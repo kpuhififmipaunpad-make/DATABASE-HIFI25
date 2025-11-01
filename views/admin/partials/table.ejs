@@ -513,3 +513,213 @@ table.dataTable tbody tr.child span.dtr-data {
     font-size: 11px !important;
     padding: 14px 10px !important;
   }
+  
+  table.dataTable tbody td {
+    font-size: 13px !important;
+    padding: 12px 10px !important;
+  }
+  
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  
+  .action-buttons {
+    gap: 6px;
+  }
+  
+  .badge-red {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .dataTables_paginate .page-item .page-link {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-width: 38px;
+  }
+  
+  .dt-button {
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .table-section {
+    padding: 16px 10px;
+  }
+  
+  .table-title h5 {
+    font-size: 16px;
+  }
+  
+  .btn-refresh span {
+    display: none;
+  }
+  
+  .btn-refresh {
+    padding: 10px 16px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .table-section {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .table-title h5,
+  .table-title i {
+    color: #F9FAFB;
+    -webkit-text-fill-color: #F9FAFB;
+  }
+  
+  .dataTables_filter label,
+  .dataTables_length label {
+    color: #F9FAFB;
+  }
+  
+  .dataTables_filter input,
+  .dataTables_length select {
+    background: rgba(51, 65, 85, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #F9FAFB;
+  }
+  
+  .dataTables_filter input:focus,
+  .dataTables_length select:focus {
+    background: rgba(51, 65, 85, 0.95);
+    border-color: #3B82F6;
+  }
+  
+  table.dataTable tbody tr {
+    background: rgba(51, 65, 85, 0.8) !important;
+  }
+  
+  table.dataTable tbody tr:hover {
+    background: rgba(59, 130, 246, 0.15) !important;
+  }
+  
+  table.dataTable tbody td,
+  table.dataTable tbody td strong {
+    color: #F9FAFB !important;
+  }
+  
+  table.dataTable tbody tr.child {
+    background: rgba(51, 65, 85, 0.9) !important;
+  }
+  
+  table.dataTable tbody tr.child span.dtr-title,
+  table.dataTable tbody tr.child span.dtr-data {
+    color: #F9FAFB;
+  }
+  
+  .dataTables_info {
+    color: #D1D5DB;
+  }
+  
+  .dataTables_paginate .page-item .page-link {
+    background: rgba(51, 65, 85, 0.8);
+    color: #F9FAFB;
+  }
+  
+  .dataTables_paginate .page-item .page-link:hover:not(.active) {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3B82F6;
+  }
+}
+
+/* Loading State */
+.table-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  color: #6B7280;
+}
+
+.table-loading i {
+  font-size: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.dataTables_empty {
+  text-align: center;
+  padding: 40px 20px !important;
+  color: #6B7280 !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+/* Scrollbar Styling */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #FF1744 0%, #2563EB 100%);
+}
+</style>
+
+<script>
+// Delete User Function
+function deleteUser(id) {
+  if (confirm('⚠️ Apakah Anda yakin ingin menghapus data ini?\n\nTindakan ini tidak dapat dibatalkan!')) {
+    const button = event.target.closest('.btn-delete');
+    const originalHTML = button.innerHTML;
+    
+    // Show loading state
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    button.disabled = true;
+    button.style.opacity = '0.7';
+    
+    fetch(`/dashboard/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        // Animate row removal
+        const row = button.closest('tr');
+        row.style.transition = 'all 0.5s ease';
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        throw new Error('Gagal menghapus data');
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      alert('❌ Terjadi kesalahan saat menghapus data!\n\nSilakan coba lagi.');
+      button.innerHTML = originalHTML;
+      button.disabled = false;
+      button.style.opacity = '1';
+    });
+  }
+}
+</script>

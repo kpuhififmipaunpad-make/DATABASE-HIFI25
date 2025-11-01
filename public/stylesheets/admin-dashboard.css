@@ -1,188 +1,17 @@
 /* ============================================
-   ADMIN DASHBOARD - SPECIFIC STYLING
-   Table, Sidebar, Navbar, Modal
-   NAMESPACE: Prefix dengan .admin-* untuk avoid conflict
+   ADMIN DASHBOARD - ENHANCED STYLING
+   Kontras tinggi, User-friendly, Modern
    ============================================ */
 
 /* ============================================
-   LAYOUT - SIDEBAR & CONTENT WRAPPER
+   TABLE CONTAINER
    ============================================ */
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    background: linear-gradient(180deg, #1F2937 0%, #111827 100%);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
-}
-
-.sidebar.collapsed {
-    transform: translateX(-280px);
-}
-
-.sidebar-header {
-    padding: 24px 20px;
-    background: rgba(220, 20, 60, 0.1);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-logo {
-    font-size: 24px;
-    font-weight: 700;
-    color: white;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.sidebar-menu {
-    padding: 20px 0;
-}
-
-.sidebar-menu-item {
-    list-style: none;
-    margin-bottom: 4px;
-}
-
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 20px;
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.sidebar-link::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--gradient-primary);
-    transform: scaleY(0);
-    transition: transform 0.2s ease;
-}
-
-.sidebar-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.sidebar-link.active {
-    background: rgba(220, 20, 60, 0.15);
-    color: white;
-}
-
-.sidebar-link.active::before {
-    transform: scaleY(1);
-}
-
-.content-wrapper {
-    margin-left: 280px;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
-    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    z-index: 1;
-}
-
-.content-wrapper.expanded {
-    margin-left: 0;
-}
-
-.main-content {
-    padding: 32px;
-    max-width: 1600px;
-    margin: 0 auto;
-}
-
-/* ============================================
-   TOP NAVBAR (Admin)
-   ============================================ */
-.admin-navbar {
-    background: white;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    padding: 16px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.navbar-toggle {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: rgba(220, 20, 60, 0.1);
-    border: none;
-    color: #DC143C;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    transition: all 0.2s ease;
-}
-
-.navbar-toggle:hover {
-    background: rgba(220, 20, 60, 0.2);
-    transform: scale(1.1);
-}
-
-.navbar-user {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 16px;
-    border-radius: 10px;
-    background: rgba(30, 58, 138, 0.1);
-    color: #1E3A8A;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.navbar-user:hover {
-    background: rgba(30, 58, 138, 0.15);
-}
-
-.navbar-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 14px;
-}
-
-/* ============================================
-   TABLE CONTAINER - SCOPED TO ADMIN DASHBOARD
-   ============================================ */
-.admin-table-container,
 .table-container {
     background: rgba(255, 255, 255, 0.98) !important;
     border-radius: 20px !important;
     padding: 0 !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
     overflow: hidden !important;
-    margin-bottom: 32px;
 }
 
 .table-header {
@@ -625,29 +454,7 @@
 /* ============================================
    RESPONSIVE ADJUSTMENTS
    ============================================ */
-@media screen and (max-width: 1024px) {
-    .sidebar {
-        transform: translateX(-280px);
-    }
-    
-    .sidebar.show {
-        transform: translateX(0);
-    }
-    
-    .content-wrapper {
-        margin-left: 0;
-    }
-    
-    .dataTables_filter input {
-        min-width: 220px !important;
-    }
-}
-
 @media screen and (max-width: 768px) {
-    .main-content {
-        padding: 20px;
-    }
-    
     .dataTables_wrapper {
         padding: 16px !important;
     }
@@ -682,31 +489,11 @@
     .table-title {
         font-size: 18px !important;
     }
-    
-    .admin-navbar {
-        padding: 12px 20px;
-    }
-    
-    .navbar-user span {
-        display: none;
-    }
 }
 
-@media screen and (max-width: 480px) {
-    .main-content {
-        padding: 16px;
-    }
-    
-    .dashboard-header {
-        padding: 20px !important;
-    }
-    
-    .dashboard-title {
-        font-size: 22px !important;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr !important;
+@media screen and (max-width: 1024px) {
+    .dataTables_filter input {
+        min-width: 220px !important;
     }
 }
 
@@ -714,8 +501,7 @@
    DARK MODE ADJUSTMENTS
    ============================================ */
 @media (prefers-color-scheme: dark) {
-    .table-container,
-    .admin-table-container {
+    .table-container {
         background: rgba(30, 41, 59, 0.98) !important;
     }
     
@@ -764,43 +550,19 @@
     .info-value {
         color: white !important;
     }
-    
-    .admin-navbar {
-        background: rgba(30, 41, 59, 0.95) !important;
-    }
-    
-    .navbar-toggle {
-        background: rgba(220, 20, 60, 0.15) !important;
-    }
-    
-    .navbar-user {
-        background: rgba(30, 58, 138, 0.15) !important;
-        color: #60A5FA !important;
-    }
 }
 
 /* ============================================
    PRINT STYLES
    ============================================ */
 @media print {
-    .sidebar,
-    .admin-navbar,
     .btn-refresh,
     .btn-action,
     .dt-buttons,
     .dataTables_filter,
     .dataTables_length,
-    .dataTables_paginate,
-    .navbar-toggle {
+    .dataTables_paginate {
         display: none !important;
-    }
-    
-    .content-wrapper {
-        margin-left: 0 !important;
-    }
-    
-    .main-content {
-        padding: 0 !important;
     }
     
     #usersTable {
@@ -811,31 +573,4 @@
         background: #f3f4f6 !important;
         color: #111827 !important;
     }
-    
-    #usersTable tbody tr {
-        page-break-inside: avoid !important;
-    }
-}
-
-/* ============================================
-   FOOTER (Admin)
-   ============================================ */
-.admin-footer {
-    padding: 24px 32px;
-    text-align: center;
-    color: #6B7280;
-    font-size: 14px;
-    border-top: 1px solid #E5E7EB;
-    background: white;
-    margin-top: 40px;
-}
-
-.admin-footer a {
-    color: #DC143C;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.admin-footer a:hover {
-    text-decoration: underline;
 }

@@ -1,336 +1,288 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Database HIFI</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+  <%- include('partials/header') %>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    }
+    
+    .wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .content-wrapper {
+      flex: 1;
+      margin-left: 260px;
+      padding: 80px 30px 30px;
+      transition: all 0.3s ease;
+    }
+    
+    .content-wrapper.expanded {
+      margin-left: 80px;
+    }
+    
+    .dashboard-header {
+      margin-bottom: 40px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .page-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #DC143C 0%, #1E3A8A 100%);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+    }
+    
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1F2937;
+      margin-bottom: 8px;
+    }
+    
+    .stat-label {
+      color: #6B7280;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .table-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      animation: fadeInUp 1s ease-out;
+    }
+    
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    
+    .table-title {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .table-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    table.dataTable {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    table.dataTable thead {
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+    }
+    
+    table.dataTable thead th {
+      padding: 16px;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      border: none;
+      font-size: 14px;
+    }
+    
+    table.dataTable thead th:first-child {
+      border-top-left-radius: 12px;
+    }
+    
+    table.dataTable thead th:last-child {
+      border-top-right-radius: 12px;
+    }
+    
+    table.dataTable tbody tr {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    table.dataTable tbody tr:hover {
+      background: rgba(30, 58, 138, 0.05);
+      transform: scale(1.01);
+    }
+    
+    table.dataTable tbody tr.shown {
+      background: rgba(220, 20, 60, 0.05);
+    }
+    
+    table.dataTable tbody td {
+      padding: 16px;
+      border: none;
+      font-size: 14px;
+      color: #374151;
+    }
+    
+    .detail-card {
+      animation: fadeInUp 0.4s ease-out;
+    }
+    
+    @media (max-width: 768px) {
+      .content-wrapper {
+        margin-left: 0;
+        padding: 80px 15px 20px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .table-container {
+        padding: 20px;
+        overflow-x: auto;
+      }
+      
+      .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Alert Message -->
-    <% if(alert.message && alert.message.length > 0) { %>
-    <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
-        <div class="flex items-center">
-            <i class="fas fa-check-circle text-2xl mr-3 text-green-400"></i>
-            <div class="text-sm font-medium text-white"><%= alert.message %></div>
-            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200 transition-smooth">
-                <i class="fas fa-times"></i>
+  <div class="wrapper">
+    <%- include('partials/sidebar') %>
+    <%- include('partials/navbar') %>
+    
+    <div class="content-wrapper">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <h1 class="page-title">Dashboard Admin</h1>
+        <p class="page-subtitle">Selamat datang, <%= nama %>!</p>
+      </div>
+      
+      <!-- Alert Messages -->
+      <%- include('partials/message', {message: alert.message, status: alert.status}) %>
+      
+      <!-- Statistics Cards -->
+      <div class="stats-grid">
+        <div class="stat-card" data-tilt>
+          <div class="stat-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-value" data-counter="<%= count.user %>">0</div>
+          <div class="stat-label">Total Anggota</div>
+        </div>
+        
+        <div class="stat-card" data-tilt>
+          <div class="stat-icon">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <div class="stat-value" data-counter="<%= admin.length %>">0</div>
+          <div class="stat-label">Administrator</div>
+        </div>
+        
+        <div class="stat-card" data-tilt>
+          <div class="stat-icon">
+            <i class="fas fa-user-check"></i>
+          </div>
+          <div class="stat-value" data-counter="<%= count.user - admin.length %>">0</div>
+          <div class="stat-label">Anggota Aktif</div>
+        </div>
+        
+        <div class="stat-card" data-tilt>
+          <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Database Aktif</div>
+        </div>
+      </div>
+      
+      <!-- Data Table -->
+      <div class="table-container">
+        <div class="table-header">
+          <h2 class="table-title">
+            <i class="fas fa-table"></i>
+            Data Warga HIFI
+          </h2>
+          <div class="table-actions">
+            <button onclick="HIFIAdmin.refreshData()" class="btn-export" id="refreshBtn">
+              <i class="fas fa-sync-alt"></i>
+              Refresh
             </button>
+          </div>
         </div>
+        
+        <%- include('partials/table', {users: users}) %>
+      </div>
     </div>
-    <% } %>
-
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="glass-sidebar w-72 hidden lg:block fixed h-full">
-            <div class="p-6 h-full flex flex-col">
-                <div class="flex items-center mb-10 animate-fadeIn">
-                    <img src="/img/LogoHIFI-2.png" alt="HIFI Admin Logo with professional dashboard branding in red and blue color palette" class="h-14 w-auto">
-                    <span class="ml-3 text-white text-xl font-bold">Admin Panel</span>
-                </div>
-                <nav class="space-y-3 flex-1">
-                    <a href="/dashboard" class="flex items-center px-5 py-4 text-white bg-gradient-to-r from-blue-600/30 to-red-600/30 rounded-xl transition-smooth hover:from-blue-600/40 hover:to-red-600/40">
-                        <i class="fas fa-dashboard mr-4 text-xl"></i>
-                        <span class="font-semibold">Dashboard</span>
-                    </a>
-                    <a href="/" class="flex items-center px-5 py-4 text-white/80 hover:bg-white/10 rounded-xl transition-smooth hover:text-white">
-                        <i class="fas fa-home mr-4 text-xl"></i>
-                        <span class="font-semibold">Home</span>
-                    </a>
-                    <a href="/profile" class="flex items-center px-5 py-4 text-white/80 hover:bg-white/10 rounded-xl transition-smooth hover:text-white">
-                        <i class="fas fa-user mr-4 text-xl"></i>
-                        <span class="font-semibold">Profile</span>
-                    </a>
-                </nav>
-                <a href="/auth/logout" class="flex items-center px-5 py-4 text-white/80 hover:bg-red-500/20 rounded-xl transition-smooth mt-auto">
-                    <i class="fas fa-sign-out-alt mr-4 text-xl"></i>
-                    <span class="font-semibold">Logout</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <div class="flex-1 lg:ml-72">
-            <!-- Top Navbar -->
-            <nav class="glass-navbar sticky top-0 z-30">
-                <div class="px-6 py-5 flex justify-between items-center">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileMenu()" class="lg:hidden mr-4 text-white">
-                            <i class="fas fa-bars text-2xl"></i>
-                        </button>
-                        <h2 class="text-3xl font-bold text-white">Dashboard Admin</h2>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="glass-card px-5 py-3 flex items-center">
-                            <i class="fas fa-user-circle text-2xl text-blue-400 mr-3"></i>
-                            <span class="text-white font-semibold"><%= nama %></span>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Stats Cards -->
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                    <div class="glass-card p-8 hover:scale-105 transition-smooth">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-white/70 text-sm font-semibold mb-2 uppercase tracking-wide">Total Users</p>
-                                <h3 class="text-5xl font-bold text-white" data-counter="<%= count.user %>">0</h3>
-                            </div>
-                            <div class="bg-gradient-to-br from-blue-600/40 to-blue-800/40 p-5 rounded-2xl">
-                                <i class="fas fa-users text-4xl text-white"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="glass-card p-8 hover:scale-105 transition-smooth">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-white/70 text-sm font-semibold mb-2 uppercase tracking-wide">Total Admin</p>
-                                <h3 class="text-5xl font-bold text-white" data-counter="<%= admin.length %>">0</h3>
-                            </div>
-                            <div class="bg-gradient-to-br from-red-600/40 to-red-800/40 p-5 rounded-2xl">
-                                <i class="fas fa-user-shield text-4xl text-white"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="glass-card p-8 hover:scale-105 transition-smooth">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-white/70 text-sm font-semibold mb-2 uppercase tracking-wide">Active Now</p>
-                                <h3 class="text-5xl font-bold text-white" data-counter="<%= count.user %>">0</h3>
-                            </div>
-                            <div class="bg-gradient-to-br from-purple-600/40 to-purple-800/40 p-5 rounded-2xl animate-pulse">
-                                <i class="fas fa-chart-line text-4xl text-white"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Users Table -->
-                <div class="glass-table p-8">
-                    <div class="flex justify-between items-center mb-8">
-                        <h3 class="text-3xl font-bold text-white">
-                            <i class="fas fa-table mr-3 text-blue-400"></i>Data Pengguna HIFI
-                        </h3>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table id="usersTable" class="w-full">
-                            <thead>
-                                <tr>
-                                    <th class="text-left py-4 px-6">No</th>
-                                    <th class="text-left py-4 px-6">Username</th>
-                                    <th class="text-left py-4 px-6">Nama</th>
-                                    <th class="text-left py-4 px-6">NPM</th>
-                                    <th class="text-left py-4 px-6">Email</th>
-                                    <th class="text-left py-4 px-6">Role</th>
-                                    <th class="text-left py-4 px-6">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% users.forEach((user, index) => { %>
-                                <tr class="transition-smooth">
-                                    <td class="py-4 px-6 font-medium"><%= index + 1 %></td>
-                                    <td class="py-4 px-6 font-semibold"><%= user.username %></td>
-                                    <td class="py-4 px-6"><%= user.nama || '-' %></td>
-                                    <td class="py-4 px-6"><%= user.npm || '-' %></td>
-                                    <td class="py-4 px-6"><%= user.email || '-' %></td>
-                                    <td class="py-4 px-6">
-                                        <span class="<%= user.role === 'admin' ? 'badge-admin' : 'badge-user' %>">
-                                            <i class="fas fa-<%= user.role === 'admin' ? 'shield-alt' : 'user' %> mr-1"></i>
-                                            <%= user.role || 'user' %>
-                                        </span>
-                                    </td>
-                                    <td class="py-4 px-6">
-                                        <div class="flex space-x-2">
-                                            <a href="/dashboard/edit/<%= user._id %>" 
-                                               class="glass-button text-xs py-2 px-4 ripple bg-blue-600/25 hover:bg-blue-600/35">
-                                                <i class="fas fa-edit mr-1"></i>Edit
-                                            </a>
-                                            <form action="/dashboard/delete/<%= user._id %>?_method=DELETE" method="POST" 
-                                                  onsubmit="return confirm('Yakin ingin menghapus user <%= user.username %>?')" class="inline">
-                                                <button type="submit" 
-                                                        class="glass-button text-xs py-2 px-4 ripple bg-red-600/25 hover:bg-red-600/35">
-                                                    <i class="fas fa-trash mr-1"></i>Hapus
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
-    <script src="/javascript/dom.js"></script>
-    <script src="/javascript/animations.js"></script>
-    <script>
-        $(document).ready(function() {
-            var table = $('#usersTable').DataTable({
-                "pageLength": 10,
-                "ordering": true,
-                "searching": true,
-                "responsive": true,
-                "dom": 'Bfrtip',
-                "buttons": [
-                    {
-                        extend: 'excel',
-                        text: '<i class="fas fa-file-excel mr-2"></i>Export Excel',
-                        className: 'dt-button',
-                        title: 'Data Pengguna HIFI',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: '<i class="fas fa-print mr-2"></i>Print',
-                        className: 'dt-button',
-                        title: 'Data Pengguna HIFI',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5]
-                        }
-                    }
-                ],
-                "language": {
-                    "search": "Cari:",
-                    "lengthMenu": "Tampilkan _MENU_ data per halaman",
-                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                    "infoEmpty": "Tidak ada data",
-                    "infoFiltered": "(difilter dari _MAX_ total data)",
-                    "zeroRecords": "Tidak ada data yang cocok",
-                    "paginate": {
-                        "first": "Pertama",
-                        "last": "Terakhir",
-                        "previous": "Sebelumnya",
-                        "next": "Selanjutnya"
-                    }
-                },
-                "drawCallback": function() {
-                    // Add animation to table rows
-                    $('#usersTable tbody tr').each(function(index) {
-                        $(this).css({
-                            'animation': 'fadeInUp 0.5s ease-out',
-                            'animation-delay': (index * 0.05) + 's',
-                            'animation-fill-mode': 'both'
-                        });
-                    });
-                }
-            });
-
-            // Add click event to show detail
-            $('#usersTable tbody').on('click', 'tr', function () {
-                if ($(this).hasClass('detail-shown')) {
-                    // Close detail
-                    $(this).removeClass('detail-shown');
-                    $(this).next('.detail-row-wrapper').remove();
-                } else {
-                    // Close other details
-                    $('#usersTable tbody tr.detail-shown').each(function() {
-                        $(this).removeClass('detail-shown');
-                        $(this).next('.detail-row-wrapper').remove();
-                    });
-                    
-                    // Open this detail
-                    $(this).addClass('detail-shown');
-                    var rowData = table.row(this).data();
-                    var userIndex = table.row(this).index();
-                    var user = <%= JSON.stringify(users) %>[userIndex];
-                    
-                    var detailHtml = `
-                        <tr class="detail-row-wrapper">
-                            <td colspan="7" class="p-0">
-                                <div class="detail-row mx-4 my-2">
-                                    <h4 class="text-xl font-bold text-white mb-4 flex items-center">
-                                        <i class="fas fa-info-circle mr-2 text-blue-400"></i>
-                                        Detail Lengkap: ${user.nama || user.username}
-                                    </h4>
-                                    <table class="w-full">
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-id-card mr-2 text-blue-400"></i>NPM</td>
-                                            <td class="py-2">: ${user.npm || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-envelope mr-2 text-blue-400"></i>Email</td>
-                                            <td class="py-2">: ${user.email || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-phone mr-2 text-blue-400"></i>No. HP</td>
-                                            <td class="py-2">: ${user.hp || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-birthday-cake mr-2 text-red-400"></i>TTL</td>
-                                            <td class="py-2">: ${user.ttl || '-'}, ${user.tgl || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-pray mr-2 text-red-400"></i>Agama</td>
-                                            <td class="py-2">: ${user.agama || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-tint mr-2 text-red-400"></i>Golongan Darah</td>
-                                            <td class="py-2">: ${user.goldar || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-home mr-2 text-blue-400"></i>Alamat Rumah</td>
-                                            <td class="py-2">: ${user.rumah || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-building mr-2 text-blue-400"></i>Alamat Kos</td>
-                                            <td class="py-2">: ${user.kos || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-graduation-cap mr-2 text-purple-400"></i>Pendidikan</td>
-                                            <td class="py-2">: ${user.pendidikan || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-users-cog mr-2 text-purple-400"></i>Kepanitiaan</td>
-                                            <td class="py-2">: ${user.panitia || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-sitemap mr-2 text-purple-400"></i>Organisasi</td>
-                                            <td class="py-2">: ${user.organisasi || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-certificate mr-2 text-green-400"></i>Pelatihan</td>
-                                            <td class="py-2">: ${user.pelatihan || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-trophy mr-2 text-yellow-400"></i>Prestasi</td>
-                                            <td class="py-2">: ${user.prestasi || '-'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2"><i class="fas fa-clock mr-2 text-gray-400"></i>Terakhir Update</td>
-                                            <td class="py-2">: ${user.time || '-'}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    
-                    $(this).after(detailHtml);
-                }
-            });
-        });
-
-        function toggleMobileMenu() {
-            document.querySelector('.glass-sidebar').classList.toggle('active');
-        }
-    </script>
+  </div>
+  
+  <%- include('partials/script') %>
+  <script src="/javascript/animations.js"></script>
+  <script src="/javascript/admin-animations.js"></script>
 </body>
 </html>

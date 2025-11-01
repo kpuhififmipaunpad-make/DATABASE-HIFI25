@@ -20,29 +20,20 @@
 <script src="/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
 <script>
-  // tombol Refresh
   window.HIFIAdmin = { refreshData: () => window.location.reload() };
 
   $(function(){
     const $tbl = $('#usersTable');
     if (!$tbl.length) return;
 
-    // Hapus/hidden kontrol TOP khusus (search & page select) bila masih ada di DOM
-    $('#searchNama, #itemsPerPage, #pageSelect')
-      .closest('.form-group, .input-group, .toolbar-item, .table-toolbar')
-      .remove();
-    $('#searchNama, #itemsPerPage, #pageSelect').remove();
-
-    // Init DataTable – hanya bottom: info + paginate
     const table = $tbl.DataTable({
       responsive: true,
       autoWidth: false,
-      dom: 't<"dt-bottom"ip>',
-      searching: true,      // aktif untuk API, tapi UI default kita sembunyikan via CSS
-      lengthChange: false,  // hilangkan dropdown length bawaan
+      dom: 't<"dt-bottom"ip>',   // hanya info & paginate di bawah
+      searching: true,           // search aktif (dipakai input custom)
+      lengthChange: false,
       pageLength: 10,
       pagingType: 'full_numbers',
       columnDefs: [
@@ -57,7 +48,7 @@
       }
     });
 
-    // Export buttons (hijau)
+    // ===== Export buttons (ijo) DIPASANG DI ATAS =====
     const btns = new $.fn.dataTable.Buttons(table, {
       buttons: [
         { extend: 'excelHtml5', text: '<i class="fas fa-file-excel"></i> Export Excel', className: 'dt-btn-green' },
@@ -65,9 +56,18 @@
         { extend: 'print',      text: '<i class="fas fa-print"></i> Print',           className: 'dt-btn-green' }
       ]
     });
-    table.buttons().container().appendTo($('.table-toolbar')[0] || $('#usersTable_wrapper')[0]);
+    table.buttons().container().appendTo($('#exportButtons'));
 
-    // ——— TIDAK ADA row-detail pada klik (permintaan kamu) ———
-    // jadi tidak ada handler klik baris di sini.
+    // ===== Items per page (10/page) =====
+    $('#itemsPerPage').on('change', function(){
+      table.page.len(parseInt(this.value, 10) || 10).draw();
+    });
+
+    // ===== Search global (pojok kanan) =====
+    $('#searchTable').on('input', function(){
+      table.search(this.value).draw();
+    });
+
+    // (Tidak ada row-detail saat klik baris)
   });
 </script>

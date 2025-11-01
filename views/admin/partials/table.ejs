@@ -1,46 +1,71 @@
-<div class="table-responsive">
-  <table id="usersTable" class="display" style="width:100%">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Username</th>
-        <th>Nama</th>
-        <th>NPM</th>
-        <th>Email</th>
-        <th>Telepon</th> <!-- NEW -->
-        <th>Role</th>
-        <th>Terakhir Update</th>
-        <th class="no-export">Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% users.forEach((user, index) => { %>
-        <tr data-id="<%= user._id %>">
-          <td><%= index + 1 %></td>
-          <td><strong><%= user.username %></strong></td>
-          <td><%= user.nama || '-' %></td>
-          <td><%= user.npm || '-' %></td>
-          <td><%= user.email || '-' %></td>
-          <td><%= user.hp || '-' %></td> <!-- pakai field yang sama dengan edit.ejs -->
-          <td>
-            <span class="badge-glass <%= user.role === 'admin' ? 'badge-red' : 'badge-blue' %>">
-              <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
-              <%= user.role === 'admin' ? 'Admin' : 'User' %>
-            </span>
-          </td>
-          <td><%= user.time || '-' %></td>
-          <td class="no-export">
-            <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn-action btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
+<div class="table-container">
+  <!-- TOP TOOLBAR -->
+  <div class="table-toolbar">
+    <div class="toolbar-left">
+      <label class="toolbar-label">Tampilkan</label>
+      <select id="itemsPerPage" class="toolbar-select">
+        <option value="10" selected>10 / page</option>
+        <option value="20">20 / page</option>
+        <option value="30">30 / page</option>
+        <option value="50">50 / page</option>
+        <option value="100">100 / page</option>
+      </select>
+    </div>
+
+    <div class="toolbar-right">
+      <input id="searchTable" class="toolbar-search" type="text" placeholder="Cari di semua kolom..." />
+      <button id="btnRefresh" class="btn-glass" onclick="HIFIAdmin.refreshData()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <span id="exportButtons"></span>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-responsive">
+    <table id="usersTable" class="display" style="width:100%">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Username</th>
+          <th>Nama</th>
+          <th>NPM</th>
+          <th>Email</th>
+          <th>Telepon</th> <!-- NEW -->
+          <th>Role</th>
+          <th>Terakhir Update</th>
+          <th class="no-export">Aksi</th>
         </tr>
-      <% }) %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% users.forEach((user, index) => { %>
+          <tr data-id="<%= user._id %>">
+            <td><%= index + 1 %></td>
+            <td><strong><%= user.username %></strong></td>
+            <td><%= user.nama || '-' %></td>
+            <td><%= user.npm || '-' %></td>
+            <td><%= user.email || '-' %></td>
+            <td><%= user.hp || '-' %></td> <!-- sinkron edit.ejs -->
+            <td>
+              <span class="badge-glass <%= user.role === 'admin' ? 'badge-red' : 'badge-blue' %>">
+                <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
+                <%= user.role === 'admin' ? 'Admin' : 'User' %>
+              </span>
+            </td>
+            <td><%= user.time || '-' %></td>
+            <td class="no-export">
+              <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn-action btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>

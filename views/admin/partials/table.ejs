@@ -21,7 +21,7 @@
           <td><%= user.nama || '-' %></td>
           <td><%= user.npm || '-' %></td>
           <td><%= user.email || '-' %></td>
-          <td><%= user.telp || user.telepon || user.nohp || '-' %></td> <!-- NEW -->
+          <td><%= user.hp || '-' %></td> <!-- pakai field yang sama dengan edit.ejs -->
           <td>
             <span class="badge-glass <%= user.role === 'admin' ? 'badge-red' : 'badge-blue' %>">
               <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>

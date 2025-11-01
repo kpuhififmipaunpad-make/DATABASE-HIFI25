@@ -1,102 +1,93 @@
-<%- include('partials/header') %>
-
-<div class="w-full flex flex-wrap">
-
-    <!-- Login Section -->
-    <div class="w-full md:w-1/2 flex flex-col">
-
-        <div class="flex justify-center md:justify-start pt-12 md:pl-12 md:-mb-24">
-        </div>
-
-        <div class="flex flex-col justify-center md:justify-start my-auto pt-8 md:pt-0 px-8 md:px-24 lg:px-32">
-            <div class="flex justify-center mt-8 mb-3">
-                <img src="/img/LogoHIFI-2.png" alt="logo HIFI" width="40" height="20">
-                <p class="text-3xl pl-2">Sign Up</p>
-             </div>
-            <%- include ./partials/message.ejs %>
-            <form class="flex flex-col pt-3" action="/auth/signup" method="post" autocomplete="off">
-                <div class="flex flex-col pt-4 justify-between relative">
-                    <label for="username" class="text-lg">
-                        Username
-                        <span class="text-xs text-red-500 absolute right-0 top-6">
-                            <%= unameBlank %> (Isi menggunakan NPM)
-                        </span>
-                    </label>
-                    <input 
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        type="number" 
-                        id="username" 
-                        name="username" 
-                        placeholder="Username"
-                        autocomplete="off"
-                    />
-                </div>
-                <div class="flex flex-col pt-4 relative">
-                    <label for="email" class="text-lg">
-                        Email
-                        <span class="text-xs text-red-500 absolute right-0 top-6">
-                            <%= emailBlank %>
-                        </span>
-                    </label>
-                    <input 
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                        type="text" 
-                        id="email" 
-                        name="email" 
-                        placeholder="youremail@mail.com"
-                        autocomplete="off"
-                    >
-                </div>
-                <div class="flex flex-col pt-4 relative">
-                    <label for="password" class="text-lg">
-                        Password
-                        <span class="text-xs text-red-500 absolute right-0 top-6">
-                            <%= passBlank %>
-                        </span>
-                    </label>
-                    <div class="flex flex-row shadow appearance-none border rounded mt-1">
-                        <input 
-                            class="w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline appearance-none rounded"
-                            type="password" 
-                            id="password" 
-                            name="password"
-                            placeholder="Password"
-                            autocomplete="new-password"
-                        >
-                        <button id="seePassButton" class="px-3" type="button"><i id="seePassIcon" class="fa-solid fa-eye"></i></button>
-                    </div>
-                </div>
-                <div class="flex flex-col pt-4 relative">
-                    <label for="password" class="text-lg">
-                        Confirm Password
-                        <span class="text-xs text-red-500 absolute right-0 top-6">
-                            <%= password2 %>
-                        </span>
-                    </label>
-                    <div class="flex flex-row shadow appearance-none border rounded mt-1">
-                        <input 
-                            class="w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline appearance-none rounded"
-                            type="password" 
-                            id="password2" 
-                            name="password2"
-                            placeholder="Confirm Password"
-                            autocomplete="new-password"
-                        >
-                    </div>
-                </div>
-                <button type="submit" class="bg-black text-white font-bold text-lg hover:bg-gray-700 p-2 mt-8 transition duration-500">Sign Up</button>
-            </form>
-            <div class="text-center pt-12 pb-12">
-                <p>Sudah punya akun? <a href="/auth/login" class="underline font-semibold">Login</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Database HIFI</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="gradient-bg-1">
+    <!-- Alert Messages -->
+    <% if(message && message.length > 0 || unameBlank || emailBlank || passBlank || password2) { %>
+    <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle text-2xl mr-3 text-white"></i>
+            <div class="text-sm font-medium text-white">
+                <%= message || unameBlank || emailBlank || passBlank || password2 %>
             </div>
+            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
+    </div>
+    <% } %>
 
+    <div class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="glass-card p-8 md:p-12 w-full max-w-md">
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo for signup page with welcoming design" class="h-24 w-auto mx-auto mb-4">
+                <h1 class="text-3xl font-bold text-white mb-2">Daftar Akun</h1>
+                <p class="text-white/80">Buat akun Database HIFI baru</p>
+            </div>
+
+            <!-- Signup Form -->
+            <form action="/auth/signup" method="POST" name="validasi_form" onsubmit="return validasi_input(this)" class="space-y-5">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-user mr-2"></i>Username
+                    </label>
+                    <input type="text" id="username" name="username" required 
+                           class="glass-input" placeholder="Minimal 8 karakter">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Email
+                    </label>
+                    <input type="email" id="email" name="email" required 
+                           class="glass-input" placeholder="contoh@email.com">
+                </div>
+
+                <div>
+                    <label for="password_1" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password_1" name="password" required 
+                               class="glass-input pr-12" placeholder="Masukkan password">
+                        <button type="button" id="seePassButton" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
+                            <i class="fas fa-eye" id="seePassIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password_2" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-lock mr-2"></i>Konfirmasi Password
+                    </label>
+                    <input type="password" id="password_2" name="password2" required 
+                           onkeyup="checkPass()" class="glass-input" placeholder="Ulangi password">
+                    <span id="pesan" class="text-sm"></span>
+                </div>
+
+                <button type="submit" name="daftar_process" class="glass-button w-full" disabled>
+                    <i class="fas fa-user-plus mr-2"></i>Daftar
+                </button>
+
+                <p class="text-center text-white/80 text-sm">
+                    Sudah punya akun? 
+                    <a href="/auth/login" class="text-white font-semibold hover:underline">Login di sini</a>
+                </p>
+            </form>
+        </div>
     </div>
 
-    <!-- Image Section -->
-    <div class="w-1/2 shadow-2xl">
-        <img class="object-cover w-full h-screen hidden md:block" src="https://source.unsplash.com/IXUM4cJynP0">
-    </div>
-</div>
-
-<%- include('partials/footer') %>
+    <script src="/javascript/validasi.js"></script>
+    <script src="/javascript/dom.js"></script>
+</body>
+</html>

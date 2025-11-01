@@ -1850,218 +1850,188 @@ input::-ms-clear {
 
 
 /* ============================================
-   ADMIN DASHBOARD - STYLING IMPROVEMENTS
-   (Tambahan untuk merapikan tampilan)
+   ADMIN DASHBOARD - FINAL STYLING FIXES
    ============================================ */
 
-/* Perbaikan Kontras Sidebar */
-.sidebar-glass {
-  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.15) !important;
+/* Top Navigation Bar */
+.top-nav {
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
-.sidebar-menu-item {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 600 !important;
-}
-
-.sidebar-menu-item:hover {
-  background: rgba(220, 20, 60, 0.2) !important;
-  color: white !important;
-}
-
-.sidebar-menu-item.active {
-  background: linear-gradient(135deg, rgba(220, 20, 60, 0.25) 0%, rgba(30, 58, 138, 0.25) 100%) !important;
-  color: white !important;
-  font-weight: 700 !important;
-}
-
-/* Perbaikan Stat Cards */
-.stat-card {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(220, 20, 60, 0.1) !important;
-}
-
-.stat-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-}
-
-.stat-card-body h3 {
-  color: #1F2937 !important;
-  font-weight: 800 !important;
-}
-
-.stat-card-body p {
-  color: #6B7280 !important;
-  font-weight: 600 !important;
-}
-
-/* Perbaikan DataTable */
-.dataTables_wrapper {
-  padding: 0 !important;
-}
-
-.dataTables_filter input,
-.dataTables_length select {
-  border: 2px solid #E5E7EB !important;
-  padding: 10px 16px !important;
-  border-radius: 10px !important;
-  font-weight: 500 !important;
-  transition: all 0.3s ease !important;
-}
-
-.dataTables_filter input:focus,
-.dataTables_length select:focus {
-  border-color: #1E3A8A !important;
-  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1) !important;
-  outline: none !important;
-}
-
-/* Perbaikan Table Header */
-table.dataTable thead th {
-  background: linear-gradient(135deg, #1F2937 0%, #374151 100%) !important;
-  color: white !important;
-  font-weight: 700 !important;
-  padding: 18px 16px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  font-size: 13px !important;
-}
-
-/* Perbaikan Table Body */
-table.dataTable tbody td {
-  color: #374151 !important;
-  font-weight: 500 !important;
-  padding: 16px !important;
-  vertical-align: middle !important;
-}
-
-table.dataTable tbody tr:hover {
-  background: rgba(30, 58, 138, 0.05) !important;
-}
-
-/* Perbaikan Pagination */
-.dataTables_paginate .page-item .page-link {
-  border: 2px solid transparent !important;
-  border-radius: 10px !important;
-  padding: 10px 16px !important;
-  color: #374151 !important;
-  background: #F9FAFB !important;
-  font-weight: 600 !important;
-  transition: all 0.3s ease !important;
-}
-
-.dataTables_paginate .page-item.active .page-link {
+.sidebar-toggle {
   background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
   color: white !important;
-  border-color: transparent !important;
+  border: none !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
   box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3) !important;
 }
 
-.dataTables_paginate .page-item .page-link:hover {
-  background: rgba(30, 58, 138, 0.1) !important;
-  border-color: #1E3A8A !important;
-  transform: translateY(-2px);
+.sidebar-toggle:hover {
+  transform: scale(1.1) rotate(90deg) !important;
+  box-shadow: 0 6px 16px rgba(220, 20, 60, 0.4) !important;
 }
 
-/* Perbaikan Action Buttons */
-.btn-action {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-  transition: all 0.3s ease !important;
+.page-title {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  margin: 0 !important;
 }
 
-.btn-edit {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
-}
-
-.btn-delete {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
-}
-
-.btn-action:hover {
-  transform: scale(1.1) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
-}
-
-/* Perbaikan Export Buttons */
-.dt-buttons .dt-button {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
-  color: white !important;
-  border: none !important;
+/* Notification Bell */
+.notification-bell {
+  width: 40px !important;
+  height: 40px !important;
   border-radius: 10px !important;
-  padding: 10px 18px !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
-  margin-right: 8px !important;
+  background: rgba(220, 20, 60, 0.1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  color: #DC143C !important;
+  position: relative !important;
+}
+
+.notification-bell:hover {
+  background: rgba(220, 20, 60, 0.2) !important;
+  transform: scale(1.1) !important;
+}
+
+.notification-badge {
+  position: absolute !important;
+  top: -4px !important;
+  right: -4px !important;
+  background: linear-gradient(135deg, #DC143C 0%, #FF1744 100%) !important;
+  color: white !important;
+  border-radius: 10px !important;
+  padding: 2px 6px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4) !important;
+}
+
+/* Profile Section */
+.profile-section {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 8px 16px !important;
+  background: rgba(30, 58, 138, 0.08) !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
   transition: all 0.3s ease !important;
 }
 
-.dt-buttons .dt-button:hover {
+.profile-section:hover {
+  background: rgba(30, 58, 138, 0.15) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
 }
 
-/* Perbaikan Alert Messages */
-.alert-glass {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px) !important;
-  border-radius: 12px !important;
-  padding: 16px 20px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-  border-left-width: 4px !important;
-  font-weight: 600 !important;
-}
-
-.alert-success {
-  border-left-color: #10B981 !important;
-  color: #065F46 !important;
-}
-
-.alert-error {
-  border-left-color: #EF4444 !important;
-  color: #991B1B !important;
-}
-
-/* Perbaikan Badge */
-.badge-red {
-  background: rgba(220, 20, 60, 0.15) !important;
-  color: #DC143C !important;
-  padding: 4px 10px !important;
-  border-radius: 8px !important;
+.profile-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
   font-weight: 700 !important;
+  font-size: 16px !important;
+  box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3) !important;
+}
+
+.profile-info h6 {
+  margin: 0 !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #1F2937 !important;
+}
+
+.profile-info p {
+  margin: 0 !important;
   font-size: 12px !important;
+  color: #6B7280 !important;
 }
 
-/* Perbaikan Kontras Text di Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .stat-card-body h3,
-  .stat-card-body p,
-  table.dataTable tbody td {
-    color: #F9FAFB !important;
+/* Main Content Area */
+.main-content {
+  padding: 32px !important;
+  background: transparent !important;
+}
+
+/* Stats Grid Layout */
+.stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+  gap: 24px !important;
+  margin-bottom: 32px !important;
+}
+
+/* Sidebar Improvements */
+.sidebar-glass {
+  background: rgba(30, 41, 59, 0.98) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.sidebar-logo {
+  padding: 24px 20px !important;
+  text-align: center !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.sidebar-logo h4 {
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  margin-top: 12px !important;
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 1024px) {
+  .sidebar-glass {
+    transform: translateX(-100%) !important;
   }
   
-  .sidebar-menu-item {
-    color: rgba(255, 255, 255, 0.95) !important;
+  .sidebar-glass.active {
+    transform: translateX(0) !important;
+  }
+  
+  .content-wrapper {
+    margin-left: 0 !important;
+    width: 100% !important;
   }
 }
 
-/* Perbaikan Responsive */
 @media screen and (max-width: 768px) {
-  .stat-card {
-    padding: 20px !important;
+  .page-title {
+    font-size: 20px !important;
   }
   
-  .stat-card-body h3 {
-    font-size: 28px !important;
+  .profile-info {
+    display: none !important;
   }
   
-  table.dataTable thead th,
-  table.dataTable tbody td {
-    padding: 12px 8px !important;
-    font-size: 13px !important;
+  .main-content {
+    padding: 20px 16px !important;
   }
   
-  .btn-action {
-    width: 32px !important;
-    height: 32px !important;
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
 }

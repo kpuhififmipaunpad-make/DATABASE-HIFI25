@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,14 +9,14 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="gradient-bg-1">
+<body>
     <!-- Alert Message -->
     <% if(message && message.length > 0) { %>
     <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
         <div class="flex items-center">
             <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %> text-2xl mr-3 text-white"></i>
             <div class="text-sm font-medium text-white"><%= message %></div>
-            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200">
+            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200 transition-smooth">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -26,29 +26,29 @@
     <!-- Navbar -->
     <nav class="glass-navbar sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <img src="/img/LogoHIFI-2.png" alt="HIFI Logo with modern design and vibrant colors" class="h-12 w-auto">
-                    <span class="ml-3 text-white text-xl font-bold">Database HIFI</span>
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center animate-fadeIn">
+                    <img src="/img/LogoHIFI-2.png" alt="HIFI Logo with modern design and vibrant red blue colors representing the organization" class="h-14 w-auto">
+                    <span class="ml-3 text-white text-2xl font-bold tracking-tight">Database HIFI</span>
                 </div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3">
                     <% if(loggedIn) { %>
-                        <a href="/profile" class="glass-button text-sm">
+                        <a href="/profile" class="glass-button text-sm ripple">
                             <i class="fas fa-user mr-2"></i>Profile
                         </a>
                         <% if(user === 'admin') { %>
-                        <a href="/dashboard" class="glass-button text-sm">
+                        <a href="/dashboard" class="glass-button text-sm ripple bg-red-600/30 hover:bg-red-600/40">
                             <i class="fas fa-dashboard mr-2"></i>Dashboard
                         </a>
                         <% } %>
-                        <a href="/auth/logout" class="glass-button text-sm bg-red-500/20 hover:bg-red-500/30">
+                        <a href="/auth/logout" class="glass-button text-sm ripple bg-red-500/25 hover:bg-red-500/35">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </a>
                     <% } else { %>
-                        <a href="/auth/login" class="glass-button text-sm">
+                        <a href="/auth/login" class="glass-button text-sm ripple">
                             <i class="fas fa-sign-in-alt mr-2"></i>Login
                         </a>
-                        <a href="/auth/signup" class="glass-button text-sm">
+                        <a href="/auth/signup" class="glass-button text-sm ripple bg-blue-600/30 hover:bg-blue-600/40">
                             <i class="fas fa-user-plus mr-2"></i>Sign Up
                         </a>
                     <% } %>
@@ -58,52 +58,99 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="glass-card p-8 md:p-12 text-center">
-            <img src="/img/LogoHIFI-2.png" alt="HIFI Logo main banner with professional branding elements" class="h-32 w-auto mx-auto mb-6">
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="glass-card p-10 md:p-16 text-center">
+            <div class="parallax" data-speed="0.3">
+                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo main banner with professional blue and red branding elements showcasing organizational identity" class="h-40 w-auto mx-auto mb-8 animate-scaleIn">
+            </div>
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 animate-fadeInUp tracking-tight">
                 Selamat Datang di Database HIFI
             </h1>
-            <p class="text-xl text-white/90 mb-8">
+            <p class="text-xl md:text-2xl text-white/90 mb-10 animate-fadeInUp" style="animation-delay: 0.2s;">
                 Sistem Informasi dan Database Anggota HIFI Unpad
             </p>
             <% if(!loggedIn) { %>
-            <div class="flex justify-center space-x-4">
-                <a href="/auth/login" class="glass-button text-lg px-8 py-3">
+            <div class="flex justify-center space-x-4 animate-fadeInUp" style="animation-delay: 0.4s;">
+                <a href="/auth/login" class="glass-button text-lg px-10 py-4 ripple bg-blue-600/30 hover:bg-blue-600/40">
                     <i class="fas fa-sign-in-alt mr-2"></i>Mulai Sekarang
+                </a>
+                <a href="/auth/signup" class="glass-button text-lg px-10 py-4 ripple">
+                    <i class="fas fa-user-plus mr-2"></i>Daftar Sekarang
                 </a>
             </div>
             <% } else { %>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-                <div class="glass-card p-6">
-                    <i class="fas fa-users text-4xl text-white mb-4"></i>
-                    <h3 class="text-xl font-bold text-white mb-2">Kelola Data</h3>
-                    <p class="text-white/80">Akses dan kelola data anggota HIFI dengan mudah</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+                <div class="glass-card p-8 hover:scale-105 transition-smooth">
+                    <div class="bg-blue-600/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-4xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Kelola Data</h3>
+                    <p class="text-white/80 text-lg">Akses dan kelola data anggota HIFI dengan mudah dan aman</p>
                 </div>
-                <div class="glass-card p-6">
-                    <i class="fas fa-chart-line text-4xl text-white mb-4"></i>
-                    <h3 class="text-xl font-bold text-white mb-2">Statistik</h3>
-                    <p class="text-white/80">Lihat statistik dan perkembangan organisasi</p>
+                <div class="glass-card p-8 hover:scale-105 transition-smooth">
+                    <div class="bg-red-600/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chart-line text-4xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Statistik</h3>
+                    <p class="text-white/80 text-lg">Lihat statistik dan perkembangan organisasi secara real-time</p>
                 </div>
-                <div class="glass-card p-6">
-                    <i class="fas fa-shield-alt text-4xl text-white mb-4"></i>
-                    <h3 class="text-xl font-bold text-white mb-2">Aman & Terpercaya</h3>
-                    <p class="text-white/80">Data Anda dijamin aman dengan enkripsi tingkat tinggi</p>
+                <div class="glass-card p-8 hover:scale-105 transition-smooth">
+                    <div class="bg-purple-600/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-shield-alt text-4xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Aman & Terpercaya</h3>
+                    <p class="text-white/80 text-lg">Data Anda dijamin aman dengan enkripsi tingkat tinggi</p>
                 </div>
             </div>
             <% } %>
         </div>
     </div>
 
+    <!-- Features Section (if logged in) -->
+    <% if(loggedIn) { %>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="glass-card p-8">
+                <h3 class="text-2xl font-bold text-white mb-4">
+                    <i class="fas fa-user-circle mr-3 text-blue-400"></i>Profil Saya
+                </h3>
+                <p class="text-white/80 mb-6">Lengkapi dan perbarui data profil Anda untuk informasi yang lebih akurat</p>
+                <a href="/profile" class="glass-button ripple bg-blue-600/25 hover:bg-blue-600/35">
+                    <i class="fas fa-arrow-right mr-2"></i>Lihat Profil
+                </a>
+            </div>
+            
+            <% if(user === 'admin') { %>
+            <div class="glass-card p-8">
+                <h3 class="text-2xl font-bold text-white mb-4">
+                    <i class="fas fa-cog mr-3 text-red-400"></i>Admin Dashboard
+                </h3>
+                <p class="text-white/80 mb-6">Kelola semua data anggota dan lihat statistik organisasi</p>
+                <a href="/dashboard" class="glass-button ripple bg-red-600/25 hover:bg-red-600/35">
+                    <i class="fas fa-arrow-right mr-2"></i>Buka Dashboard
+                </a>
+            </div>
+            <% } %>
+        </div>
+    </div>
+    <% } %>
+
     <!-- Footer -->
-    <footer class="glass-navbar mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <p class="text-center text-white/80">
-                <i class="fas fa-copyright mr-1"></i>2024 HIFI Unpad. All rights reserved.
-            </p>
+    <footer class="glass-navbar mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo footer with organizational branding in red and blue color scheme" class="h-16 w-auto mx-auto mb-4">
+                <p class="text-white/80 text-lg mb-2">
+                    <i class="fas fa-copyright mr-2"></i>2024 HIFI Unpad. All rights reserved.
+                </p>
+                <p class="text-white/60 text-sm">
+                    Himpunan Mahasiswa Informatika Universitas Padjadjaran
+                </p>
+            </div>
         </div>
     </footer>
 
     <script src="/javascript/dom.js"></script>
+    <script src="/javascript/animations.js"></script>
 </body>
 </html>

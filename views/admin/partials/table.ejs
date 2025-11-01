@@ -1,5 +1,16 @@
+<!-- Toolbar: Search -->
+<div class="table-toolbar">
+  <div class="toolbar-left">
+    <label for="tableSearch" class="toolbar-label">Search</label>
+    <input id="tableSearch" type="search" placeholder="Cari username, nama, NPM, email, phone…"
+           class="toolbar-input" autocomplete="off" />
+  </div>
+  <!-- Tombol export akan muncul otomatis dari DataTables Buttons (via DOM 'B') -->
+</div>
+
+<!-- Tabel -->
 <div class="table-responsive">
-  <table id="usersTable" class="display" style="width:100%">
+  <table id="usersTable" class="display table table-striped table-bordered" style="width:100%">
     <thead>
       <tr>
         <th>No</th>
@@ -7,6 +18,7 @@
         <th>Nama</th>
         <th>NPM</th>
         <th>Email</th>
+        <th>Phone Number</th>
         <th>Role</th>
         <th>Terakhir Update</th>
         <th class="no-export">Aksi</th>
@@ -16,24 +28,19 @@
       <% users.forEach((user, index) => { %>
         <tr>
           <td><%= index + 1 %></td>
-          <td><strong><%= user.username %></strong></td>
-          <td><%= user.nama || '-' %></td>
+          <td><%= user.username || '-' %></td>
+          <td><%= user.name || '-' %></td>
           <td><%= user.npm || '-' %></td>
           <td><%= user.email || '-' %></td>
-          <td>
-            <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>">
-              <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
-              <%= user.role === 'admin' ? 'Admin' : 'User' %>
-            </span>
+          <td><%= user.phone || user.phoneNumber || user.hp || '-' %></td>
+          <td><%= user.role || '-' %></td>
+          <!-- Biarkan mentah; akan diformat relatif oleh script DataTables -->
+          <td data-rawtime="<%= user.updatedAt || user.time || user.lastUpdate || '' %>">
+            <%= user.updatedAt || user.time || user.lastUpdate || '' %>
           </td>
-          <td><%= user.time || '-' %></td>
           <td class="no-export">
-            <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn-action btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
-              <i class="fas fa-trash"></i>
-            </button>
+            <a href="/dashboard/edit/<%= user._id %>" class="btn btn-sm btn-primary">Edit</a>
+            <button class="btn btn-sm btn-danger" onclick="confirmDelete('<%= user._id %>')">Delete</button>
           </td>
         </tr>
       <% }) %>
@@ -41,6 +48,7 @@
   </table>
 </div>
 
+<!-- Aksi Delete -->
 <script>
   function confirmDelete(id) {
     if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
@@ -52,3 +60,19 @@
     }
   }
 </script>
+
+<!-- Styling ringan untuk toolbar -->
+<style>
+  .table-toolbar{
+    display:flex; justify-content:flex-start; align-items:center; gap:12px;
+    margin: 0 0 16px; padding: 12px 14px;
+    background: rgba(255,255,255,.85); backdrop-filter: blur(8px);
+    border:1px solid rgba(0,0,0,.06); border-radius:12px;
+  }
+  .toolbar-label{ font-weight:600; color:#1f2937; font-size:14px; }
+  .toolbar-input{
+    min-width: clamp(200px, 32vw, 480px);
+    padding:8px 12px; border-radius:10px; border:1px solid rgba(0,0,0,.15);
+    outline:none;
+  }
+</style>

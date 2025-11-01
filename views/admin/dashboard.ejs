@@ -46,8 +46,14 @@
                 </div>
             </div>
 
-            <!-- Alert Messages -->
-            <%- include('partials/message') %>
+            <!-- Alert Messages (FIXED) -->
+            <% if (typeof message !== 'undefined' && message !== '') { %>
+                <div id="alert-border-3" class="alert alert-<%= status === 'success' ? 'success' : status === 'danger' ? 'danger' : 'info' %> alert-dismissible fade show" role="alert" style="margin-bottom: 24px;">
+                    <i class="fas fa-<%= status === 'success' ? 'check-circle' : status === 'danger' ? 'exclamation-circle' : 'info-circle' %> me-2"></i>
+                    <span><%= message %></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
 
             <!-- Statistics Cards -->
             <div class="stats-grid">
@@ -208,9 +214,98 @@
     </div>
 
     <!-- Scripts -->
-    <%- include('partials/script') %>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="/javascript/admin-animations.js"></script>
     
     <script>
+        // Initialize DataTable
+        $(document).ready(function() {
+            const table = $('#usersTable').DataTable({
+                responsive: true,
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                language: {
+                    search: "🔍",
+                    searchPlaceholder: "Cari nama, NPM, email...",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ users",
+                    infoEmpty: "No users available",
+                    infoFiltered: "(filtered from _MAX_ total)",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Prev"
+                    },
+                    emptyTable: "No data available",
+                    zeroRecords: "No matching records found"
+                },
+                dom: '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>B<"row"<"col-sm-12"rt>><"row mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                buttons: [
+                    {
+                        extend: 'excel',
+                        text: '<i class="fas fa-file-excel me-2"></i>Export Excel',
+                        className: 'dt-button',
+                        title: 'HIFI Database Export',
+                        exportOptions: {
+                            columns: ':not(.no-export)'
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fas fa-file-pdf me-2"></i>Export PDF',
+                        className: 'dt-button',
+                        title: 'HIFI Database Export',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        exportOptions: {
+                            columns: ':not(.no-export)'
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print me-2"></i>Print',
+                        className: 'dt-button',
+                        title: 'HIFI Database',
+                        exportOptions: {
+                            columns: ':not(.no-export)'
+                        }
+                    }
+                ],
+                order: [[0, 'asc']],
+                columnDefs: [
+                    { orderable: false, targets: -1 },
+                    { className: 'text-center', targets: 0 }
+                ],
+                initComplete: function() {
+                    $('#usersTable').css('opacity', '0').animate({ opacity: 1 }, 600);
+                    $('.dataTables_filter input').attr('placeholder', 'Search...');
+                },
+                drawCallback: function() {
+                    $('#usersTable tbody tr').hover(
+                        function() {
+                            $(this).addClass('table-row-hover');
+                        },
+                        function() {
+                            $(this).removeClass('table-row-hover');
+                        }
+                    );
+                }
+            });
+        });
+
         // Delete User Function
         function deleteUser(userId, username) {
             if (confirm(`Apakah Anda yakin ingin menghapus user "${username}"?`)) {
@@ -223,15 +318,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.HIFIAnimations.showToast('User berhasil dihapus!', 'success');
+                        showToast('User berhasil dihapus!', 'success');
                         setTimeout(() => location.reload(), 1500);
                     } else {
-                        window.HIFIAnimations.showToast('Gagal menghapus user!', 'error');
+                        showToast('Gagal menghapus user!', 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    window.HIFIAnimations.showToast('Terjadi kesalahan!', 'error');
+                    showToast('Terjadi kesalahan!', 'error');
                 });
             }
         }
@@ -266,6 +361,24 @@
             setTimeout(() => {
                 location.reload();
             }, 600);
+        }
+
+        // Simple Toast Function (if not in admin-animations.js)
+        function showToast(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+            alertDiv.setAttribute('role', 'alert');
+            alertDiv.style.cssText = 'position: fixed; top: 24px; right: 24px; z-index: 10000; min-width: 300px;';
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                <span>${message}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
         }
     </script>
 </body>

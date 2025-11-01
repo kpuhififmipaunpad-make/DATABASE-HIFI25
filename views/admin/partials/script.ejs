@@ -1,205 +1,231 @@
-<!-- jQuery (wajib) -->
-<script src="/adminlte/plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap (opsional, untuk style tabel bootstrap4) -->
-<script src="/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <!-- Font Awesome Icon -->
+      <script src="https://kit.fontawesome.com/7cc967098c.js" crossorigin="anonymous"></script>
+      <!-- Iconify -->
+      <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@2.2.1/dist/iconify.min.js"></script>
+      <!-- jQuery -->
+      <script src="/adminlte/plugins/jquery/jquery.min.js"></script>
+      <!-- jQuery UI 1.11.4 -->
+      <script src="/adminlte/plugins/jquery-ui/jquery-ui.min.js"></script>
+      <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+      <script>
+      $.widget.bridge('uibutton', $.ui.button)
+      </script>
+      <!-- Bootstrap 4 -->
+      <script src="/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <!-- ChartJS -->
+      <script src="/adminlte/plugins/chart.js/Chart.min.js"></script>
+      <!-- Sparkline -->
+      <script src="/adminlte/plugins/sparklines/sparkline.js"></script>
+      <!-- JQVMap -->
+      <script src="/adminlte/plugins/jqvmap/jquery.vmap.min.js"></script>
+      <script src="/adminlte/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+      <!-- jQuery Knob Chart -->
+      <script src="/adminlte/plugins/jquery-knob/jquery.knob.min.js"></script>
+      <!-- daterangepicker -->
+      <script src="/adminlte/plugins/moment/moment.min.js"></script>
+      <script src="/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
+      <!-- Tempusdominus Bootstrap 4 -->
+      <script src="/adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+      <!-- Summernote -->
+      <script src="/adminlte/plugins/summernote/summernote-bs4.min.js"></script>
+      <!-- overlayScrollbars -->
+      <script src="/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+      <!-- AdminLTE App -->
+      <script src="/adminlte/dist/js/adminlte.js"></script>
+      <!-- AdminLTE for demo purposes -->
+      <script src="/adminlte/dist/js/demo.js"></script>
+      <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+      <script src="/adminlte/dist/js/pages/dashboard.js"></script>
+      <!-- bs-custom-file-input -->
+      <script src="/adminlte/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
-<!-- DataTables & Plugins -->
-<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+      <!-- DataTables  & Plugins -->
+      <script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+      <script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+      <script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+      <script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+      <script src="/adminlte/plugins/jszip/jszip.min.js"></script>
+      <script src="/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+      <script src="/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
-<!-- Buttons -->
-<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/jszip/jszip.min.js"></script>
-<script src="/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
-<script src="/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+      <!-- Page specific script -->
+      <script>
+      (function () {
+        // ===== Helpers =====
+        const libsReady = () =>
+          !!window.jQuery && !!$.fn.DataTable && !!$.fn.dataTable && !!$.fn.dataTable.Buttons;
 
-<script>
-(() => {
-  // ===== Utilities =====
-  const libsReady = () =>
-    !!window.jQuery && !!$.fn.DataTable && !!$.fn.dataTable && !!$.fn.dataTable.Buttons;
+        const whenDOMReady = (cb) => {
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", cb, { once: true });
+          } else cb();
+        };
 
-  const whenDOMReady = (cb) => {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", cb, { once: true });
-    } else cb();
-  };
+        const debounce = (fn, wait = 160) => {
+          let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
+        };
 
-  // Debounce utk search input
-  const debounce = (fn, wait = 160) => {
-    let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), wait); };
-  };
-
-  // Format waktu relatif
-  function formatRelativeTime(dateString) {
-    if (!dateString) return 'Tidak pernah';
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return '—';
-    const now = new Date();
-    let diff = Math.floor((now - d) / 1000);
-    const abs = Math.abs(diff);
-
-    const units = [
-      ["tahun", 365*24*3600],
-      ["bulan", 30*24*3600],
-      ["hari", 24*3600],
-      ["jam", 3600],
-      ["menit", 60],
-      ["detik", 1],
-    ];
-    for (const [name, sec] of units) {
-      const v = Math.floor(abs / sec);
-      if (v >= 1) return (diff >= 0) ? `${v} ${name} yang lalu` : `dalam ${v} ${name}`;
-    }
-    return "baru saja";
-  }
-
-  // Normalisasi tanggal ke ISO utk sort/export stabil
-  function normalizeToISO(s) {
-    if (!s) return null;
-    const d1 = new Date(s);
-    if (!isNaN(d1.getTime())) return d1.toISOString();
-
-    // fallback dd/mm/yyyy hh:mm(:ss)
-    const m = String(s).match(
-      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
-    );
-    if (m) {
-      const [_, dd, mm, yyyy, HH="00", MM="00", SS="00"] = m;
-      const year = yyyy.length === 2 ? Number("20" + yyyy) : Number(yyyy);
-      const iso = new Date(year, Number(mm)-1, Number(dd), Number(HH), Number(MM), Number(SS));
-      if (!isNaN(iso.getTime())) return iso.toISOString();
-    }
-    return null;
-  }
-
-  // Bersihkan nomor untuk sort/export (hanya digit + '+')
-  function normalizePhone(text) {
-    if (!text) return "";
-    const only = String(text).replace(/[^0-9+]/g, "");
-    // pastikan '+' tetap di depan bila ada
-    return only.replace(/(.*)\+/g, "+$1");
-  }
-
-  whenDOMReady(() => {
-    if (!libsReady()) return console.error("DataTables/Buttons belum siap.");
-    const $table = $("#usersTable");
-    if (!$table.length) return;
-
-    const dt = $table.DataTable({
-      responsive: true,
-      autoWidth: false,
-      lengthChange: true,     // aktifkan items per page
-      paging: true,
-      ordering: true,
-      searching: false,       // kita pakai search bar custom (#tableSearch)
-      pageLength: 10,
-      // DOM:
-      // B = Buttons (export), l = length menu, r = processing, t = table, i = info, p = pagination
-      // Search default ('f') sengaja dihilangkan; pakai input custom di atas tabel
-      dom: "Blrtip",
-
-      // Tombol Export: Excel, PDF, Print (sesuai permintaan)
-      buttons: [
-        {
-          extend: "excelHtml5",
-          title: "Users",
-          exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-        },
-        {
-          extend: "pdfHtml5",
-          title: "Users",
-          orientation: "landscape",
-          pageSize: "A4",
-          exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-        },
-        {
-          extend: "print",
-          title: "Users",
-          exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-        }
-      ],
-
-      // Urutan default: kolom No
-      order: [[0, "asc"]],
-
-      columnDefs: [
-        { targets: 0, width: 56, type: "num", className: "dt-center" }, // No
-        { targets: 6, className: "dt-center" },                          // Role
-
-        // Phone Number (index 5) -> sort/export pakai versi bersih angka saja
-        {
-          targets: 5,
-          render: function (data, type, row, meta) {
-            const text = (data || "").toString();
-            if (type === "sort" || type === "type") return normalizePhone(text);
-            if (type === "export") return normalizePhone(text);
-            return text; // display apa adanya
+        function formatRelativeTime(dateString) {
+          if (!dateString) return 'Tidak pernah';
+          const d = new Date(dateString);
+          if (isNaN(d.getTime())) return '—';
+          const now = new Date();
+          const diffSec = Math.floor((now - d) / 1000);
+          const abs = Math.abs(diffSec);
+          const units = [
+            ["tahun", 365*24*3600],
+            ["bulan", 30*24*3600],
+            ["hari", 24*3600],
+            ["jam", 3600],
+            ["menit", 60],
+            ["detik", 1],
+          ];
+          for (const [name, sec] of units) {
+            const v = Math.floor(abs / sec);
+            if (v >= 1) return (diffSec >= 0) ? `${v} ${name} yang lalu` : `dalam ${v} ${name}`;
           }
-        },
+          return "baru saja";
+        }
 
-        // Terakhir Update (index 7): tampil relatif, sort/export pakai ISO
-        {
-          targets: 7,
-          render: function (data, type, row, meta) {
-            // Data mentah bisa dari text sel atau dari atribut data-rawtime di <td>
-            // Saat server render, kita simpan ke <td data-rawtime="...">.
-            const cell = dt.cell(meta.row, meta.col).node();
-            const rawAttr = cell && cell.getAttribute ? cell.getAttribute("data-rawtime") : null;
-            const raw = (rawAttr || data || "").toString().trim();
-            const iso = normalizeToISO(raw) || raw || "";
+        // Normalisasi tanggal ke ISO utk sort/export stabil
+        function normalizeToISO(s) {
+          if (!s) return null;
+          const d1 = new Date(s);
+          if (!isNaN(d1.getTime())) return d1.toISOString();
+          // fallback dd/mm/yyyy hh:mm(:ss)
+          const m = String(s).match(
+            /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+          );
+          if (m) {
+            const [_, dd, mm, yyyy, HH="00", MM="00", SS="00"] = m;
+            const year = yyyy.length === 2 ? Number("20" + yyyy) : Number(yyyy);
+            const iso = new Date(year, Number(mm)-1, Number(dd), Number(HH), Number(MM), Number(SS));
+            if (!isNaN(iso.getTime())) return iso.toISOString();
+          }
+          return null;
+        }
 
-            if (type === "display") {
-              const title = iso ? new Date(iso).toLocaleString() : "";
-              const rel = iso ? formatRelativeTime(iso) : "—";
-              return `<time datetime="${iso}" title="${title}">${rel}</time>`;
+        // Bersihkan nomor HP utk sort/export (hanya digit + '+')
+        function normalizePhone(text) {
+          if (!text) return "";
+          const only = String(text).replace(/[^0-9+]/g, "");
+          // pastikan '+' tetap di depan bila ada
+          return only.replace(/(.*)\+/g, "+$1");
+        }
+
+        whenDOMReady(() => {
+          if (!libsReady()) return console.error("DataTables/Buttons belum siap.");
+          const $table = $("#usersTable");
+          if (!$table.length) return; // jika halaman bukan tabel user
+
+          const dt = $table.DataTable({
+            responsive: true,
+            autoWidth: false,
+            lengthChange: true,    // items per page ON
+            paging: true,
+            ordering: true,
+            searching: false,      // pakai search bar custom (#tableSearch)
+            pageLength: 10,
+            lengthMenu: [[10, 20, 30, 40, 50, -1], [10, 20, 30, 40, 50, "All"]],
+
+            // DOM: B = Buttons, l = length menu, r = processing, t = table, i = info, p = pagination
+            dom: "Blrtip",
+
+            // Export: Excel, PDF, Print (sesuai permintaan)
+            buttons: [
+              {
+                extend: "excelHtml5",
+                title: "Users",
+                exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
+              },
+              {
+                extend: "pdfHtml5",
+                title: "Users",
+                orientation: "landscape",
+                pageSize: "A4",
+                exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
+              },
+              {
+                extend: "print",
+                title: "Users",
+                exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
+              }
+            ],
+
+            order: [[0, "asc"]], // No
+
+            columnDefs: [
+              { targets: 0, width: 56, type: "num", className: "dt-center" }, // No
+              { targets: 6, className: "dt-center" },                          // Role
+
+              // Phone Number (index 5): sort/export gunakan angka bersih
+              {
+                targets: 5,
+                render: function (data, type) {
+                  const text = (data || "").toString();
+                  if (type === "sort" || type === "type" || type === "export") return normalizePhone(text);
+                  return text; // display apa adanya
+                }
+              },
+
+              // Terakhir Update (index 7): display relatif; sort/export pakai ISO
+              {
+                targets: 7,
+                render: function (data, type) {
+                  const raw = (data || "").toString().trim();
+                  const iso = normalizeToISO(raw) || raw || "";
+                  if (type === "display") {
+                    const title = iso ? new Date(iso).toLocaleString() : "";
+                    const rel = iso ? formatRelativeTime(iso) : "—";
+                    return `<time datetime="${iso}" title="${title}">${rel}</time>`;
+                  }
+                  // sort/export
+                  return iso;
+                }
+              }
+            ],
+
+            drawCallback: function () {
+              // refresh teks relatif setiap redraw
+              $table.find("time[datetime]").each(function () {
+                const iso = this.getAttribute("datetime");
+                if (iso) this.textContent = formatRelativeTime(iso);
+              });
             }
-            // sort/export
-            return iso;
+          });
+
+          // Tempatkan tombol export pada wrapper kiri atas
+          dt.buttons().container().appendTo('#usersTable_wrapper .col-md-6:eq(0)');
+
+          // Search bar custom (#tableSearch di table.ejs)
+          const $search = $("#tableSearch");
+          if ($search.length) {
+            $search.on("input", debounce(function () {
+              dt.search(this.value).draw();
+            }, 200));
           }
-        }
-      ],
 
-      drawCallback: function () {
-        // Refresh teks relatif setiap redraw
-        $table.find("time[datetime]").each(function () {
-          const iso = this.getAttribute("datetime");
-          if (iso) this.textContent = formatRelativeTime(iso);
+          // Formatter isi saat export (Excel/PDF/Print)
+          function exportBody(data, row, col, node) {
+            if (!node) return data;
+
+            // Ambil ISO dari <time> untuk kolom tanggal
+            const time = node.querySelector && node.querySelector("time[datetime]");
+            if (time) return time.getAttribute("datetime") || "";
+
+            // Phone number: angka bersih
+            if (col === 5) return normalizePhone(node.textContent || data || "");
+
+            // Default: gunakan text content apa adanya
+            return (node.textContent || data || "").trim();
+          }
         });
-      }
-    });
-
-    // Tempatkan container Buttons tepat di atas tabel (di toolbar DataTables)
-    dt.buttons().container().appendTo('#usersTable_wrapper .col-md-6:eq(0)');
-
-    // Hubungkan search bar custom
-    const $search = $("#tableSearch");
-    if ($search.length) {
-      $search.on("input", debounce(function () {
-        dt.search(this.value).draw();
-      }, 200));
-    }
-
-    // Export body formatter:
-    function exportBody(data, row, col, node) {
-      if (!node) return data;
-
-      // Jika kolom waktu, ambil ISO dari <time>
-      const time = node.querySelector && node.querySelector("time[datetime]");
-      if (time) return time.getAttribute("datetime") || "";
-
-      // Jika kolom phone, bersihkan
-      if (col === 5) return normalizePhone(node.textContent || data || "");
-
-      // Default
-      return node.textContent || data || "";
-    }
-  });
-})();
-</script>
+      })();
+      </script>
+   </body>
+</html>

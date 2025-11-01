@@ -1072,13 +1072,29 @@ input::-ms-clear {
     background: rgba(30, 41, 59, 0.8);
     color: white;
   }
-  
-  .form-control-glass {
-    background: rgba(51, 65, 85, 0.6);
-    color: white;
+
+  /* FIX: jangan sampai teks putih di atas bg putih saat :focus */
+  .form-control-glass,
+  .form-control-glass:focus {
+    background: rgba(51, 65, 85, 0.85) !important;  /* bg tetap gelap saat fokus */
+    color: #F8FAFC !important;                      /* teks terang */
+    -webkit-text-fill-color: #F8FAFC !important;    /* Chrome/Safari */
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.25);
+    color: #1F2937;
+    -webkit-text-fill-color: #1F2937; /* jaga-jaga Chrome */
   }
-  
+
   .table-glass tbody tr:hover {
     background: rgba(30, 58, 138, 0.2);
   }
+
+  /* Pastikan autofill tidak memutihkan teks */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #F8FAFC !important;
+    box-shadow: 0 0 0 1000px rgba(51, 65, 85, 0.85) inset !important;
+  }
 }
+

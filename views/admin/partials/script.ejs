@@ -126,7 +126,7 @@
         </div>`;
     }
 
-    // Inisialisasi DataTable (konfigurasi asli dipertahankan)
+    // Inisialisasi DataTable (default urut No = kolom 0)
     const dt = $("#usersTable").DataTable({
       responsive: false,
       lengthChange: false,      // pakai kontrol custom
@@ -134,10 +134,10 @@
       pagingType: "simple_numbers",
       pageLength: 10,
       dom: "Bt<'dt-bottom'ip>", // B=buttons, t=table, i=info, p=pagination
-      order: [[2, "asc"]],      // sort Nama
+      order: [[0, "asc"]],      // ⬅️ default: urut kolom No (1 → akhir)
       columnDefs: [
-        { targets: [0], width: "48px" },
-        { targets: [8], orderable: false, className: "no-detail" } // kolom Aksi
+        { targets: 0, width: "64px", type: "num" },              // pastikan numeric sort
+        { targets: 8, orderable: false, className: "no-detail" } // kolom Aksi
       ],
       language: {
         paginate: { first: "«", previous: "‹", next: "›", last: "»" },

@@ -4,23 +4,118 @@
  */
 
 // ============================================
+// UTILITIES
+// ============================================
+const HIFI = (() => {
+  const esc = (v) =>
+    (v == null || String(v).trim() === "" ? "-" :
+      String(v).replace(/[&<>"']/g, m => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[m])));
+
+  const formatDate = (dateStr) => {
+    if (!dateStr || dateStr === '-') return '-';
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+    } catch { return dateStr; }
+  };
+
+  // Template child row — disamakan dengan edit.ejs / table.ejs
+  const buildDetail = (ds) => `
+    <div class="dt-detail">
+      <div class="detail-card">
+        <div class="detail-item">
+          <b><i class="fas fa-user"></i> Nama Lengkap</b>
+          <span>${esc(ds.nama)}</span>
+        </div>
+        <div class="detail-item">
+          <b><i class="fas fa-id-card"></i> NPM</b>
+          <span>${esc(ds.npm)}</span>
+        </div>
+        <div class="detail-item">
+          <b><i class="fas fa-envelope"></i> Email</b>
+          <span>${esc(ds.email)}</span>
+        </div>
+        <div class="detail-item">
+          <b><i class="fas fa-phone"></i> No. HP</b>
+          <span>${esc(ds.hp)}</span>
+        </div>
+
+        <div class="detail-item">
+          <b><i class="fas fa-map-marker-alt"></i> Tempat Lahir</b>
+          <span>${esc(ds.ttl)}</span>
+        </div>
+        <div class="detail-item">
+          <b><i class="fas fa-calendar"></i> Tanggal Lahir</b>
+          <span>${formatDate(ds.tgl)}</span>
+        </div>
+        <div class="detail-item">
+          <b><i class="fas fa-pray"></i> Agama</b>
+          <span>${esc(ds.agama)}</span>
+        </div>
+        <div class="detail-item">
+          <b><i class="fas fa-tint"></i> Golongan Darah</b>
+          <span>${esc(ds.goldar)}</span>
+        </div>
+
+        <div class="detail-item" style="grid-column:1/-1">
+          <b><i class="fas fa-home"></i> Alamat Rumah</b>
+          <span>${esc(ds.rumah)}</span>
+        </div>
+        <div class="detail-item" style="grid-column:1/-1">
+          <b><i class="fas fa-building"></i> Alamat Kos</b>
+          <span>${esc(ds.kos)}</span>
+        </div>
+
+        <div class="detail-item" style="grid-column:1/-1">
+          <b><i class="fas fa-graduation-cap"></i> Pendidikan</b>
+          <span>${esc(ds.pendidikan)}</span>
+        </div>
+        <div class="detail-item" style="grid-column:1/-1">
+          <b><i class="fas fa-users"></i> Kepanitiaan</b>
+          <span>${esc(ds.panitia)}</span>
+        </div>
+        <div class="detail-item" style="grid-column:1/-1">
+          <b><i class="fas fa-sitemap"></i> Organisasi</b>
+          <span>${esc(ds.organisasi)}</span>
+        </div>
+        <div class="detail-item" style="grid-column:1/-1">
+          <b><i class="fas fa-certificate"></i> Pelatihan</b>
+          <span>${esc(ds.pelatihan)}</span>
+        </div>
+        <div class="detail-item" style="grid-column:1/-1">
+          <b><i class="fas fa-trophy"></i> Prestasi</b>
+          <span>${esc(ds.prestasi)}</span>
+        </div>
+
+        <div class="detail-actions">
+          <a class="btn-primary-gradient" href="/dashboard/edit/${esc(ds.id)}">
+            <i class="fas fa-pen"></i> Edit Data Lengkap
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return { esc, formatDate, buildDetail };
+})();
+
+// ============================================
 // SIDEBAR TOGGLE
 // ============================================
 function initSidebarToggle() {
   const sidebar = document.querySelector('.sidebar-glass');
   const toggleBtn = document.querySelector('#sidebarToggle');
   const mainContent = document.querySelector('.content-wrapper');
-  
+
   if (toggleBtn && sidebar) {
     toggleBtn.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       mainContent?.classList.toggle('expanded');
-      
-      // Save state to localStorage
       localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
     });
-    
-    // Restore state
+
     const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
     if (isCollapsed) {
       sidebar.classList.add('collapsed');
@@ -30,244 +125,222 @@ function initSidebarToggle() {
 }
 
 // ============================================
-// DATATABLE ENHANCEMENT
+// DATATABLE INIT — disesuaikan dengan table.ejs
 // ============================================
 function initDataTable() {
-  if (typeof $ !== 'undefined' && $.fn.DataTable) {
-    const table = $('#usersTable').DataTable({
-      responsive: true,
-      pageLength: 10,
-      language: {
-        search: "Cari:",
-        lengthMenu: "Tampilkan _MENU_ data",
-        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-        infoEmpty: "Tidak ada data",
-        infoFiltered: "(difilter dari _MAX_ total data)",
-        paginate: {
-          first: "Pertama",
-          last: "Terakhir",
-          next: "Selanjutnya",
-          previous: "Sebelumnya"
-        }
+  if (!window.jQuery || !$.fn.DataTable) return;
+
+  const $table = $('#usersTable');
+  if (!$table.length) return;
+
+  // Destroy kalau sudah ada instance
+  if ($.fn.DataTable.isDataTable('#usersTable')) {
+    $table.DataTable().destroy();
+  }
+
+  const dt = $table.DataTable({
+    responsive: false,
+    lengthChange: false,
+    searching: false,
+    pagingType: 'simple_numbers',
+    pageLength: 10,
+    dom: "Bt<'dt-bottom'ip>",
+    order: [[2, 'asc']],
+    columnDefs: [
+      { targets: [0], width: '48px' },
+      { targets: [8], orderable: false, className: 'no-detail' }
+    ],
+    language: {
+      paginate: { first: '«', previous: '‹', next: '›', last: '»' },
+      info: 'Menampilkan _START_ - _END_ dari _TOTAL_ data',
+      infoEmpty: 'Tidak ada data',
+      infoFiltered: '(disaring dari _MAX_ total data)',
+      zeroRecords: 'Data tidak ditemukan',
+      emptyTable: 'Tidak ada data tersedia'
+    },
+    buttons: [
+      {
+        extend: 'excel',
+        text: '<i class="fas fa-file-excel"></i> Excel',
+        className: 'dt-btn-green',
+        title: 'Data Warga HIFI',
+        exportOptions: { columns: [0,1,2,3,4,5,6,7] }
       },
-      dom: '<"top-controls"lfB>rt<"bottom-controls"ip>',
-      buttons: [
-        {
-          extend: 'excel',
-          text: '<i class="fas fa-file-excel"></i> Export Excel',
-          className: 'btn-export',
-          title: 'Data Warga HIFI',
-          exportOptions: {
-            columns: ':not(.no-export)'
-          }
-        },
-        {
-          extend: 'pdf',
-          text: '<i class="fas fa-file-pdf"></i> Export PDF',
-          className: 'btn-export',
-          title: 'Data Warga HIFI',
-          exportOptions: {
-            columns: ':not(.no-export)'
-          }
-        },
-        {
-          extend: 'print',
-          text: '<i class="fas fa-print"></i> Print',
-          className: 'btn-export',
-          title: 'Data Warga HIFI'
-        }
-      ],
-      initComplete: function() {
-        // Add custom styling after initialization
-        $('.dataTables_wrapper').addClass('glass-card');
-        $('.dataTables_filter input').addClass('form-control-glass');
-        $('.dataTables_length select').addClass('form-control-glass');
+      {
+        extend: 'pdf',
+        text: '<i class="fas fa-file-pdf"></i> PDF',
+        className: 'dt-btn-green',
+        title: 'Data Warga HIFI',
+        orientation: 'landscape',
+        exportOptions: { columns: [0,1,2,3,4,5,6,7] }
+      },
+      {
+        extend: 'print',
+        text: '<i class="fas fa-print"></i> Print',
+        className: 'dt-btn-green',
+        title: 'Data Warga HIFI',
+        exportOptions: { columns: [0,1,2,3,4,5,6,7] }
       }
-    });
-    
-    // Row click to expand details
-    $('#usersTable tbody').on('click', 'tr', function() {
-      const row = table.row(this);
-      
+    ]
+  });
+
+  // Pasang tombol export ke holder custom
+  $('#exportButtons').empty();
+  dt.buttons().container().appendTo('#exportButtons');
+
+  // Custom SEARCH (kolom Nama / index 2)
+  $('#searchNama').off('input.tbl').on('input.tbl', function () {
+    dt.column(2).search(this.value).draw();
+  });
+
+  // Custom ITEMS PER PAGE
+  $('#itemsPerPage').off('change.tbl').on('change.tbl', function () {
+    const val = parseInt(this.value, 10);
+    dt.page.len(val === -1 ? -1 : val).draw();
+  });
+
+  // Refresh
+  $('#btnRefresh').off('click.tbl').on('click.tbl', function(){
+    const $i = $(this).find('i');
+    $i.addClass('fa-spin');
+    setTimeout(() => location.reload(), 300);
+  });
+
+  // Toggle child-row via klik baris kecuali kolom aksi
+  $('#usersTable tbody')
+    .off('click.tbl', 'tr.clickable-row td:not(.no-detail)')
+    .on('click.tbl', 'tr.clickable-row td:not(.no-detail)', function (e) {
+      if ($(e.target).closest('.btn-action, button, a, form').length) return;
+      const $tr = $(this).closest('tr.clickable-row');
+      const row = dt.row($tr);
+      const ds = $tr.get(0).dataset; // ambil data-* dari <tr>
+
       if (row.child.isShown()) {
         row.child.hide();
-        $(this).removeClass('shown');
+        $tr.removeClass('shown');
       } else {
-        const data = row.data();
-        row.child(formatUserDetails(data)).show();
-        $(this).addClass('shown');
-        
-        // Animate child row
-        $(row.child()).find('.detail-card').addClass('animate-fadeInUp');
+        // Tutup child lain
+        dt.rows().every(function () {
+          if (this.child.isShown()) {
+            this.child.hide();
+            $(this.node()).removeClass('shown');
+          }
+        });
+        row.child(HIFI.buildDetail(ds)).show();
+        $tr.addClass('shown');
       }
     });
-  }
+
+  // Ehanced wrapper styling (opsional)
+  $('.dataTables_wrapper').addClass('glass-card');
 }
 
-
 // ============================================
-// CHART ANIMATIONS
+// CHART (opsional jika ada #userChart di halaman)
 // ============================================
 function initCharts() {
-  if (typeof Chart !== 'undefined') {
-    const ctx = document.getElementById('userChart');
-    if (ctx) {
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-          datasets: [{
-            label: 'Pendaftar Baru',
-            data: [12, 19, 8, 15, 22, 18],
-            borderColor: 'rgb(220, 20, 60)',
-            backgroundColor: 'rgba(220, 20, 60, 0.1)',
-            borderWidth: 3,
-            tension: 0.4,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: {
-                color: 'rgba(0, 0, 0, 0.05)'
-              }
-            },
-            x: {
-              grid: {
-                display: false
-              }
-            }
-          },
-          animation: {
-            duration: 2000,
-            easing: 'easeInOutQuart'
-          }
-        }
-      });
+  if (typeof Chart === 'undefined') return;
+  const ctx = document.getElementById('userChart');
+  if (!ctx) return;
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+      datasets: [{
+        label: 'Pendaftar Baru',
+        data: [12, 19, 8, 15, 22, 18],
+        borderColor: 'rgb(220, 20, 60)',
+        backgroundColor: 'rgba(220, 20, 60, 0.1)',
+        borderWidth: 3, tension: 0.4, fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { grid: { display: false } }
+      },
+      animation: { duration: 2000, easing: 'easeInOutQuart' }
     }
-  }
+  });
 }
 
 // ============================================
-// SEARCH HIGHLIGHT
+// SEARCH HIGHLIGHT (mengikuti #searchNama)
 // ============================================
 function initSearchHighlight() {
-  const searchInput = document.querySelector('.dataTables_filter input');
-  
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-      const rows = document.querySelectorAll('#usersTable tbody tr');
-      
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        if (text.includes(searchTerm)) {
-          row.style.backgroundColor = 'rgba(220, 20, 60, 0.05)';
-          setTimeout(() => {
-            row.style.backgroundColor = '';
-          }, 300);
-        }
-      });
+  const searchInput = document.querySelector('#searchNama');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', function () {
+    const term = this.value.toLowerCase();
+    document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
+      const hit = tr.textContent.toLowerCase().includes(term);
+      tr.style.backgroundColor = hit && term ? 'rgba(220,20,60,0.05)' : '';
     });
-  }
+  });
 }
 
 // ============================================
 // STAT CARD ANIMATIONS
 // ============================================
 function animateStatCards() {
-  const statCards = document.querySelectorAll('.stat-card');
-  
-  statCards.forEach((card, index) => {
+  document.querySelectorAll('.stat-card').forEach((card, i) => {
     setTimeout(() => {
       card.style.opacity = '0';
       card.style.transform = 'translateY(30px)';
-      
       setTimeout(() => {
-        card.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        card.style.transition = 'all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55)';
         card.style.opacity = '1';
         card.style.transform = 'translateY(0)';
       }, 50);
-    }, index * 100);
+    }, i * 100);
   });
 }
 
 // ============================================
-// REFRESH ANIMATION
+// REFRESH / USER ACTIONS
 // ============================================
 function refreshData() {
-  const refreshBtn = document.querySelector('#refreshBtn');
-  if (refreshBtn) {
-    refreshBtn.style.transform = 'rotate(360deg)';
-    setTimeout(() => {
-      refreshBtn.style.transform = 'rotate(0deg)';
-    }, 600);
-  }
-  
-  // Reload data with animation
-  showToast('Data berhasil diperbarui!', 'success');
-  setTimeout(() => location.reload(), 1000);
+  const btn = document.querySelector('#btnRefresh');
+  if (btn) btn.querySelector('i')?.classList.add('fa-spin');
+  setTimeout(() => location.reload(), 300);
 }
 
-// ============================================
-// USER ACTIONS
-// ============================================
 function editUser(id) {
   window.location.href = `/dashboard/edit/${id}`;
 }
 
 function deleteUser(id) {
   if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-    fetch(`/dashboard/delete/${id}`, {
-      method: 'DELETE'
-    })
-    .then(() => {
-      showToast('Data berhasil dihapus!', 'success');
-      setTimeout(() => location.reload(), 1000);
-    })
-    .catch(err => {
-      showToast('Gagal menghapus data!', 'error');
-    });
+    fetch(`/dashboard/delete/${id}`, { method: 'DELETE' })
+      .then(() => setTimeout(() => location.reload(), 600))
+      .catch(() => alert('Gagal menghapus data!'));
   }
 }
 
 // ============================================
-// NOTIFICATION DROPDOWN
+// DROPDOWNS
 // ============================================
 function toggleNotifications() {
-  const dropdown = document.querySelector('.notifications-dropdown');
-  dropdown?.classList.toggle('show');
+  document.querySelector('.notifications-dropdown')?.classList.toggle('show');
 }
-
-// ============================================
-// PROFILE DROPDOWN
-// ============================================
 function toggleProfileDropdown() {
-  const dropdown = document.querySelector('.profile-dropdown');
-  dropdown?.classList.toggle('show');
+  document.querySelector('.profile-dropdown')?.classList.toggle('show');
 }
-
-// Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.notification-bell') && !e.target.closest('.notifications-dropdown')) {
     document.querySelector('.notifications-dropdown')?.classList.remove('show');
   }
-  
   if (!e.target.closest('.profile-avatar') && !e.target.closest('.profile-dropdown')) {
     document.querySelector('.profile-dropdown')?.classList.remove('show');
   }
 });
 
 // ============================================
-// INITIALIZATION
+// INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
   initSidebarToggle();
@@ -275,15 +348,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearchHighlight();
   initCharts();
   animateStatCards();
-  
-  // Add smooth transitions to all elements
+
+  // smooth transitions
   document.querySelectorAll('.glass-card, .stat-card, .btn-action').forEach(el => {
-    el.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    el.style.transition = 'all 0.3s cubic-bezier(0.4,0,0.2,1)';
   });
 });
 
 // ============================================
-// EXPORT FUNCTIONS
+// EXPORT
 // ============================================
 window.HIFIAdmin = {
   refreshData,

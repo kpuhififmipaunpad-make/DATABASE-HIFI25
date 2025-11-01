@@ -1,110 +1,177 @@
-<%- include ./partials/header.ejs %>
-<%- include ./partials/navbar.ejs %>
-<%- include ./partials/sidebar.ejs %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Database HIFI</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+</head>
+<body class="gradient-bg-1">
+    <!-- Alert Message -->
+    <% if(alert.message && alert.message.length > 0) { %>
+    <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle text-2xl mr-3 text-white"></i>
+            <div class="text-sm font-medium text-white"><%= alert.message %></div>
+            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <% } %>
 
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-	<!-- Content Header (Page header) -->
-	<div class="content-header">
-		<div class="container-fluid">
-			<%- include ./partials/message.ejs %>
-		<div class="row mb-2">
-			<div class="col-sm-6">
-				<h1 class="m-0">Dashboard</h1>
-			</div>
-		</div><!-- /.row -->
-		</div><!-- /.container-fluid -->
-	</div>
-	<!-- /.content-header -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="glass-sidebar w-64 hidden md:block">
+            <div class="p-6">
+                <div class="flex items-center mb-8">
+                    <img src="/img/LogoHIFI-2.png" alt="HIFI Admin Logo with professional dashboard branding" class="h-12 w-auto">
+                    <span class="ml-3 text-white text-lg font-bold">Admin Panel</span>
+                </div>
+                <nav class="space-y-2">
+                    <a href="/dashboard" class="flex items-center px-4 py-3 text-white bg-white/20 rounded-lg">
+                        <i class="fas fa-dashboard mr-3"></i>Dashboard
+                    </a>
+                    <a href="/" class="flex items-center px-4 py-3 text-white/80 hover:bg-white/10 rounded-lg">
+                        <i class="fas fa-home mr-3"></i>Home
+                    </a>
+                    <a href="/auth/logout" class="flex items-center px-4 py-3 text-white/80 hover:bg-white/10 rounded-lg">
+                        <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                    </a>
+                </nav>
+            </div>
+        </aside>
 
-	<!-- Main content -->
-	<section class="content">
-		<div class="container-fluid">
-		<!-- Small boxes (Stat box) -->
-		<div class="row">
-			<!-- ./col -->
-			<div class="col-lg-3 col-6">
-				<!-- small box -->
-				<div class="small-box bg-success">
-				<div class="inner">
-					<h3><%= count.user %></h3>
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top Navbar -->
+            <nav class="glass-navbar">
+                <div class="px-6 py-4 flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-white">Dashboard</h2>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-white/90">
+                            <i class="fas fa-user-circle mr-2"></i><%= nama %>
+                        </span>
+                    </div>
+                </div>
+            </nav>
 
-					<p>Warhim Terdaftar</p>
-				</div>
-				<div class="icon">
-					<i class="ion ion-person"></i>
-				</div>
-				<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-				</div>
-			</div>
-			<!-- ./col -->
-			<div class="col-lg-3 col-6">
-				<!-- small box -->
-				<!-- <div class="small-box bg-info">
-					<div class="inner">
-						<h3>150</h3>
+            <!-- Stats Cards -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-white/80 text-sm mb-1">Total Users</p>
+                                <h3 class="text-3xl font-bold text-white"><%= count.user %></h3>
+                            </div>
+                            <div class="bg-blue-500/30 p-4 rounded-full">
+                                <i class="fas fa-users text-3xl text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-white/80 text-sm mb-1">Total Admin</p>
+                                <h3 class="text-3xl font-bold text-white"><%= admin.length %></h3>
+                            </div>
+                            <div class="bg-green-500/30 p-4 rounded-full">
+                                <i class="fas fa-user-shield text-3xl text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-white/80 text-sm mb-1">Active Sessions</p>
+                                <h3 class="text-3xl font-bold text-white"><%= count.user %></h3>
+                            </div>
+                            <div class="bg-purple-500/30 p-4 rounded-full">
+                                <i class="fas fa-chart-line text-3xl text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-						<p>New Orders</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-bag"></i>
-					</div>
-					<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-				</div> -->
-			</div>
-			<!-- ./col -->
-			<div class="col-lg-3 col-6">
-				<!-- small box -->
-				<!-- <div class="small-box bg-warning">
-					<div class="inner">
-						<h3>44</h3>
+                <!-- Users Table -->
+                <div class="glass-table p-6">
+                    <h3 class="text-xl font-bold text-white mb-6">
+                        <i class="fas fa-table mr-2"></i>Data Pengguna
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table id="usersTable" class="w-full">
+                            <thead>
+                                <tr class="border-b border-white/20">
+                                    <th class="text-left py-3 px-4 text-white/90 font-semibold">No</th>
+                                    <th class="text-left py-3 px-4 text-white/90 font-semibold">Username</th>
+                                    <th class="text-left py-3 px-4 text-white/90 font-semibold">Nama</th>
+                                    <th class="text-left py-3 px-4 text-white/90 font-semibold">Email</th>
+                                    <th class="text-left py-3 px-4 text-white/90 font-semibold">Role</th>
+                                    <th class="text-left py-3 px-4 text-white/90 font-semibold">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% users.forEach((user, index) => { %>
+                                <tr class="border-b border-white/10 hover:bg-white/5">
+                                    <td class="py-3 px-4 text-white/90"><%= index + 1 %></td>
+                                    <td class="py-3 px-4 text-white/90"><%= user.username %></td>
+                                    <td class="py-3 px-4 text-white/90"><%= user.nama || '-' %></td>
+                                    <td class="py-3 px-4 text-white/90"><%= user.email || '-' %></td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold 
+                                                     <%= user.role === 'admin' ? 'bg-green-500/30 text-white' : 'bg-blue-500/30 text-white' %>">
+                                            <%= user.role || 'user' %>
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex space-x-2">
+                                            <a href="/dashboard/edit/<%= user._id %>" 
+                                               class="glass-button text-xs py-2 px-3 bg-blue-500/20 hover:bg-blue-500/30">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="/dashboard/delete/<%= user._id %>?_method=DELETE" method="POST" 
+                                                  onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                                                <button type="submit" 
+                                                        class="glass-button text-xs py-2 px-3 bg-red-500/20 hover:bg-red-500/30">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-						<p>Warhim Terdaftar</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-stats-bars"></i>
-					</div>
-					<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-				</div> -->
-			</div>
-			<!-- ./col -->
-			<div class="col-lg-3 col-6">
-				<!-- small box -->
-				<!-- <div class="small-box bg-danger">
-					<div class="inner">
-						<h3>65</h3>
-
-						<p>Unique Visitors</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-pie-graph"></i>
-					</div>
-					<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-				</div> -->
-			</div>
-			<!-- ./col -->
-		</div>
-		<!-- /.row -->
-		<!-- Main row -->
-		<div class="row">
-			<div class="col-12">
-				<div class="card">
-					<div class="card-header">
-						<h3 class="card-title"></h3>
-					</div>
-					<!-- /.card-header -->
-					<div class="card-body">
-						<%- include ./partials/table.ejs %>
-					</div>
-					<!-- /.card-body -->
-					</div>
-				</div>
-			</div>
-		<!-- /.row (main row) -->
-		</div><!-- /.container-fluid -->
-	</section>
- <!-- /.content -->
-</div>
-
-<%- include ./partials/footer.ejs %>
-<%- include ./partials/script.ejs %>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="/javascript/dom.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#usersTable').DataTable({
+                "pageLength": 10,
+                "ordering": true,
+                "searching": true,
+                "language": {
+                    "search": "Cari:",
+                    "lengthMenu": "Tampilkan _MENU_ data",
+                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    "paginate": {
+                        "previous": "Sebelumnya",
+                        "next": "Selanjutnya"
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

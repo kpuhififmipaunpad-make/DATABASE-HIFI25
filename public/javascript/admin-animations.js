@@ -40,44 +40,46 @@ function initSidebarToggle() {
 }
 
 // ============================================
-// DATATABLE ENHANCEMENT
+// DATATABLE ENHANCEMENT (ADD THIS AFTER LINE 49)
 // ============================================
 function initDataTable() {
   if (typeof $ !== 'undefined' && $.fn.DataTable) {
     const table = $('#usersTable').DataTable({
       responsive: true,
       pageLength: 10,
+      lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
       language: {
-        search: "Cari:",
-        lengthMenu: "Tampilkan _MENU_ data",
-        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-        infoEmpty: "Tidak ada data",
-        infoFiltered: "(difilter dari _MAX_ total data)",
+        search: "🔍",
+        searchPlaceholder: "Cari nama, NPM, email...",
+        lengthMenu: "Show _MENU_ entries",
+        info: "Showing _START_ to _END_ of _TOTAL_ users",
+        infoEmpty: "No users available",
+        infoFiltered: "(filtered from _MAX_ total)",
         paginate: {
-          first: "Pertama",
-          last: "Terakhir",
-          next: "Selanjutnya",
-          previous: "Sebelumnya"
+          first: "First",
+          last: "Last",
+          next: "Next",
+          previous: "Prev"
         },
-        emptyTable: "Tidak ada data yang tersedia",
-        zeroRecords: "Tidak ditemukan data yang sesuai"
+        emptyTable: "No data available",
+        zeroRecords: "No matching records found"
       },
       dom: '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>B<"row"<"col-sm-12"rt>><"row mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
       buttons: [
         {
           extend: 'excel',
-          text: '<i class="fas fa-file-excel"></i> Export Excel',
+          text: '<i class="fas fa-file-excel me-2"></i>Export Excel',
           className: 'dt-button',
-          title: 'Data Warga HIFI',
+          title: 'HIFI Database Export',
           exportOptions: {
             columns: ':not(.no-export)'
           }
         },
         {
           extend: 'pdf',
-          text: '<i class="fas fa-file-pdf"></i> Export PDF',
+          text: '<i class="fas fa-file-pdf me-2"></i>Export PDF',
           className: 'dt-button',
-          title: 'Data Warga HIFI',
+          title: 'HIFI Database Export',
           orientation: 'landscape',
           pageSize: 'A4',
           exportOptions: {
@@ -86,9 +88,9 @@ function initDataTable() {
         },
         {
           extend: 'print',
-          text: '<i class="fas fa-print"></i> Print',
+          text: '<i class="fas fa-print me-2"></i>Print',
           className: 'dt-button',
-          title: 'Data Warga HIFI',
+          title: 'HIFI Database',
           exportOptions: {
             columns: ':not(.no-export)'
           }
@@ -96,19 +98,26 @@ function initDataTable() {
       ],
       order: [[0, 'asc']],
       columnDefs: [
-        { orderable: false, targets: -1 }
+        { orderable: false, targets: -1 },
+        { className: 'text-center', targets: 0 }
       ],
       initComplete: function() {
-        // Add placeholder to search input
-        $('.dataTables_filter input')
-          .attr('placeholder', 'Cari nama, NPM, email...')
-          .addClass('form-control-glass');
-        
-        $('.dataTables_length select')
-          .addClass('form-control-glass');
-        
         // Smooth fade-in animation
         $('#usersTable').css('opacity', '0').animate({ opacity: 1 }, 600);
+        
+        // Add custom styling to search
+        $('.dataTables_filter input').attr('placeholder', 'Search...');
+      },
+      drawCallback: function() {
+        // Re-apply hover effects after redraw
+        $('#usersTable tbody tr').hover(
+          function() {
+            $(this).addClass('table-row-hover');
+          },
+          function() {
+            $(this).removeClass('table-row-hover');
+          }
+        );
       }
     });
     

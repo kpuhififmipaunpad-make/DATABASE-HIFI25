@@ -1,81 +1,88 @@
 <div class="table-container">
-  <!-- TOP TOOLBAR -->
+  <!-- TOOLBAR ATAS -->
   <div class="table-toolbar">
     <div class="toolbar-left">
-      <label class="toolbar-label">Tampilkan</label>
-      <select id="itemsPerPage" class="toolbar-select">
+      <span class="toolbar-label">Tampilkan</span>
+      <select id="itemsPerPage" class="toolbar-select" aria-label="Items per page">
         <option value="10" selected>10 / page</option>
-        <option value="20">20 / page</option>
-        <option value="30">30 / page</option>
+        <option value="25">25 / page</option>
         <option value="50">50 / page</option>
         <option value="100">100 / page</option>
       </select>
     </div>
 
     <div class="toolbar-right">
-      <input id="searchTable" class="toolbar-search" type="text" placeholder="Cari di semua kolom..." />
-      <button id="btnRefresh" class="btn-glass" onclick="HIFIAdmin.refreshData()">
-        <i class="fas fa-sync-alt"></i> Refresh
+      <input id="searchNama" class="toolbar-search" type="search" placeholder="Cari Nama... (kolom Nama saja)" />
+      <button id="btnRefresh" type="button" class="btn-glass">
+        <i class="fas fa-sync-alt"></i>&nbsp; Refresh
       </button>
-      <span id="exportButtons"></span>
+      <div id="exportButtons"></div>
     </div>
   </div>
 
-  <!-- TABLE -->
-  <div class="table-responsive">
-    <table id="usersTable" class="display" style="width:100%">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Username</th>
-          <th>Nama</th>
-          <th>NPM</th>
-          <th>Email</th>
-          <th>Telepon</th> <!-- NEW -->
-          <th>Role</th>
-          <th>Terakhir Update</th>
-          <th class="no-export">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% users.forEach((user, index) => { %>
-          <tr data-id="<%= user._id %>">
-            <td><%= index + 1 %></td>
-            <td><strong><%= user.username %></strong></td>
-            <td><%= user.nama || '-' %></td>
-            <td><%= user.npm || '-' %></td>
-            <td><%= user.email || '-' %></td>
-            <td><%= user.hp || '-' %></td> <!-- sinkron edit.ejs -->
-            <td>
-              <span class="badge-glass <%= user.role === 'admin' ? 'badge-red' : 'badge-blue' %>">
-                <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
-                <%= user.role === 'admin' ? 'Admin' : 'User' %>
-              </span>
-            </td>
-            <td><%= user.time || '-' %></td>
-            <td class="no-export">
-              <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn-action btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
+  <!-- TABEL -->
+  <table id="usersTable" class="display nowrap" style="width:100%">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Username</th>
+        <th>Nama</th>
+        <th>NPM</th>
+        <th>Email</th>
+        <th>Telepon</th>
+        <th>Role</th>
+        <th>Terakhir Update</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(function(u, i){ %>
+        <!--
+          DATASET untuk child row -> PENTING:
+          property-nya disamakan dengan edit.ejs
+        -->
+        <tr
+          data-id="<%= u._id %>"
+          data-username="<%= u.username || '' %>"
+          data-nama="<%= u.nama || '' %>"
+          data-npm="<%= u.npm || '' %>"
+          data-email="<%= u.email || '' %>"
+          data-hp="<%= u.hp || '' %>"
+          data-ttl="<%= u.ttl || '' %>"
+          data-tgl="<%= u.tgl || '' %>"
+          data-agama="<%= u.agama || '' %>"
+          data-goldar="<%= u.goldar || '' %>"
+          data-rumah="<%= u.rumah || '' %>"
+          data-kos="<%= u.kos || '' %>"
+          data-pendidikan="<%= u.pendidikan || '' %>"
+          data-panitia="<%= u.panitia || '' %>"
+          data-organisasi="<%= u.organisasi || '' %>"
+          data-pelatihan="<%= u.pelatihan || '' %>"
+          data-prestasi="<%= u.prestasi || '' %>"
+        >
+          <td><%= i + 1 %></td>
+          <td><%= u.username %></td>
+          <td><%= u.nama || '-' %></td>
+          <td><%= u.npm || '-' %></td>
+          <td><%= u.email || '-' %></td>
+          <!-- TELEPON diambil dari hp -->
+          <td><%= u.hp || '-' %></td>
+          <td>
+            <span class="badge-glass"><i class="fas fa-user"></i> <%= (u.role || 'User') %></span>
+          </td>
+          <td><%= u.updatedAt || '-' %></td>
+          <td class="no-detail">
+            <a class="btn-action btn-edit" title="Edit" href="/dashboard/edit/<%= u._id %>">
+              <i class="fas fa-pen"></i>
+            </a>
+            <form action="/dashboard/delete/<%= u._id %>?_method=DELETE" method="POST" style="display:inline">
+              <button type="submit" class="btn-action btn-delete" title="Hapus" onclick="return confirm('Hapus data ini?')">
                 <i class="fas fa-trash"></i>
               </button>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
 </div>
-
-<script>
-  function confirmDelete(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = `/dashboard/delete/${id}?_method=DELETE`;
-      document.body.appendChild(form);
-      form.submit();
-    }
-  }
-</script>

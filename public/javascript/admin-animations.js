@@ -1,6 +1,6 @@
 /**
- * HIFI Database - Admin Panel Animations v2.0
- * Dashboard-specific animations & interactions
+ * HIFI Database - Admin Panel Animations v2.1
+ * Dashboard-specific animations & interactions (FIXED)
  */
 
 // ============================================
@@ -30,20 +30,34 @@ function initSidebarToggle() {
 }
 
 // ============================================
-// DATATABLE ENHANCEMENT
+// DATATABLE ENHANCEMENT (FIXED)
 // ============================================
 function initDataTable() {
-  if (typeof $ === 'undefined' || !$.fn.DataTable) return;
+  if (typeof $ === 'undefined' || !$.fn.DataTable) {
+    console.warn('DataTables not loaded');
+    return;
+  }
   
   const tableElement = $('#usersTable');
   if (tableElement.length === 0) return;
   
+  // Check if already initialized
+  if ($.fn.DataTable.isDataTable('#usersTable')) {
+    tableElement.DataTable().destroy();
+  }
+  
   const table = tableElement.DataTable({
-    responsive: true,
+    responsive: {
+      details: {
+        type: 'column',
+        target: 'tr'
+      }
+    },
     pageLength: 10,
+    order: [[1, 'asc']], // Sort by name
     language: {
       search: "Cari:",
-      lengthMenu: "Tampilkan _MENU_ data",
+      lengthMenu: "Tampilkan _MENU_ data per halaman",
       info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
       infoEmpty: "Tidak ada data",
       infoFiltered: "(difilter dari _MAX_ total data)",
@@ -52,15 +66,15 @@ function initDataTable() {
       paginate: {
         first: "Pertama",
         last: "Terakhir",
-        next: "Selanjutnya",
-        previous: "Sebelumnya"
+        next: '<i class="fas fa-chevron-right"></i>',
+        previous: '<i class="fas fa-chevron-left"></i>'
       }
     },
-    dom: '<"top-controls d-flex justify-content-between align-items-center mb-3"lfB>rt<"bottom-controls d-flex justify-content-between align-items-center mt-3"ip>',
+    dom: '<"top-controls d-flex justify-content-between align-items-center flex-wrap mb-3"<"d-flex align-items-center gap-2"lf>B>rt<"bottom-controls d-flex justify-content-between align-items-center flex-wrap mt-3"ip>',
     buttons: [
       {
         extend: 'excel',
-        text: '<i class="fas fa-file-excel"></i> Export Excel',
+        text: '<i class="fas fa-file-excel"></i> Excel',
         className: 'btn-export',
         title: 'Data Warga HIFI',
         exportOptions: {
@@ -69,99 +83,78 @@ function initDataTable() {
       },
       {
         extend: 'pdf',
-        text: '<i class="fas fa-file-pdf"></i> Export PDF',
+        text: '<i class="fas fa-file-pdf"></i> PDF',
         className: 'btn-export',
         title: 'Data Warga HIFI',
         exportOptions: {
           columns: ':not(.no-export)'
+        },
+        customize: function(doc) {
+          doc.styles.tableHeader = {
+            fillColor: [220, 20, 60],
+            color: [255, 255, 255],
+            bold: true
+          };
         }
       },
       {
         extend: 'print',
         text: '<i class="fas fa-print"></i> Print',
         className: 'btn-export',
-        title: 'Data Warga HIFI'
+        title: 'Data Warga HIFI',
+        exportOptions: {
+          columns: ':not(.no-export)'
+        }
       }
     ],
+    columnDefs: [
+      { 
+        targets: 0, 
+        className: 'text-center',
+        width: '5%'
+      },
+      { 
+        targets: -1, 
+        orderable: false,
+        className: 'text-center no-export',
+        width: '10%'
+      }
+    ],
+    drawCallback: function() {
+      // Re-apply animations after redraw
+      $('.stat-card').each(function(index) {
+        $(this).css('animation-delay', (index * 0.1) + 's');
+      });
+    },
     initComplete: function() {
-      // Add custom styling after initialization
+      console.log('DataTable initialized successfully');
+      
+      // Add custom styling
       $('.dataTables_wrapper').addClass('glass-card');
-      $('.dataTables_filter input').addClass('form-control-glass');
+      $('.dataTables_filter input').addClass('form-control-glass').attr('placeholder', 'Cari warga...');
       $('.dataTables_length select').addClass('form-control-glass');
       
-      // Add icons
-      $('.dataTables_filter label').prepend('<i class="fas fa-search search-icon"></i>');
-      $('.dataTables_filter').addClass('search-glass');
+      // Wrap search with icon
+      const filterLabel = $('.dataTables_filter label');
+      if (filterLabel.find('.search-icon').length === 0) {
+        filterLabel.prepend('<i class="fas fa-search search-icon"></i>');
+        filterLabel.addClass('search-glass');
+      }
+      
+      // Style buttons container
+      $('.dt-buttons').css({
+        'display': 'flex',
+        'gap': '8px',
+        'flex-wrap': 'wrap'
+      });
+      
+      // Update total count
+      const info = table.page.info();
+      $('#totalUsers').text(info.recordsTotal);
     }
   });
   
-  // Row click to expand details (FIXED)
-  $('#usersTable tbody').on('click', 'tr', function(e) {
-    // Prevent expansion if clicking on action buttons
-    if ($(e.target).closest('.btn-action').length > 0) {
-      return;
-    }
-    
-    const row = table.row(this);
-    
-    if (row.child.isShown()) {
-      row.child.hide();
-      $(this).removeClass('shown');
-    } else {
-      const data = row.data();
-      if (data) {
-        row.child(formatUserDetails(data)).show();
-        $(this).addClass('shown');
-        
-        // Animate child row
-        $(row.child()).find('.detail-card').addClass('animate-fadeInUp');
-      }
-    }
-  });
-}
-
-// ============================================
-// FORMAT USER DETAILS
-// ============================================
-function formatUserDetails(data) {
-  return `
-    <div class="detail-card glass-card p-4" style="margin: 10px 0;">
-      <div class="row">
-        <div class="col-md-6">
-          <h6 class="text-gradient mb-3">
-            <i class="fas fa-user-circle"></i> Informasi Personal
-          </h6>
-          <p><strong>NPM:</strong> ${data[2] || '-'}</p>
-          <p><strong>TTL:</strong> ${data[3] || '-'}</p>
-          <p><strong>Tanggal Lahir:</strong> ${data[4] || '-'}</p>
-          <p><strong>Agama:</strong> ${data[5] || '-'}</p>
-          <p><strong>Golongan Darah:</strong> ${data[6] || '-'}</p>
-          <p><strong>No. HP:</strong> ${data[7] || '-'}</p>
-        </div>
-        <div class="col-md-6">
-          <h6 class="text-gradient mb-3">
-            <i class="fas fa-address-book"></i> Kontak & Alamat
-          </h6>
-          <p><strong>Email:</strong> ${data[8] || '-'}</p>
-          <p><strong>Alamat Rumah:</strong> ${data[9] || '-'}</p>
-          <p><strong>Alamat Kos:</strong> ${data[10] || '-'}</p>
-          <h6 class="text-gradient mt-3 mb-2">
-            <i class="fas fa-history"></i> Riwayat
-          </h6>
-          <p><strong>Pendidikan:</strong> ${data[11] || '-'}</p>
-          <p><strong>Organisasi:</strong> ${data[12] || '-'}</p>
-        </div>
-      </div>
-      <div class="mt-3 d-flex gap-2">
-        <button class="btn-action btn-edit" onclick="editUser('${data[0]}')" title="Edit">
-          <i class="fas fa-edit"></i>
-        </button>
-        <button class="btn-action btn-delete" onclick="deleteUser('${data[0]}')" title="Hapus">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
-    </div>
-  `;
+  return table;
 }
 
 // ============================================
@@ -184,7 +177,12 @@ function initCharts() {
         backgroundColor: 'rgba(220, 20, 60, 0.1)',
         borderWidth: 3,
         tension: 0.4,
-        fill: true
+        fill: true,
+        pointBackgroundColor: 'rgb(220, 20, 60)',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7
       }]
     },
     options: {
@@ -193,18 +191,44 @@ function initCharts() {
       plugins: {
         legend: {
           display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          cornerRadius: 8,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          }
         }
       },
       scales: {
         y: {
           beginAtZero: true,
           grid: {
-            color: 'rgba(0, 0, 0, 0.05)'
+            color: 'rgba(0, 0, 0, 0.05)',
+            drawBorder: false
+          },
+          ticks: {
+            color: '#6B7280',
+            font: {
+              size: 12
+            }
           }
         },
         x: {
           grid: {
-            display: false
+            display: false,
+            drawBorder: false
+          },
+          ticks: {
+            color: '#6B7280',
+            font: {
+              size: 12
+            }
           }
         }
       },
@@ -247,16 +271,14 @@ function animateStatCards() {
   const statCards = document.querySelectorAll('.stat-card');
   
   statCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    
     setTimeout(() => {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(30px)';
-      
-      setTimeout(() => {
-        card.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-      }, 50);
-    }, index * 100);
+      card.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, 100 + (index * 100));
   });
 }
 
@@ -274,13 +296,15 @@ function refreshData() {
   }
   
   // Show loading toast
-  showToast('Memperbarui data...', 'info', 1000);
-  
-  // Reload data with animation
-  setTimeout(() => {
-    showToast('Data berhasil diperbarui!', 'success');
+  if (typeof showToast !== 'undefined') {
+    showToast('Memperbarui data...', 'info', 1000);
+    setTimeout(() => {
+      showToast('Data berhasil diperbarui!', 'success');
+      setTimeout(() => location.reload(), 1000);
+    }, 1500);
+  } else {
     setTimeout(() => location.reload(), 1000);
-  }, 1500);
+  }
 }
 
 // ============================================
@@ -288,7 +312,9 @@ function refreshData() {
 // ============================================
 function editUser(id) {
   if (!id) {
-    showToast('ID pengguna tidak valid!', 'error');
+    if (typeof showToast !== 'undefined') {
+      showToast('ID pengguna tidak valid!', 'error');
+    }
     return;
   }
   window.location.href = `/dashboard/edit/${id}`;
@@ -296,13 +322,20 @@ function editUser(id) {
 
 function deleteUser(id) {
   if (!id) {
-    showToast('ID pengguna tidak valid!', 'error');
+    if (typeof showToast !== 'undefined') {
+      showToast('ID pengguna tidak valid!', 'error');
+    }
     return;
   }
   
-  if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+  // Custom confirmation modal
+  const confirmDelete = confirm('⚠️ PERINGATAN!\n\nApakah Anda yakin ingin menghapus data ini?\nData yang dihapus tidak dapat dikembalikan.');
+  
+  if (confirmDelete) {
     // Show loading
-    showToast('Menghapus data...', 'info', 1000);
+    if (typeof showToast !== 'undefined') {
+      showToast('Menghapus data...', 'info', 1000);
+    }
     
     fetch(`/dashboard/delete/${id}`, {
       method: 'DELETE',
@@ -315,12 +348,18 @@ function deleteUser(id) {
       return response.json();
     })
     .then(() => {
-      showToast('Data berhasil dihapus!', 'success');
+      if (typeof showToast !== 'undefined') {
+        showToast('Data berhasil dihapus!', 'success');
+      }
       setTimeout(() => location.reload(), 1000);
     })
     .catch(err => {
       console.error(err);
-      showToast('Gagal menghapus data!', 'error');
+      if (typeof showToast !== 'undefined') {
+        showToast('Gagal menghapus data! ' + err.message, 'error');
+      } else {
+        alert('Gagal menghapus data!');
+      }
     });
   }
 }
@@ -345,6 +384,16 @@ function toggleProfileDropdown() {
   }
 }
 
+// ============================================
+// MOBILE MENU TOGGLE
+// ============================================
+function toggleMobileMenu() {
+  const sidebar = document.querySelector('.sidebar-glass');
+  if (sidebar) {
+    sidebar.classList.toggle('active');
+  }
+}
+
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.notification-bell') && !e.target.closest('.notifications-dropdown')) {
@@ -363,20 +412,10 @@ document.addEventListener('click', (e) => {
 });
 
 // ============================================
-// MOBILE MENU TOGGLE
-// ============================================
-function toggleMobileMenu() {
-  const sidebar = document.querySelector('.sidebar-glass');
-  if (sidebar) {
-    sidebar.classList.toggle('active');
-  }
-}
-
-// ============================================
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('HIFI Admin Animations v2.0 Initialized');
+  console.log('HIFI Admin v2.1 Initialized');
   
   initSidebarToggle();
   initDataTable();
@@ -384,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCharts();
   animateStatCards();
   
-  // Add smooth transitions to all elements
+  // Add smooth transitions
   document.querySelectorAll('.glass-card, .stat-card, .btn-action').forEach(el => {
     el.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
   });

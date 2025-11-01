@@ -1,400 +1,478 @@
-// ============================================
-// DATA MANAGEMENT & SEARCH FUNCTIONALITY
-// ============================================
+<script>
+// ==================== CONFIGURATION ====================
+const API_CONFIG = {
+    baseURL: '/api',
+    endpoints: {
+        devices: '/devices',
+        search: '/devices/search',
+        update: '/devices/update'
+    },
+    timeout: 5000
+};
 
-(function() {
-    'use strict';
+// ==================== STATE MANAGEMENT ====================
+let deviceData = [];
+let filteredData = [];
+let currentSortColumn = 'lastUpdate';
+let currentSortOrder = 'desc';
+let searchTimeout = null;
 
-    // Sample data - replace dengan actual data source
-    let originalData = [
-        {
-            id: 1,
-            kode: 'PRD001',
-            nama: 'Laptop Dell XPS 13',
-            kategori: 'Elektronik',
-            status: 'active',
-            tanggalUpdate: new Date('2025-01-15T10:30:00'),
-            keterangan: 'Stok tersedia'
-        },
-        {
-            id: 2,
-            kode: 'PRD002',
-            nama: 'Mouse Wireless Logitech',
-            kategori: 'Aksesoris',
-            status: 'active',
-            tanggalUpdate: new Date('2025-01-16T14:20:00'),
-            keterangan: 'Pre-order'
-        },
-        {
-            id: 3,
-            kode: 'PRD003',
-            nama: 'Keyboard Mechanical RGB',
-            kategori: 'Aksesoris',
-            status: 'inactive',
-            tanggalUpdate: new Date('2025-01-10T09:15:00'),
-            keterangan: 'Habis'
-        },
-        {
-            id: 4,
-            kode: 'PRD004',
-            nama: 'Monitor LG 27 inch 4K',
-            kategori: 'Elektronik',
-            status: 'active',
-            tanggalUpdate: new Date('2025-01-17T16:45:00'),
-            keterangan: 'Baru masuk'
-        },
-        {
-            id: 5,
-            kode: 'PRD005',
-            nama: 'Headset Gaming Razer',
-            kategori: 'Aksesoris',
-            status: 'active',
-            tanggalUpdate: new Date('2025-01-17T08:30:00'),
-            keterangan: 'Limited edition'
-        }
-    ];
+// ==================== INITIALIZATION ====================
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
 
-    let filteredData = [...originalData];
-    let latestUpdateTime = null;
-
-    // ============================================
-    // UTILITY FUNCTIONS
-    // ============================================
-
-    /**
-     * Format date to Indonesian locale
-     * @param {Date} date - Date object to format
-     * @returns {string} - Formatted date string
-     */
-    function formatDate(date) {
-        if (!(date instanceof Date) || isNaN(date)) {
-            return 'Invalid Date';
-        }
-
-        const options = {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        };
-
-        return new Intl.DateTimeFormat('id-ID', options).format(date);
+async function initializeApp() {
+    try {
+        showLoadingState();
+        await loadDeviceData();
+        initializeEventListeners();
+        renderTable();
+        hideLoadingState();
+    } catch (error) {
+        console.error('Initialization error:', error);
+        showError('Gagal memuat data. Silakan refresh halaman.');
     }
+}
 
-    /**
-     * Get relative time description
-     * @param {Date} date - Date to compare
-     * @returns {string} - Relative time string
-     */
-    function getRelativeTime(date) {
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-
-        if (diffMins < 1) return 'Baru saja';
-        if (diffMins < 60) return `${diffMins} menit lalu`;
-        if (diffHours < 24) return `${diffHours} jam lalu`;
-        if (diffDays < 7) return `${diffDays} hari lalu`;
-        return formatDate(date);
-    }
-
-    /**
-     * Check if data is recently updated (within 24 hours)
-     * @param {Date} date - Date to check
-     * @returns {boolean}
-     */
-    function isRecentlyUpdated(date) {
-        const now = new Date();
-        const diffHours = (now - date) / 3600000;
-        return diffHours < 24;
-    }
-
-    /**
-     * Sort data by date (newest first)
-     * @param {Array} data - Data array to sort
-     * @returns {Array} - Sorted data array
-     */
-    function sortByDateDesc(data) {
-        return data.sort((a, b) => {
-            const dateA = new Date(a.tanggalUpdate);
-            const dateB = new Date(b.tanggalUpdate);
-            return dateB - dateA;
+// ==================== DATA LOADING ====================
+async function loadDeviceData() {
+    try {
+        const response = await fetch(API_CONFIG.baseURL + API_CONFIG.endpoints.devices, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            timeout: API_CONFIG.timeout
         });
-    }
 
-    /**
-     * Get latest update time from data
-     * @param {Array} data - Data array
-     * @returns {Date|null} - Latest date or null
-     */
-    function getLatestUpdate(data) {
-        if (!data || data.length === 0) return null;
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
         
-        const sortedData = sortByDateDesc([...data]);
-        return sortedData[0].tanggalUpdate;
+        // Validate and sort data by last update (newest first)
+        deviceData = validateAndSortData(data);
+        filteredData = [...deviceData];
+        
+        return deviceData;
+    } catch (error) {
+        console.error('Load device data error:', error);
+        throw error;
+    }
+}
+
+function validateAndSortData(data) {
+    if (!Array.isArray(data)) {
+        console.warn('Invalid data format, returning empty array');
+        return [];
     }
 
-    // ============================================
-    // DATA RENDERING
-    // ============================================
+    // Validate and enrich each device
+    const validatedData = data.map(device => ({
+        id: device.id || generateId(),
+        name: device.name || 'Unknown Device',
+        type: device.type || 'N/A',
+        status: device.status || 'offline',
+        power: validatePower(device.power),
+        lastUpdate: validateDate(device.lastUpdate),
+        location: device.location || 'Unknown',
+        rawUpdateTime: device.lastUpdate
+    }));
 
-    /**
-     * Render table rows
-     * @param {Array} data - Data to render
-     */
-    function renderTable(data) {
-        const tableBody = document.getElementById('tableBody');
-        const totalDataEl = document.getElementById('totalData');
-        const lastUpdateEl = document.getElementById('lastUpdate');
+    // Sort by lastUpdate (newest first)
+    return validatedData.sort((a, b) => {
+        const dateA = new Date(a.rawUpdateTime);
+        const dateB = new Date(b.rawUpdateTime);
+        return dateB - dateA; // Descending order
+    });
+}
 
-        if (!tableBody) return;
+function validatePower(power) {
+    const parsed = parseFloat(power);
+    return isNaN(parsed) ? 0 : Math.max(0, parsed);
+}
 
-        // Sort data by date (newest first)
-        const sortedData = sortByDateDesc([...data]);
+function validateDate(dateString) {
+    if (!dateString) return 'Never';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+    
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
 
-        // Update total data count
-        if (totalDataEl) {
-            totalDataEl.textContent = sortedData.length;
-        }
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    
+    return date.toLocaleDateString('id-ID', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
 
-        // Update last update time
-        latestUpdateTime = getLatestUpdate(sortedData);
-        if (lastUpdateEl && latestUpdateTime) {
-            lastUpdateEl.textContent = getRelativeTime(latestUpdateTime);
-        }
+function generateId() {
+    return 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
 
-        // Clear table body
-        tableBody.innerHTML = '';
-
-        // Check if data is empty
-        if (sortedData.length === 0) {
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="no-data">
-                        😔 Tidak ada data yang ditemukan
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        // Render each row
-        sortedData.forEach((item, index) => {
-            const row = document.createElement('tr');
-            const isNew = isRecentlyUpdated(item.tanggalUpdate);
-            
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td><strong>${escapeHtml(item.kode)}</strong></td>
-                <td>
-                    ${escapeHtml(item.nama)}
-                    ${isNew ? '<span class="new-badge">BARU</span>' : ''}
-                </td>
-                <td>${escapeHtml(item.kategori)}</td>
-                <td>
-                    <span class="status-badge ${item.status === 'active' ? 'status-active' : 'status-inactive'}">
-                        ${item.status === 'active' ? 'Aktif' : 'Nonaktif'}
-                    </span>
-                </td>
-                <td>${formatDate(item.tanggalUpdate)}</td>
-                <td>${escapeHtml(item.keterangan)}</td>
-            `;
-
-            tableBody.appendChild(row);
+// ==================== EVENT LISTENERS ====================
+function initializeEventListeners() {
+    // Search input with debounce
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Escape') {
+                this.value = '';
+                handleSearch();
+            }
         });
     }
 
-    /**
-     * Escape HTML to prevent XSS
-     * @param {string} text - Text to escape
-     * @returns {string} - Escaped text
-     */
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+    // Refresh button
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', handleRefresh);
     }
 
-    // ============================================
-    // SEARCH FUNCTIONALITY
-    // ============================================
+    // Sort buttons
+    document.querySelectorAll('[data-sort]').forEach(btn => {
+        btn.addEventListener('click', handleSort);
+    });
 
-    /**
-     * Filter data based on search query
-     * @param {string} query - Search query
-     */
-    function filterData(query) {
-        const searchQuery = query.toLowerCase().trim();
+    // Filter buttons
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+        btn.addEventListener('click', handleFilter);
+    });
+}
 
-        if (!searchQuery) {
-            filteredData = [...originalData];
+// ==================== SEARCH FUNCTIONALITY (FIXED) ====================
+function handleSearch(event) {
+    clearTimeout(searchTimeout);
+    
+    searchTimeout = setTimeout(() => {
+        const searchTerm = event.target.value.toLowerCase().trim();
+        
+        if (searchTerm === '') {
+            filteredData = [...deviceData];
         } else {
-            filteredData = originalData.filter(item => {
+            filteredData = deviceData.filter(device => {
                 return (
-                    item.kode.toLowerCase().includes(searchQuery) ||
-                    item.nama.toLowerCase().includes(searchQuery) ||
-                    item.kategori.toLowerCase().includes(searchQuery) ||
-                    item.status.toLowerCase().includes(searchQuery) ||
-                    item.keterangan.toLowerCase().includes(searchQuery)
+                    device.name.toLowerCase().includes(searchTerm) ||
+                    device.type.toLowerCase().includes(searchTerm) ||
+                    device.location.toLowerCase().includes(searchTerm) ||
+                    device.status.toLowerCase().includes(searchTerm) ||
+                    device.id.toLowerCase().includes(searchTerm)
                 );
             });
         }
+        
+        renderTable();
+        updateSearchStats(searchTerm);
+    }, 300); // Debounce 300ms
+}
 
-        renderTable(filteredData);
-    }
-
-    /**
-     * Debounce function to limit search frequency
-     * @param {Function} func - Function to debounce
-     * @param {number} wait - Wait time in ms
-     * @returns {Function} - Debounced function
-     */
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // ============================================
-    // EVENT LISTENERS
-    // ============================================
-
-    /**
-     * Initialize event listeners
-     */
-    function initEventListeners() {
-        const searchInput = document.getElementById('searchInput');
-
-        if (searchInput) {
-            // Debounced search (300ms delay)
-            const debouncedSearch = debounce((e) => {
-                filterData(e.target.value);
-            }, 300);
-
-            searchInput.addEventListener('input', debouncedSearch);
-
-            // Clear search on Escape key
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    searchInput.value = '';
-                    filterData('');
-                }
-            });
+function updateSearchStats(searchTerm) {
+    const statsEl = document.getElementById('searchStats');
+    if (statsEl) {
+        if (searchTerm) {
+            statsEl.textContent = `Found ${filteredData.length} of ${deviceData.length} devices`;
+            statsEl.style.display = 'block';
+        } else {
+            statsEl.style.display = 'none';
         }
     }
+}
 
-    // ============================================
-    // AUTO-REFRESH LAST UPDATE TIME
-    // ============================================
-
-    /**
-     * Update relative time every minute
-     */
-    function startAutoRefresh() {
-        setInterval(() => {
-            const lastUpdateEl = document.getElementById('lastUpdate');
-            if (lastUpdateEl && latestUpdateTime) {
-                lastUpdateEl.textContent = getRelativeTime(latestUpdateTime);
-            }
-        }, 60000); // Update every 1 minute
-    }
-
-    // ============================================
-    // INITIALIZATION
-    // ============================================
-
-    /**
-     * Initialize application
-     */
-    function init() {
-        // Sort original data by date
-        originalData = sortByDateDesc(originalData);
-        filteredData = [...originalData];
-
-        // Render initial table
-        renderTable(filteredData);
-
-        // Setup event listeners
-        initEventListeners();
-
-        // Start auto-refresh for relative time
-        startAutoRefresh();
-
-        console.log('✅ Table initialized successfully');
-    }
-
-    // ============================================
-    // PUBLIC API (if needed for external access)
-    // ============================================
-
-    window.TableManager = {
-        /**
-         * Add new data to table
-         * @param {Object} newData - New data object
-         */
-        addData: function(newData) {
-            if (!newData.tanggalUpdate) {
-                newData.tanggalUpdate = new Date();
-            }
-            originalData.unshift(newData);
-            filterData(document.getElementById('searchInput')?.value || '');
-        },
-
-        /**
-         * Update existing data
-         * @param {number} id - Data ID to update
-         * @param {Object} updates - Update object
-         */
-        updateData: function(id, updates) {
-            const index = originalData.findIndex(item => item.id === id);
-            if (index !== -1) {
-                originalData[index] = {
-                    ...originalData[index],
-                    ...updates,
-                    tanggalUpdate: new Date()
-                };
-                filterData(document.getElementById('searchInput')?.value || '');
-            }
-        },
-
-        /**
-         * Refresh table data
-         * @param {Array} newData - New data array
-         */
-        refreshData: function(newData) {
-            originalData = sortByDateDesc([...newData]);
-            filterData(document.getElementById('searchInput')?.value || '');
-        },
-
-        /**
-         * Get current filtered data
-         * @returns {Array}
-         */
-        getData: function() {
-            return [...filteredData];
-        }
-    };
-
-    // ============================================
-    // START APPLICATION
-    // ============================================
-
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+// ==================== SORT FUNCTIONALITY ====================
+function handleSort(event) {
+    const column = event.currentTarget.dataset.sort;
+    
+    if (currentSortColumn === column) {
+        currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
     } else {
-        init();
+        currentSortColumn = column;
+        currentSortOrder = 'asc';
     }
 
-})();
+    sortData(column, currentSortOrder);
+    renderTable();
+    updateSortIndicators();
+}
+
+function sortData(column, order) {
+    filteredData.sort((a, b) => {
+        let valA = a[column];
+        let valB = b[column];
+
+        // Handle different data types
+        if (column === 'power') {
+            valA = parseFloat(valA) || 0;
+            valB = parseFloat(valB) || 0;
+        } else if (column === 'lastUpdate') {
+            valA = new Date(a.rawUpdateTime).getTime();
+            valB = new Date(b.rawUpdateTime).getTime();
+        } else {
+            valA = String(valA).toLowerCase();
+            valB = String(valB).toLowerCase();
+        }
+
+        if (valA < valB) return order === 'asc' ? -1 : 1;
+        if (valA > valB) return order === 'asc' ? 1 : -1;
+        return 0;
+    });
+}
+
+function updateSortIndicators() {
+    document.querySelectorAll('[data-sort]').forEach(btn => {
+        const icon = btn.querySelector('.sort-icon');
+        if (icon) {
+            if (btn.dataset.sort === currentSortColumn) {
+                icon.textContent = currentSortOrder === 'asc' ? '▲' : '▼';
+                btn.classList.add('active-sort');
+            } else {
+                icon.textContent = '⇅';
+                btn.classList.remove('active-sort');
+            }
+        }
+    });
+}
+
+// ==================== FILTER FUNCTIONALITY ====================
+function handleFilter(event) {
+    const filterType = event.currentTarget.dataset.filter;
+    
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+
+    if (filterType === 'all') {
+        filteredData = [...deviceData];
+    } else {
+        filteredData = deviceData.filter(device => device.status === filterType);
+    }
+
+    renderTable();
+}
+
+// ==================== TABLE RENDERING (STABLE) ====================
+function renderTable() {
+    const tbody = document.getElementById('deviceTableBody');
+    if (!tbody) return;
+
+    // Preserve scroll position
+    const container = tbody.closest('.table-container');
+    const scrollPos = container ? container.scrollTop : 0;
+
+    if (filteredData.length === 0) {
+        tbody.innerHTML = `
+            <tr class="no-data-row">
+                <td colspan="6" class="no-data-cell">
+                    <div class="no-data-message">
+                        <span class="no-data-icon">🔍</span>
+                        <p>No devices found</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    // Render rows without changing structure
+    tbody.innerHTML = filteredData.map((device, index) => `
+        <tr class="device-row" data-device-id="${device.id}" data-index="${index}">
+            <td class="cell-name">
+                <div class="device-name-wrapper">
+                    <span class="device-icon">${getDeviceIcon(device.type)}</span>
+                    <span class="device-name">${escapeHtml(device.name)}</span>
+                </div>
+            </td>
+            <td class="cell-type">${escapeHtml(device.type)}</td>
+            <td class="cell-status">
+                <span class="status-badge status-${device.status}">
+                    <span class="status-dot"></span>
+                    ${escapeHtml(device.status)}
+                </span>
+            </td>
+            <td class="cell-power">
+                <span class="power-value">${device.power.toFixed(2)}</span>
+                <span class="power-unit">W</span>
+            </td>
+            <td class="cell-update">
+                <span class="update-time" title="${escapeHtml(device.rawUpdateTime)}">
+                    ${escapeHtml(device.lastUpdate)}
+                </span>
+            </td>
+            <td class="cell-actions">
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDevice('${device.id}')" title="View Details">
+                        👁️
+                    </button>
+                    <button class="btn-action btn-edit" onclick="editDevice('${device.id}')" title="Edit">
+                        ✏️
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+
+    // Restore scroll position
+    if (container) {
+        container.scrollTop = scrollPos;
+    }
+
+    // Update stats
+    updateTableStats();
+}
+
+function updateTableStats() {
+    const totalEl = document.getElementById('totalDevices');
+    const activeEl = document.getElementById('activeDevices');
+    
+    if (totalEl) totalEl.textContent = deviceData.length;
+    if (activeEl) {
+        const activeCount = deviceData.filter(d => d.status === 'online').length;
+        activeEl.textContent = activeCount;
+    }
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+function getDeviceIcon(type) {
+    const icons = {
+        'sensor': '📡',
+        'camera': '📷',
+        'light': '💡',
+        'thermostat': '🌡️',
+        'lock': '🔒',
+        'switch': '🔌',
+        'fan': '🌀',
+        'default': '📱'
+    };
+    return icons[type.toLowerCase()] || icons.default;
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+function showLoadingState() {
+    const tbody = document.getElementById('deviceTableBody');
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="loading-cell">
+                    <div class="loading-spinner"></div>
+                    <p>Loading devices...</p>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+function hideLoadingState() {
+    // Loading removed by renderTable()
+}
+
+function showError(message) {
+    const tbody = document.getElementById('deviceTableBody');
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="error-cell">
+                    <div class="error-message">
+                        <span class="error-icon">⚠️</span>
+                        <p>${escapeHtml(message)}</p>
+                        <button onclick="location.reload()" class="btn-retry">Retry</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+async function handleRefresh() {
+    try {
+        const btn = document.getElementById('refreshBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('refreshing');
+        }
+
+        await loadDeviceData();
+        
+        // Re-apply current search
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput && searchInput.value) {
+            handleSearch({ target: searchInput });
+        } else {
+            renderTable();
+        }
+
+        if (btn) {
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('refreshing');
+            }, 1000);
+        }
+    } catch (error) {
+        console.error('Refresh error:', error);
+        showError('Failed to refresh data');
+    }
+}
+
+// ==================== DEVICE ACTIONS ====================
+function viewDevice(deviceId) {
+    const device = deviceData.find(d => d.id === deviceId);
+    if (device) {
+        alert(`Device Details:\n\nName: ${device.name}\nType: ${device.type}\nStatus: ${device.status}\nPower: ${device.power}W\nLast Update: ${device.lastUpdate}\nLocation: ${device.location}`);
+    }
+}
+
+function editDevice(deviceId) {
+    const device = deviceData.find(d => d.id === deviceId);
+    if (device) {
+        const newName = prompt('Enter new device name:', device.name);
+        if (newName && newName.trim()) {
+            device.name = newName.trim();
+            renderTable();
+        }
+    }
+}
+
+// ==================== AUTO REFRESH (Optional) ====================
+let autoRefreshInterval = null;
+
+function startAutoRefresh(intervalMs = 30000) {
+    stopAutoRefresh();
+    autoRefreshInterval = setInterval(() => {
+        handleRefresh();
+    }, intervalMs);
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+// Uncomment to enable auto-refresh every 30 seconds
+// startAutoRefresh(30000);
+</script>

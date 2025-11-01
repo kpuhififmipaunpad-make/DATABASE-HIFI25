@@ -14,7 +14,6 @@ function initSidebarToggle() {
   if (toggleBtn && sidebar) {
     toggleBtn.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
-      sidebar.classList.toggle('active');
       mainContent?.classList.toggle('expanded');
       
       // Save state to localStorage
@@ -23,105 +22,198 @@ function initSidebarToggle() {
     
     // Restore state
     const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-    if (isCollapsed && window.innerWidth > 1024) {
+    if (isCollapsed) {
       sidebar.classList.add('collapsed');
       mainContent?.classList.add('expanded');
     }
   }
-  
-  // Close sidebar on mobile when clicking outside
-  if (window.innerWidth <= 1024) {
-    document.addEventListener('click', function(e) {
-      if (!sidebar?.contains(e.target) && !toggleBtn?.contains(e.target)) {
-        sidebar?.classList.remove('active');
-      }
-    });
-  }
 }
 
 // ============================================
-// DATATABLE ENHANCEMENT (ADD THIS AFTER LINE 49)
+// DATATABLE ENHANCEMENT
 // ============================================
 function initDataTable() {
   if (typeof $ !== 'undefined' && $.fn.DataTable) {
     const table = $('#usersTable').DataTable({
       responsive: true,
       pageLength: 10,
-      lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
       language: {
-        search: "🔍",
-        searchPlaceholder: "Cari nama, NPM, email...",
-        lengthMenu: "Show _MENU_ entries",
-        info: "Showing _START_ to _END_ of _TOTAL_ users",
-        infoEmpty: "No users available",
-        infoFiltered: "(filtered from _MAX_ total)",
+        search: "Cari:",
+        lengthMenu: "Tampilkan _MENU_ data",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Tidak ada data",
+        infoFiltered: "(difilter dari _MAX_ total data)",
         paginate: {
-          first: "First",
-          last: "Last",
-          next: "Next",
-          previous: "Prev"
-        },
-        emptyTable: "No data available",
-        zeroRecords: "No matching records found"
+          first: "Pertama",
+          last: "Terakhir",
+          next: "Selanjutnya",
+          previous: "Sebelumnya"
+        }
       },
-      dom: '<"row mb-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>B<"row"<"col-sm-12"rt>><"row mt-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+      dom: '<"top-controls"lfB>rt<"bottom-controls"ip>',
       buttons: [
         {
           extend: 'excel',
-          text: '<i class="fas fa-file-excel me-2"></i>Export Excel',
-          className: 'dt-button',
-          title: 'HIFI Database Export',
+          text: '<i class="fas fa-file-excel"></i> Export Excel',
+          className: 'btn-export',
+          title: 'Data Warga HIFI',
           exportOptions: {
             columns: ':not(.no-export)'
           }
         },
         {
           extend: 'pdf',
-          text: '<i class="fas fa-file-pdf me-2"></i>Export PDF',
-          className: 'dt-button',
-          title: 'HIFI Database Export',
-          orientation: 'landscape',
-          pageSize: 'A4',
+          text: '<i class="fas fa-file-pdf"></i> Export PDF',
+          className: 'btn-export',
+          title: 'Data Warga HIFI',
           exportOptions: {
             columns: ':not(.no-export)'
           }
         },
         {
           extend: 'print',
-          text: '<i class="fas fa-print me-2"></i>Print',
-          className: 'dt-button',
-          title: 'HIFI Database',
-          exportOptions: {
-            columns: ':not(.no-export)'
-          }
+          text: '<i class="fas fa-print"></i> Print',
+          className: 'btn-export',
+          title: 'Data Warga HIFI'
         }
       ],
-      order: [[0, 'asc']],
-      columnDefs: [
-        { orderable: false, targets: -1 },
-        { className: 'text-center', targets: 0 }
-      ],
       initComplete: function() {
-        // Smooth fade-in animation
-        $('#usersTable').css('opacity', '0').animate({ opacity: 1 }, 600);
-        
-        // Add custom styling to search
-        $('.dataTables_filter input').attr('placeholder', 'Search...');
-      },
-      drawCallback: function() {
-        // Re-apply hover effects after redraw
-        $('#usersTable tbody tr').hover(
-          function() {
-            $(this).addClass('table-row-hover');
-          },
-          function() {
-            $(this).removeClass('table-row-hover');
-          }
-        );
+        // Add custom styling after initialization
+        $('.dataTables_wrapper').addClass('glass-card');
+        $('.dataTables_filter input').addClass('form-control-glass');
+        $('.dataTables_length select').addClass('form-control-glass');
       }
     });
     
-    return table;
+    // Row click to expand details
+    $('#usersTable tbody').on('click', 'tr', function() {
+      const row = table.row(this);
+      
+      if (row.child.isShown()) {
+        row.child.hide();
+        $(this).removeClass('shown');
+      } else {
+        const data = row.data();
+        row.child(formatUserDetails(data)).show();
+        $(this).addClass('shown');
+        
+        // Animate child row
+        $(row.child()).find('.detail-card').addClass('animate-fadeInUp');
+      }
+    });
+  }
+}
+
+// ============================================
+// FORMAT USER DETAILS
+// ============================================
+function formatUserDetails(data) {
+  return `
+    <div class="detail-card glass-card p-4" style="margin: 10px 0;">
+      <div class="row">
+        <div class="col-md-6">
+          <h6 class="text-gradient mb-3">Informasi Personal</h6>
+          <p><strong>NPM:</strong> ${data[2] || '-'}</p>
+          <p><strong>TTL:</strong> ${data[3] || '-'}</p>
+          <p><strong>Tanggal Lahir:</strong> ${data[4] || '-'}</p>
+          <p><strong>Agama:</strong> ${data[5] || '-'}</p>
+          <p><strong>Golongan Darah:</strong> ${data[6] || '-'}</p>
+          <p><strong>No. HP:</strong> ${data[7] || '-'}</p>
+        </div>
+        <div class="col-md-6">
+          <h6 class="text-gradient mb-3">Kontak & Alamat</h6>
+          <p><strong>Email:</strong> ${data[8] || '-'}</p>
+          <p><strong>Alamat Rumah:</strong> ${data[9] || '-'}</p>
+          <p><strong>Alamat Kos:</strong> ${data[10] || '-'}</p>
+          <h6 class="text-gradient mt-3 mb-2">Riwayat</h6>
+          <p><strong>Pendidikan:</strong> ${data[11] || '-'}</p>
+          <p><strong>Organisasi:</strong> ${data[12] || '-'}</p>
+        </div>
+      </div>
+      <div class="mt-3 d-flex gap-2">
+        <button class="btn-action btn-edit" onclick="editUser('${data[0]}')" title="Edit">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-action btn-delete" onclick="deleteUser('${data[0]}')" title="Hapus">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// CHART ANIMATIONS
+// ============================================
+function initCharts() {
+  if (typeof Chart !== 'undefined') {
+    const ctx = document.getElementById('userChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+          datasets: [{
+            label: 'Pendaftar Baru',
+            data: [12, 19, 8, 15, 22, 18],
+            borderColor: 'rgb(220, 20, 60)',
+            backgroundColor: 'rgba(220, 20, 60, 0.1)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          },
+          animation: {
+            duration: 2000,
+            easing: 'easeInOutQuart'
+          }
+        }
+      });
+    }
+  }
+}
+
+// ============================================
+// SEARCH HIGHLIGHT
+// ============================================
+function initSearchHighlight() {
+  const searchInput = document.querySelector('.dataTables_filter input');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const rows = document.querySelectorAll('#usersTable tbody tr');
+      
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+          row.style.backgroundColor = 'rgba(220, 20, 60, 0.05)';
+          setTimeout(() => {
+            row.style.backgroundColor = '';
+          }, 300);
+        }
+      });
+    });
   }
 }
 
@@ -146,227 +238,83 @@ function animateStatCards() {
 }
 
 // ============================================
-// NUMBER COUNTER ANIMATION
-// ============================================
-function animateCounters() {
-  const counters = document.querySelectorAll('.stat-card-body h3');
-  
-  counters.forEach(counter => {
-    const text = counter.textContent;
-    const target = parseInt(text.replace(/\D/g, '')) || 0;
-    
-    if (target > 0) {
-      const duration = 2000;
-      const increment = target / (duration / 16);
-      let current = 0;
-      
-      const updateCounter = () => {
-        current += increment;
-        if (current < target) {
-          counter.textContent = Math.floor(current);
-          requestAnimationFrame(updateCounter);
-        } else {
-          counter.textContent = text; // Restore original text (with %)
-        }
-      };
-      
-      updateCounter();
-    }
-  });
-}
-
-// ============================================
-// SEARCH HIGHLIGHT
-// ============================================
-function initSearchHighlight() {
-  const searchInput = document.querySelector('.dataTables_filter input');
-  
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-      const rows = document.querySelectorAll('#usersTable tbody tr:not(.child)');
-      
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        if (searchTerm && text.includes(searchTerm)) {
-          row.style.backgroundColor = 'rgba(220, 20, 60, 0.05)';
-          setTimeout(() => {
-            row.style.backgroundColor = '';
-          }, 300);
-        }
-      });
-    });
-  }
-}
-
-// ============================================
 // REFRESH ANIMATION
 // ============================================
 function refreshData() {
-  const refreshBtn = document.querySelector('.btn-refresh');
+  const refreshBtn = document.querySelector('#refreshBtn');
   if (refreshBtn) {
-    const icon = refreshBtn.querySelector('i');
-    icon.style.transition = 'transform 0.6s ease';
-    icon.style.transform = 'rotate(360deg)';
-    
+    refreshBtn.style.transform = 'rotate(360deg)';
     setTimeout(() => {
-      icon.style.transform = 'rotate(0deg)';
-      location.reload();
+      refreshBtn.style.transform = 'rotate(0deg)';
     }, 600);
   }
+  
+  // Reload data with animation
+  showToast('Data berhasil diperbarui!', 'success');
+  setTimeout(() => location.reload(), 1000);
 }
 
 // ============================================
-// MOBILE MENU HANDLER
+// USER ACTIONS
 // ============================================
-function handleMobileMenu() {
-  const toggleBtn = document.querySelector('#sidebarToggle');
-  const sidebar = document.querySelector('.sidebar-glass');
-  
-  if (window.innerWidth <= 1024 && toggleBtn && sidebar) {
-    toggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
+function editUser(id) {
+  window.location.href = `/dashboard/edit/${id}`;
+}
+
+function deleteUser(id) {
+  if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+    fetch(`/dashboard/delete/${id}`, {
+      method: 'DELETE'
+    })
+    .then(() => {
+      showToast('Data berhasil dihapus!', 'success');
+      setTimeout(() => location.reload(), 1000);
+    })
+    .catch(err => {
+      showToast('Gagal menghapus data!', 'error');
     });
   }
 }
 
 // ============================================
-// SMOOTH SCROLL TO TOP
+// NOTIFICATION DROPDOWN
 // ============================================
-function initScrollToTop() {
-  // Check if button already exists
-  let scrollBtn = document.getElementById('scrollToTop');
-  
-  if (!scrollBtn) {
-    scrollBtn = document.createElement('button');
-    scrollBtn.id = 'scrollToTop';
-    scrollBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
-    scrollBtn.style.cssText = `
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      color: white;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
-      z-index: 998;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      transition: all 0.3s ease;
-    `;
-    document.body.appendChild(scrollBtn);
-  }
-  
-  window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-      scrollBtn.style.display = 'flex';
-    } else {
-      scrollBtn.style.display = 'none';
-    }
-  });
-  
-  scrollBtn.addEventListener('click', () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  });
-  
-  scrollBtn.addEventListener('mouseenter', () => {
-    scrollBtn.style.transform = 'scale(1.1) rotate(360deg)';
-  });
-  
-  scrollBtn.addEventListener('mouseleave', () => {
-    scrollBtn.style.transform = 'scale(1) rotate(0deg)';
-  });
+function toggleNotifications() {
+  const dropdown = document.querySelector('.notifications-dropdown');
+  dropdown?.classList.toggle('show');
 }
 
 // ============================================
-// AUTO DISMISS ALERTS
+// PROFILE DROPDOWN
 // ============================================
-function initAutoDismissAlerts() {
-  const alerts = document.querySelectorAll('.alert-glass');
+function toggleProfileDropdown() {
+  const dropdown = document.querySelector('.profile-dropdown');
+  dropdown?.classList.toggle('show');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.notification-bell') && !e.target.closest('.notifications-dropdown')) {
+    document.querySelector('.notifications-dropdown')?.classList.remove('show');
+  }
   
-  alerts.forEach(alert => {
-    setTimeout(() => {
-      alert.style.transition = 'all 0.5s ease';
-      alert.style.opacity = '0';
-      alert.style.transform = 'translateY(-20px)';
-      setTimeout(() => alert.remove(), 500);
-    }, 5000);
-  });
-}
-
-// ============================================
-// RESPONSIVE TABLE HANDLER
-// ============================================
-function handleResponsiveTable() {
-  if (window.innerWidth < 768) {
-    $('#usersTable').addClass('nowrap');
-  } else {
-    $('#usersTable').removeClass('nowrap');
+  if (!e.target.closest('.profile-avatar') && !e.target.closest('.profile-dropdown')) {
+    document.querySelector('.profile-dropdown')?.classList.remove('show');
   }
-}
-
-// ============================================
-// NOTIFICATION BELL ANIMATION
-// ============================================
-function initNotificationBell() {
-  const bell = document.querySelector('.notification-bell');
-  
-  if (bell) {
-    bell.addEventListener('mouseenter', function() {
-      const icon = this.querySelector('i');
-      icon.style.animation = 'swing 0.5s ease';
-    });
-    
-    bell.addEventListener('animationend', function() {
-      const icon = this.querySelector('i');
-      icon.style.animation = '';
-    });
-  }
-}
-
-// Add keyframes for bell animation
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes swing {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(15deg); }
-    75% { transform: rotate(-15deg); }
-  }
-`;
-document.head.appendChild(style);
+});
 
 // ============================================
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize all functions
   initSidebarToggle();
   initDataTable();
-  animateStatCards();
-  animateCounters();
   initSearchHighlight();
-  handleMobileMenu();
-  initScrollToTop();
-  initAutoDismissAlerts();
-  initNotificationBell();
-  handleResponsiveTable();
+  initCharts();
+  animateStatCards();
   
-  // Handle window resize
-  window.addEventListener('resize', () => {
-    handleResponsiveTable();
-  });
-  
-  // Add smooth transitions to all interactive elements
-  document.querySelectorAll('.glass-card, .stat-card, .btn-action, .sidebar-menu-item').forEach(el => {
+  // Add smooth transitions to all elements
+  document.querySelectorAll('.glass-card, .stat-card, .btn-action').forEach(el => {
     el.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
   });
 });
@@ -376,7 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 window.HIFIAdmin = {
   refreshData,
-  animateCounters,
-  handleMobileMenu,
-  initSearchHighlight
+  editUser,
+  deleteUser,
+  toggleNotifications,
+  toggleProfileDropdown
 };

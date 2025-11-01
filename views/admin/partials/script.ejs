@@ -1,26 +1,36 @@
-<!-- Icons (opsional, aman kalau sudah ada di header) -->
+<!-- Font Awesome Icon -->
 <script src="https://kit.fontawesome.com/7cc967098c.js" crossorigin="anonymous"></script>
+
+<!-- Iconify -->
 <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@2.2.1/dist/iconify.min.js"></script>
 
-<!-- jQuery + jQuery UI (untuk komponen tertentu AdminLTE) -->
+<!-- jQuery & jQuery UI -->
 <script src="/adminlte/plugins/jquery/jquery.min.js"></script>
 <script src="/adminlte/plugins/jquery-ui/jquery-ui.min.js"></script>
 <script>
-  /* Hindari konflik tooltip jQuery UI vs Bootstrap */
-  $.widget.bridge('uibutton', $.ui.button);
+  // Resolve conflict in jQuery UI tooltip with Bootstrap tooltip
+  $.widget.bridge('uibutton', $.ui.button)
 </script>
 
-<!-- Bootstrap bundle -->
+<!-- Bootstrap -->
 <script src="/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-<!-- AdminLTE core (kalau dipakai) -->
-<script src="/adminlte/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE core -->
+<script src="/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="/adminlte/dist/js/adminlte.js"></script>
 
-<!-- Plugins umum yang mungkin kamu gunakan -->
+<!-- (opsional) libs lain yang mungkin kamu pakai -->
+<script src="/adminlte/plugins/chart.js/Chart.min.js"></script>
+<script src="/adminlte/plugins/sparklines/sparkline.js"></script>
+<script src="/adminlte/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="/adminlte/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
 <script src="/adminlte/plugins/moment/moment.min.js"></script>
+<script src="/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="/adminlte/plugins/summernote/summernote-bs4.min.js"></script>
 <script src="/adminlte/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
-<!-- DataTables & Extensions (Bootstrap 4 skin) -->
+<!-- DataTables & Plugins (Bootstrap 4 skin) -->
 <script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
@@ -34,201 +44,85 @@
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
+<!-- Page specific: DataTable init for #usersTable -->
 <script>
-  /* =============================
-     HELPER: DOM Ready
-  ==============================*/
-  const onReady = (fn) => {
-    if (document.readyState !== 'loading') fn();
-    else document.addEventListener('DOMContentLoaded', fn);
-  };
+  $(function () {
+    const $table = $('#usersTable');
+    if (!$table.length) return;
 
-  /* =============================
-     GLOBAL UI BEHAVIORS
-  ==============================*/
-  onReady(() => {
-    // Navbar blur saat scroll
-    const navbar = document.querySelector('.navbar-glass');
-    if (navbar) {
-      const toggleScrolled = () => {
-        if (window.scrollY > 8) navbar.classList.add('scrolled');
-        else navbar.classList.remove('scrolled');
-      };
-      toggleScrolled();
-      window.addEventListener('scroll', toggleScrolled, { passive: true });
+    // Jangan re-init. Kalau sudah hidup, cukup adjust layout.
+    if ($.fn.DataTable.isDataTable($table)) {
+      $table.DataTable().columns.adjust().responsive.recalc();
+      return;
     }
 
-    // Sidebar toggle + simpan state
-    const sidebar = document.querySelector('.sidebar-glass');
-    const content = document.querySelector('.content-wrapper');
-    const toggleBtn = document.querySelector('.sidebar-toggle');
-    if (sidebar && content && toggleBtn) {
-      const KEY = 'hifi.sidebar.collapsed';
-      const applyState = (collapsed) => {
-        sidebar.classList.toggle('collapsed', collapsed);
-        content.classList.toggle('expanded', collapsed);
-      };
-      // load state
-      applyState(localStorage.getItem(KEY) === '1');
-      // toggle
-      toggleBtn.addEventListener('click', () => {
-        const collapsed = !sidebar.classList.contains('collapsed');
-        applyState(collapsed);
-        localStorage.setItem(KEY, collapsed ? '1' : '0');
-      });
-    }
-
-    // Ripple effect
-    document.querySelectorAll('.ripple-container').forEach((el) => {
-      el.addEventListener('click', (e) => {
-        const circle = document.createElement('span');
-        circle.className = 'ripple';
-        const d = Math.max(el.clientWidth, el.clientHeight);
-        circle.style.width = circle.style.height = d + 'px';
-        const rect = el.getBoundingClientRect();
-        circle.style.left = (e.clientX - rect.left - d / 2) + 'px';
-        circle.style.top  = (e.clientY - rect.top  - d / 2) + 'px';
-        el.appendChild(circle);
-        circle.addEventListener('animationend', () => circle.remove());
-      });
-    });
-
-    // Password reveal
-    document.querySelectorAll('.password-toggle').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const input = btn.closest('.input-group-glass, .form-group')?.querySelector('input[type="password"], input[type="text"]');
-        if (!input) return;
-        input.type = input.type === 'password' ? 'text' : 'password';
-        btn.classList.toggle('active');
-      });
-    });
-
-    // Auto-hide alert
-    const autoAlert = document.getElementById('alert-border-3');
-    if (autoAlert) setTimeout(() => autoAlert.classList.add('hide'), 3000);
-
-    // Bootstrap tooltips
-    if (window.$ && $.fn.tooltip) {
-      $('[data-toggle="tooltip"]').tooltip();
-    }
-
-    // Custom file input
-    if (window.bsCustomFileInput) {
-      bsCustomFileInput.init();
-    }
-
-    // Profile dropdown & Notifications dropdown (show/hide)
-    document.querySelectorAll('[data-toggle="dropdown-custom"]').forEach((btn) => {
-      const targetSel = btn.getAttribute('data-target');
-      const target = document.querySelector(targetSel);
-      if (!target) return;
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        target.classList.toggle('show');
-      });
-      document.addEventListener('click', () => target.classList.remove('show'));
-    });
-
-    // Page loader (jika ada .page-loader)
-    const loader = document.querySelector('.page-loader');
-    if (loader) {
-      window.addEventListener('load', () => {
-        loader.style.opacity = '0';
-        setTimeout(() => loader.remove(), 300);
-      });
-    }
-  });
-
-  /* =============================
-     TOAST Util
-  ==============================*/
-  function showToast(type = 'info', message = 'Info') {
-    const toast = document.createElement('div');
-    toast.className = `toast-glass toast-${type}`;
-    toast.innerHTML = `
-      <div class="toast-content">
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : 'fa-info-circle'}"></i>
-        <span>${message}</span>
-      </div>
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
-
-  /* =============================
-     DATATABLES INIT (usersTable)
-  ==============================*/
-  onReady(() => {
-    const $tbl = $('#usersTable');
-    if (!$tbl.length) return;
-
-    const dt = $tbl.DataTable({
-      responsive: true,
+    const dt = $table.DataTable({
+      // destroy/retrieve tidak dipakai agar DOM tidak terhapus
+      deferRender: true,
       autoWidth: false,
+      scrollX: true,
+
+      responsive: { details: { type: 'inline' } },
+
+      pagingType: 'simple_numbers',
       lengthChange: true,
       pageLength: 10,
-      // Layout: length + search, table, info + paginate, buttons
-      dom:
-        "<'row'<'col-sm-6'l><'col-sm-6'f>>" +
-        "<'row'<'col-sm-12'tr>>" +
-        "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
-        "<'row'<'col-sm-12'B>>",
-      buttons: [
-        { extend: 'copy',  text: 'Copy',  exportOptions: { columns: ':not(.no-export)' } },
-        { extend: 'csv',   text: 'CSV',   exportOptions: { columns: ':not(.no-export)' } },
-        { extend: 'excel', text: 'Excel', exportOptions: { columns: ':not(.no-export)' } },
-        { extend: 'pdf',   text: 'PDF',   exportOptions: { columns: ':not(.no-export)' } },
-        { extend: 'print', text: 'Print', exportOptions: { columns: ':not(.no-export)' } },
-        { extend: 'colvis', text: 'Kolom' }
+      lengthMenu: [
+        [10, 20, 30, 40, 50, -1],
+        [10, 20, 30, 40, 50, "Semua"]
       ],
+
+      order: [[0, 'asc']],
+      columnDefs: [
+        { targets: [0, 5, 7], className: 'text-center' },   // No, Role, Aksi
+        { targets: 7, orderable: false, searchable: false } // Aksi bukan sorting/search
+      ],
+
+      dom: 'Bfrtip',
+      buttons: [
+        { extend: 'copyHtml5',  exportOptions: { columns: ':not(.no-export)' } },
+        { extend: 'csvHtml5',   exportOptions: { columns: ':not(.no-export)' } },
+        { extend: 'excelHtml5', exportOptions: { columns: ':not(.no-export)' } },
+        {
+          extend: 'pdfHtml5',
+          exportOptions: { columns: ':not(.no-export)' },
+          orientation: 'landscape',
+          pageSize: 'A4'
+        },
+        { extend: 'print', exportOptions: { columns: ':not(.no-export)' } },
+        'colvis'
+      ],
+
       language: {
         search: "Cari:",
-        lengthMenu: "Tampilkan _MENU_",
-        info: "Menampilkan _START_–_END_ dari _TOTAL_",
-        infoEmpty: "Menampilkan 0–0 dari 0",
-        infoFiltered: "(disaring dari _MAX_ data)",
-        zeroRecords: "Tidak ada data",
-        paginate: { previous: "‹", next: "›" }
+        lengthMenu: "Tampilkan _MENU_ data",
+        info: "Menampilkan _START_–_END_ dari _TOTAL_ data",
+        infoEmpty: "Tidak ada data",
+        infoFiltered: "(difilter dari _MAX_ total data)",
+        zeroRecords: "Data tidak ditemukan",
+        paginate: {
+          first: "Awal",
+          last: "Akhir",
+          next: "Berikut",
+          previous: "Sebelum"
+        }
       }
     });
 
-    // Tempatkan tombol di kiri atas wrapper
-    const $leftTop = $('#usersTable_wrapper .col-md-6:eq(0)');
-    if ($leftTop.length) dt.buttons().container().appendTo($leftTop);
+    // Taruh tombol export/colvis di kiri atas wrapper
+    const $target = $('#usersTable_wrapper .col-md-6').eq(0);
+    if ($target.length) {
+      dt.buttons().container().appendTo($target);
+    }
 
-    // Recalc saat tab berubah (kalau tabel di dalam tab)
-    $('a[data-toggle="tab"]').on('shown.bs.tab', () => {
-      dt.columns.adjust().responsive.recalc();
-    });
-
-    // Recalc saat kembali dari bfcache (Back)
+    // Recalc saat halaman kembali dari bfcache (back button)
     window.addEventListener('pageshow', (e) => {
-      if (e.persisted) dt.columns.adjust().responsive.recalc();
+      if (e.persisted) {
+        dt.columns.adjust().responsive.recalc();
+      }
     });
   });
-
-  /* =============================
-     ACTIONS (Edit/Delete)
-  ==============================*/
-  function goEdit(id) {
-    window.location.href = `/dashboard/edit/${id}`;
-  }
-
-  function deleteUser(id) {
-    if (!confirm('Hapus data ini?')) return;
-    fetch(`/dashboard/delete/${id}`, { method: 'DELETE' })
-      .then((r) => {
-        if (r.ok) {
-          showToast('success', 'Data terhapus');
-          setTimeout(() => location.reload(), 600);
-        } else {
-          showToast('error', 'Gagal menghapus');
-        }
-      })
-      .catch(() => showToast('error', 'Gagal menghapus'));
-  }
-
-  // Ekspos ke window jika dipanggil inline di EJS
-  window.deleteUser = deleteUser;
-  window.goEdit = goEdit;
 </script>
+
+</body>
+</html>

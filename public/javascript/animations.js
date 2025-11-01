@@ -1,5 +1,5 @@
 /**
- * HIFI Database - Morphing Animations v2.0
+ * HIFI Database - Morphing Animations
  * Satisfying animations dengan morphing effects
  */
 
@@ -24,11 +24,8 @@ function initMorphingShapes() {
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-      const href = this.getAttribute('href');
-      if (href === '#') return;
-      
       e.preventDefault();
-      const target = document.querySelector(href);
+      const target = document.querySelector(this.getAttribute('href'));
       if (target) {
         target.scrollIntoView({
           behavior: 'smooth',
@@ -66,8 +63,6 @@ function initNavbarScroll() {
 // ============================================
 function initParallax() {
   const parallaxElements = document.querySelectorAll('[data-parallax]');
-  
-  if (parallaxElements.length === 0) return;
   
   window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
@@ -124,9 +119,7 @@ function initParticles() {
       this.size = Math.random() * 3 + 1;
       this.speedX = Math.random() * 2 - 1;
       this.speedY = Math.random() * 2 - 1;
-      this.color = Math.random() > 0.5 
-        ? 'rgba(220, 20, 60, 0.5)' 
-        : 'rgba(30, 58, 138, 0.5)';
+      this.color = Math.random() > 0.5 ? 'rgba(220, 20, 60, 0.5)' : 'rgba(30, 58, 138, 0.5)';
     }
     
     update() {
@@ -213,12 +206,36 @@ function createRipple(event) {
   button.appendChild(ripple);
 }
 
+// Add ripple styles
+const style = document.createElement('style');
+style.textContent = `
+  .ripple-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    pointer-events: none;
+  }
+  
+  @keyframes ripple-animation {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(style);
+
 // ============================================
 // TYPING EFFECT
 // ============================================
 function typeWriter(element, text, speed = 100) {
-  if (!element) return;
-  
   let i = 0;
   element.textContent = '';
   
@@ -264,8 +281,6 @@ function initCardTilt() {
 // NUMBER COUNTER ANIMATION
 // ============================================
 function animateCounter(element, target, duration = 2000) {
-  if (!element) return;
-  
   const start = 0;
   const increment = target / (duration / 16);
   let current = start;
@@ -287,19 +302,57 @@ function animateCounter(element, target, duration = 2000) {
 function showToast(message, type = 'info', duration = 3000) {
   const toast = document.createElement('div');
   toast.className = `toast-glass toast-${type}`;
-  
-  const iconMap = {
-    success: 'check-circle',
-    error: 'exclamation-circle',
-    info: 'info-circle'
-  };
-  
   toast.innerHTML = `
     <div class="toast-content">
-      <i class="fas fa-${iconMap[type] || 'info-circle'}"></i>
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
       <span>${message}</span>
     </div>
   `;
+  
+  const toastStyles = `
+    .toast-glass {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      z-index: 10001;
+      animation: slideInRight 0.4s ease-out;
+      border-left: 4px solid;
+    }
+    
+    .toast-success { border-left-color: #10B981; }
+    .toast-error { border-left-color: #EF4444; }
+    .toast-info { border-left-color: #3B82F6; }
+    
+    .toast-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `;
+  
+  if (!document.getElementById('toast-styles')) {
+    const styleElement = document.createElement('style');
+    styleElement.id = 'toast-styles';
+    styleElement.textContent = toastStyles;
+    document.head.appendChild(styleElement);
+  }
   
   document.body.appendChild(toast);
   
@@ -316,26 +369,10 @@ function initAutoDismissAlerts() {
   const alerts = document.querySelectorAll('.alert-glass');
   
   alerts.forEach(alert => {
-    const closeBtn = document.createElement('button');
-    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-    closeBtn.style.cssText = 'background: none; border: none; cursor: pointer; position: absolute; right: 16px; top: 16px; color: inherit; opacity: 0.6; transition: opacity 0.3s;';
-    closeBtn.onmouseover = () => closeBtn.style.opacity = '1';
-    closeBtn.onmouseout = () => closeBtn.style.opacity = '0.6';
-    closeBtn.onclick = () => {
+    setTimeout(() => {
       alert.style.opacity = '0';
       alert.style.transform = 'translateY(-20px)';
       setTimeout(() => alert.remove(), 300);
-    };
-    
-    alert.style.position = 'relative';
-    alert.appendChild(closeBtn);
-    
-    setTimeout(() => {
-      if (alert.parentElement) {
-        alert.style.opacity = '0';
-        alert.style.transform = 'translateY(-20px)';
-        setTimeout(() => alert.remove(), 300);
-      }
     }, 5000);
   });
 }
@@ -357,8 +394,7 @@ function initFormValidation() {
         }
       });
       
-      input.addEventListener('invalid', function(e) {
-        e.preventDefault();
+      input.addEventListener('invalid', function() {
         this.classList.add('invalid');
         this.classList.remove('valid');
       });
@@ -367,35 +403,9 @@ function initFormValidation() {
 }
 
 // ============================================
-// PAGE ENTER ANIMATION
-// ============================================
-function initPageEnterAnimation() {
-  const mainContent = document.querySelector('main, .content-wrapper, .auth-container');
-  if (mainContent) {
-    mainContent.classList.add('page-enter');
-  }
-}
-
-// ============================================
-// LOADING SCREEN
-// ============================================
-window.addEventListener('load', () => {
-  const loader = document.querySelector('.page-loader');
-  if (loader) {
-    loader.style.opacity = '0';
-    setTimeout(() => loader.remove(), 300);
-  }
-  
-  // Initialize page animations after load
-  initPageEnterAnimation();
-});
-
-// ============================================
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('HIFI Animations v2.0 Initialized');
-  
   initMorphingShapes();
   initSmoothScroll();
   initNavbarScroll();
@@ -415,15 +425,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Animate counters on page load
   document.querySelectorAll('[data-counter]').forEach(counter => {
     const target = parseInt(counter.dataset.counter);
-    if (!isNaN(target)) {
-      animateCounter(counter, target);
-    }
+    animateCounter(counter, target);
   });
-  
-  // Add smooth transitions to all elements
-  document.querySelectorAll('.glass-card, .stat-card, .btn-action').forEach(el => {
-    el.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-  });
+});
+
+// ============================================
+// LOADING SCREEN
+// ============================================
+window.addEventListener('load', () => {
+  const loader = document.querySelector('.page-loader');
+  if (loader) {
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 300);
+  }
 });
 
 // ============================================

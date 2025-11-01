@@ -1,67 +1,56 @@
-<!-- Data Table Section -->
-<div class="table-section">
-  <div class="table-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <div class="table-title d-flex align-items-center gap-2">
-      <i class="fas fa-table"></i>
-      <h5 class="m-0">Data Warga HIFI</h5>
-    </div>
-    <div class="table-actions d-flex gap-2">
-      <button class="btn-export" onclick="window.location.reload()">
-        <i class="fas fa-sync-alt"></i>
-        <span>Refresh Data</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="table-responsive">
-    <table id="usersTable" class="table table-striped table-hover nowrap" style="width:100%">
-      <thead>
+<div class="table-responsive">
+  <table id="usersTable"
+         class="table table-striped table-bordered table-hover table-glass nowrap"
+         style="width:100%">
+    <thead>
+      <tr>
+        <th data-priority="1" style="width:60px; text-align:center;">No</th>
+        <th>Username</th>
+        <th>Nama</th>
+        <th>NPM</th>
+        <th>Email</th>
+        <th data-priority="2" style="text-align:center;">Role</th>
+        <th>Terakhir Update</th>
+        <th class="no-export" data-priority="1" style="text-align:center; width:120px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach((user, index) => { %>
         <tr>
-          <th>No</th>
-          <th>Nama</th>
-          <th>NPM</th>
-          <th>Tempat Lahir</th>
-          <th>Tanggal Lahir</th>
-          <th>Agama</th>
-          <th>Gol. Darah</th>
-          <th>No. HP</th>
-          <th>Email</th>
-          <th>Alamat Rumah</th>
-          <th>Alamat Kos</th>
-          <th>Pendidikan</th>
-          <th>Organisasi</th>
-          <th class="no-export">Aksi</th>
+          <td style="text-align:center;"><%= index + 1 %></td>
+          <td><strong><%= user.username %></strong></td>
+          <td><%= user.nama || '-' %></td>
+          <td><%= user.npm || '-' %></td>
+          <td><%= user.email || '-' %></td>
+          <td style="text-align:center;">
+            <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>">
+              <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
+              <%= user.role === 'admin' ? 'Admin' : 'User' %>
+            </span>
+          </td>
+          <td><%= user.time || '-' %></td>
+          <td class="no-export" style="text-align:center;">
+            <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-action btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        <% users.forEach((user, index) => { %>
-          <tr>
-            <td><%= index + 1 %></td>
-            <td><strong><%= user.nama %></strong></td>
-            <td><%= user.npm %></td>
-            <td><%= user.tempat_lahir %></td>
-            <td><%= user.tanggal_lahir %></td>
-            <td><%= user.agama %></td>
-            <td><span class="badge badge-red"><%= user.golongan_darah %></span></td>
-            <td><%= user.no_hp %></td>
-            <td><%= user.email %></td>
-            <td><%= user.alamat_rumah %></td>
-            <td><%= user.alamat_kos %></td>
-            <td><%= user.pendidikan %></td>
-            <td><%= user.organisasi %></td>
-            <td class="no-export">
-              <div class="action-buttons">
-                <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user.id %>'" title="Edit Data">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn-action btn-delete" onclick="deleteUser('<%= user.id %>')" title="Hapus Data">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
-  </div>
+      <% }) %>
+    </tbody>
+  </table>
 </div>
+
+<script>
+  function confirmDelete(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/dashboard/delete/${id}?_method=DELETE`;
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }
+</script>

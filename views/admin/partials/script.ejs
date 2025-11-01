@@ -126,7 +126,7 @@
         </div>`;
     }
 
-    // Inisialisasi DataTable (default urut No = kolom 0)
+    // Inisialisasi DataTable
     const dt = $("#usersTable").DataTable({
       responsive: false,
       lengthChange: false,      // pakai kontrol custom
@@ -134,10 +134,28 @@
       pagingType: "simple_numbers",
       pageLength: 10,
       dom: "Bt<'dt-bottom'ip>", // B=buttons, t=table, i=info, p=pagination
-      order: [[7, "desc"]],      // ⬅️ default: urut kolom No (1 → akhir)
+      // ✅ default: urut kolom No (index 0) → 1..akhir
+      order: [[0, "asc"]],
+      // Performa & stabilitas layout saat Show All
+      scrollX: true,
+      autoWidth: false,
+      deferRender: true,
       columnDefs: [
-        { targets: 0, width: "64px", type: "num" },              // pastikan numeric sort
-        { targets: 8, orderable: false, className: "no-detail" } // kolom Aksi
+        { targets: 0, width: "64px", type: "num" },                // kolom No numeric
+        { targets: 8, orderable: false, className: "no-detail" },  // kolom Aksi
+        // Sort akurat untuk kolom "Terakhir Update" (index 7) dari atribut data-time/data-order
+        {
+          targets: 7,
+          createdCell: function(td/*, cellData, rowData, row, col*/) {
+            const raw = td.getAttribute("data-time");
+            if (raw) {
+              const t = new Date(raw).getTime();
+              td.setAttribute("data-order", isFinite(t) ? String(t) : "-1");
+            } else {
+              td.setAttribute("data-order", "-1");
+            }
+          }
+        }
       ],
       language: {
         paginate: { first: "«", previous: "‹", next: "›", last: "»" },
@@ -170,7 +188,11 @@
           title: "Data Warga HIFI",
           exportOptions: { columns: [0,1,2,3,4,5,6,7] }
         }
-      ]
+      ],
+      // Setelah draw, pastikan kolom menyesuaikan lebar (mengurangi glitch saat banyak baris)
+      drawCallback: function() {
+        this.api().columns.adjust();
+      }
     });
 
     // Pasang tombol export ke holder (fallback kalau #exportButtons tidak ada)
@@ -184,13 +206,17 @@
 
     // ===== CUSTOM SEARCH (kolom Nama) =====
     $("#searchNama").off("input.tbl").on("input.tbl", function () {
-      dt.column(2).search(this.value).draw();
+      dt.column(2).search(this.value).draw(false);
+      dt.columns.adjust();
     });
 
     // ===== CUSTOM ITEMS PER PAGE =====
     $("#itemsPerPage").off("change.tbl").on("change.tbl", function () {
       const val = parseInt(this.value, 10);
-      dt.page.len(val === -1 ? -1 : val).draw();
+      dt.page.len(val === -1 ? -1 : val).draw(false);
+      // adjust 2x untuk pastikan layout stabil saat Show All
+      dt.columns.adjust();
+      setTimeout(() => dt.columns.adjust(), 0);
       console.log("Items per page changed to:", val === -1 ? "ALL" : val);
     });
 
@@ -223,6 +249,9 @@
           });
           row.child(buildDetail(ds)).show();
           $tr.addClass("shown");
+          // Adjust kolom setelah child terbuka supaya tidak geser
+          dt.columns.adjust();
+          setTimeout(() => dt.columns.adjust(), 0);
         }
       });
 

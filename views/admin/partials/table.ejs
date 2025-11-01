@@ -93,7 +93,8 @@
 </div>
 
 <!-- TABEL -->
-<div class="table-responsive">
+<!-- catatan: biar nggak double-scroll, biarkan DataTables yang handle scrollX -->
+<div class="table-responsive" style="overflow:visible">
   <table id="usersTable" class="display nowrap table-glass" style="width:100%">
     <thead>
       <tr>
@@ -110,6 +111,7 @@
     </thead>
     <tbody>
       <% users.forEach(function(u, i){ %>
+        <% const __lastUpdate = u.updatedAt || u.time || u.updated_at || u.lastUpdate || u.updated || u.createdAt; %>
         <tr
           class="clickable-row"
           data-id="<%= u._id %>"
@@ -142,9 +144,10 @@
               <%= (u.role || 'User') %>
             </span>
           </td>
-          <td>
-            <%= u.updatedAt
-                  ? new Date(u.updatedAt).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' })
+          <!-- Fallback tanggal versi lama + data attr mentah untuk jaga-jaga -->
+          <td data-time="<%= __lastUpdate || '' %>">
+            <%= __lastUpdate
+                  ? new Date(__lastUpdate).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' })
                   : '-' %>
           </td>
           <td class="no-detail" style="text-align:center;" onclick="event.stopPropagation()">

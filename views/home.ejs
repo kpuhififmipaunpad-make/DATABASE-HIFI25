@@ -1,156 +1,293 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | Database HIFI</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HIFI Database - Himpunan Informatika</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    .hero-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 20px 50px;
+      position: relative;
+    }
+    
+    .hero-content {
+      text-align: center;
+      z-index: 10;
+      max-width: 800px;
+    }
+    
+    .hero-title {
+      font-size: 56px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hero-subtitle {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 40px;
+      font-weight: 300;
+    }
+    
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .hero-btn {
+      padding: 16px 40px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .btn-login {
+      background: white;
+      color: #1E3A8A;
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(255, 255, 255, 0.4);
+    }
+    
+    .btn-signup {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+    
+    .btn-signup:hover {
+      background: white;
+      color: #DC143C;
+      transform: translateY(-3px);
+    }
+    
+    .feature-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      text-align: center;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px) scale(1.05);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #DC143C 0%, #FF6B8A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 60px;
+      padding: 0 20px;
+    }
+    
+    .logo-container {
+      margin-bottom: 30px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .logo-img {
+      width: 150px;
+      height: auto;
+      filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+    }
+    
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 36px;
+      }
+      
+      .hero-subtitle {
+        font-size: 16px;
+      }
+      
+      .hero-buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .hero-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Alert Message -->
-    <% if(message && message.length > 0) { %>
-    <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
-        <div class="flex items-center">
-            <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %> text-2xl mr-3 text-white"></i>
-            <div class="text-sm font-medium text-white"><%= message %></div>
-            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200 transition-smooth">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+  <!-- Background Shapes -->
+  <div class="bg-shape bg-shape-1"></div>
+  <div class="bg-shape bg-shape-2"></div>
+  <div class="bg-shape bg-shape-3"></div>
+  
+  <!-- Particle Canvas -->
+  <canvas id="particles-canvas" style="position: fixed; top: 0; left: 0; z-index: 0; pointer-events: none;"></canvas>
+  
+  <!-- Alert Messages -->
+  <% if (message != '' && status != '') { %>
+    <div id="alert-border-3" class="alert-glass alert-<%= status === 'green' ? 'success' : status === 'red' ? 'error' : 'info' %>" style="position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;">
+      <i class="fas fa-<%= status === 'green' ? 'check-circle' : status === 'red' ? 'exclamation-circle' : 'info-circle' %>"></i>
+      <span><%= message %></span>
+      <button onclick="dismiss()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
-    <% } %>
-
-    <!-- Navbar -->
-    <nav class="glass-navbar sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center animate-fadeIn">
-                    <img src="/img/LogoHIFI-2.png" alt="HIFI Logo with modern design and vibrant red blue colors representing the organization" class="h-14 w-auto">
-                    <span class="ml-3 text-white text-2xl font-bold tracking-tight">Database HIFI</span>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <% if(loggedIn) { %>
-                        <a href="/profile" class="glass-button text-sm ripple">
-                            <i class="fas fa-user mr-2"></i>Profile
-                        </a>
-                        <% if(user === 'admin') { %>
-                        <a href="/dashboard" class="glass-button text-sm ripple bg-red-600/30 hover:bg-red-600/40">
-                            <i class="fas fa-dashboard mr-2"></i>Dashboard
-                        </a>
-                        <% } %>
-                        <a href="/auth/logout" class="glass-button text-sm ripple bg-red-500/25 hover:bg-red-500/35">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                        </a>
-                    <% } else { %>
-                        <a href="/auth/login" class="glass-button text-sm ripple">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Login
-                        </a>
-                        <a href="/auth/signup" class="glass-button text-sm ripple bg-blue-600/30 hover:bg-blue-600/40">
-                            <i class="fas fa-user-plus mr-2"></i>Sign Up
-                        </a>
-                    <% } %>
-                </div>
-            </div>
+  <% } %>
+  
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content page-enter">
+      <div class="logo-container">
+        <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI" class="logo-img">
+      </div>
+      
+      <h1 class="hero-title">Database HIFI</h1>
+      <p class="hero-subtitle">Sistem Manajemen Data Warga Himpunan Informatika</p>
+      
+      <% if (!loggedIn) { %>
+        <div class="hero-buttons">
+          <a href="/auth/login" class="hero-btn btn-login">
+            <i class="fas fa-sign-in-alt"></i>
+            Masuk
+          </a>
+          <a href="/auth/signup" class="hero-btn btn-signup">
+            <i class="fas fa-user-plus"></i>
+            Daftar
+          </a>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="glass-card p-10 md:p-16 text-center">
-            <div class="parallax" data-speed="0.3">
-                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo main banner with professional blue and red branding elements showcasing organizational identity" class="h-40 w-auto mx-auto mb-8 animate-scaleIn">
-            </div>
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 animate-fadeInUp tracking-tight">
-                Selamat Datang di Database HIFI
-            </h1>
-            <p class="text-xl md:text-2xl text-white/90 mb-10 animate-fadeInUp" style="animation-delay: 0.2s;">
-                Sistem Informasi dan Database Anggota HIFI Unpad
-            </p>
-            <% if(!loggedIn) { %>
-            <div class="flex justify-center space-x-4 animate-fadeInUp" style="animation-delay: 0.4s;">
-                <a href="/auth/login" class="glass-button text-lg px-10 py-4 ripple bg-blue-600/30 hover:bg-blue-600/40">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Mulai Sekarang
-                </a>
-                <a href="/auth/signup" class="glass-button text-lg px-10 py-4 ripple">
-                    <i class="fas fa-user-plus mr-2"></i>Daftar Sekarang
-                </a>
-            </div>
-            <% } else { %>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-                <div class="glass-card p-8 hover:scale-105 transition-smooth">
-                    <div class="bg-blue-600/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-users text-4xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Kelola Data</h3>
-                    <p class="text-white/80 text-lg">Akses dan kelola data anggota HIFI dengan mudah dan aman</p>
-                </div>
-                <div class="glass-card p-8 hover:scale-105 transition-smooth">
-                    <div class="bg-red-600/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-chart-line text-4xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Statistik</h3>
-                    <p class="text-white/80 text-lg">Lihat statistik dan perkembangan organisasi secara real-time</p>
-                </div>
-                <div class="glass-card p-8 hover:scale-105 transition-smooth">
-                    <div class="bg-purple-600/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-shield-alt text-4xl text-white"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Aman & Terpercaya</h3>
-                    <p class="text-white/80 text-lg">Data Anda dijamin aman dengan enkripsi tingkat tinggi</p>
-                </div>
-            </div>
-            <% } %>
+      <% } else { %>
+        <div class="hero-buttons">
+          <% if (user === 'admin') { %>
+            <a href="/dashboard" class="hero-btn btn-login">
+              <i class="fas fa-tachometer-alt"></i>
+              Dashboard Admin
+            </a>
+          <% } %>
+          <a href="/profile" class="hero-btn btn-signup">
+            <i class="fas fa-user"></i>
+            Profile Saya
+          </a>
+          <a href="/auth/logout" class="hero-btn btn-signup">
+            <i class="fas fa-sign-out-alt"></i>
+            Keluar
+          </a>
         </div>
+      <% } %>
     </div>
-
-    <!-- Features Section (if logged in) -->
-    <% if(loggedIn) { %>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="glass-card p-8">
-                <h3 class="text-2xl font-bold text-white mb-4">
-                    <i class="fas fa-user-circle mr-3 text-blue-400"></i>Profil Saya
-                </h3>
-                <p class="text-white/80 mb-6">Lengkapi dan perbarui data profil Anda untuk informasi yang lebih akurat</p>
-                <a href="/profile" class="glass-button ripple bg-blue-600/25 hover:bg-blue-600/35">
-                    <i class="fas fa-arrow-right mr-2"></i>Lihat Profil
-                </a>
-            </div>
-            
-            <% if(user === 'admin') { %>
-            <div class="glass-card p-8">
-                <h3 class="text-2xl font-bold text-white mb-4">
-                    <i class="fas fa-cog mr-3 text-red-400"></i>Admin Dashboard
-                </h3>
-                <p class="text-white/80 mb-6">Kelola semua data anggota dan lihat statistik organisasi</p>
-                <a href="/dashboard" class="glass-button ripple bg-red-600/25 hover:bg-red-600/35">
-                    <i class="fas fa-arrow-right mr-2"></i>Buka Dashboard
-                </a>
-            </div>
-            <% } %>
+  </section>
+  
+  <!-- Features Section -->
+  <section style="padding: 60px 20px; max-width: 1200px; margin: 0 auto;">
+    <h2 style="text-align: center; color: white; font-size: 36px; margin-bottom: 20px; font-weight: 700;">
+      Fitur Unggulan
+    </h2>
+    <p style="text-align: center; color: rgba(255, 255, 255, 0.8); margin-bottom: 60px; font-size: 18px;">
+      Kelola data warga HIFI dengan mudah dan efisien
+    </p>
+    
+    <div class="features-grid">
+      <div class="feature-card" data-animate>
+        <div class="feature-icon">
+          <i class="fas fa-database"></i>
         </div>
+        <h3 style="color: white; margin-bottom: 12px; font-weight: 600;">Database Terpusat</h3>
+        <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+          Semua data warga HIFI tersimpan dengan aman dalam satu sistem terpadu
+        </p>
+      </div>
+      
+      <div class="feature-card" data-animate>
+        <div class="feature-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3 style="color: white; margin-bottom: 12px; font-weight: 600;">Keamanan Terjamin</h3>
+        <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+          Sistem enkripsi modern melindungi data pribadi Anda
+        </p>
+      </div>
+      
+      <div class="feature-card" data-animate>
+        <div class="feature-icon">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h3 style="color: white; margin-bottom: 12px; font-weight: 600;">Responsif</h3>
+        <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+          Akses dari perangkat apa pun, kapan pun, di mana pun
+        </p>
+      </div>
+      
+      <div class="feature-card" data-animate>
+        <div class="feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3 style="color: white; margin-bottom: 12px; font-weight: 600;">Laporan Real-time</h3>
+        <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+          Statistik dan analisis data yang selalu ter-update
+        </p>
+      </div>
     </div>
-    <% } %>
-
-    <!-- Footer -->
-    <footer class="glass-navbar mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="text-center">
-                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo footer with organizational branding in red and blue color scheme" class="h-16 w-auto mx-auto mb-4">
-                <p class="text-white/80 text-lg mb-2">
-                    <i class="fas fa-copyright mr-2"></i>2024 HIFI Unpad. All rights reserved.
-                </p>
-                <p class="text-white/60 text-sm">
-                    Himpunan Mahasiswa Informatika Universitas Padjadjaran
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="/javascript/dom.js"></script>
-    <script src="/javascript/animations.js"></script>
+  </section>
+  
+  <!-- Footer -->
+  <footer style="text-align: center; padding: 40px 20px; color: rgba(255, 255, 255, 0.7);">
+    <p>&copy; 2024 HIFI - Himpunan Informatika. All rights reserved.</p>
+    <p style="margin-top: 10px; font-size: 14px;">Developed with <i class="fas fa-heart" style="color: #DC143C;"></i> by HIFI Team</p>
+  </footer>
+  
+  <script src="/javascript/animations.js"></script>
+  <script>
+    function dismiss() {
+      const alert = document.getElementById("alert-border-3");
+      alert.classList.add("hide");
+    }
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      const alert = document.getElementById("alert-border-3");
+      if (alert) dismiss();
+    }, 5000);
+  </script>
 </body>
 </html>

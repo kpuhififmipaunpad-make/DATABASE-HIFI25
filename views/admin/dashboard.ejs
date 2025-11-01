@@ -186,59 +186,6 @@
       flex-wrap: wrap;
     }
     
-    table.dataTable {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-    
-    table.dataTable thead {
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-    }
-    
-    table.dataTable thead th {
-      padding: 16px;
-      color: white;
-      font-weight: 600;
-      text-align: left;
-      border: none;
-      font-size: 14px;
-    }
-    
-    table.dataTable thead th:first-child {
-      border-top-left-radius: 12px;
-    }
-    
-    table.dataTable thead th:last-child {
-      border-top-right-radius: 12px;
-    }
-    
-    table.dataTable tbody tr {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-    
-    table.dataTable tbody tr:hover {
-      background: rgba(30, 58, 138, 0.05);
-      transform: scale(1.01);
-    }
-    
-    table.dataTable tbody tr.shown {
-      background: rgba(220, 20, 60, 0.05);
-    }
-    
-    table.dataTable tbody td {
-      padding: 16px;
-      border: none;
-      font-size: 14px;
-      color: #374151;
-    }
-    
-    .detail-card {
-      animation: fadeInUp 0.4s ease-out;
-    }
-    
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -337,12 +284,6 @@
             <i class="fas fa-table"></i>
             Data Warga HIFI
           </h2>
-          <div class="table-actions">
-            <button onclick="HIFIAdmin.refreshData()" class="btn-export" id="refreshBtn">
-              <i class="fas fa-sync-alt"></i>
-              Refresh
-            </button>
-          </div>
         </div>
         
         <%- include('partials/table', {users: users}) %>
@@ -350,7 +291,9 @@
     </div>
   </div>
   
+  <!-- Scripts -->
   <%- include('partials/script') %>
+  
   <script src="/javascript/animations.js"></script>
   <script src="/javascript/admin-animations.js"></script>
   

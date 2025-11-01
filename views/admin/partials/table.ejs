@@ -2,15 +2,19 @@
 <div class="table-toolbar">
   <div class="toolbar-left">
     <label for="tableSearch" class="toolbar-label">Search</label>
-    <input id="tableSearch" type="search" placeholder="Cari username, nama, NPM, email, phone…"
-           class="toolbar-input" autocomplete="off" />
+    <input
+      id="tableSearch"
+      type="search"
+      placeholder="Cari username, nama, NPM, email, phone…"
+      class="toolbar-input"
+      autocomplete="off"
+    />
   </div>
-  <!-- Tombol export akan muncul otomatis dari DataTables Buttons (via DOM 'B') -->
+  <!-- Tombol export muncul otomatis dari DataTables Buttons via DOM 'B' -->
 </div>
 
-<!-- Tabel -->
 <div class="table-responsive">
-  <table id="usersTable" class="display table table-striped table-bordered" style="width:100%">
+  <table id="usersTable" class="display" style="width:100%">
     <thead>
       <tr>
         <th>No</th>
@@ -28,19 +32,37 @@
       <% users.forEach((user, index) => { %>
         <tr>
           <td><%= index + 1 %></td>
-          <td><%= user.username || '-' %></td>
-          <td><%= user.name || '-' %></td>
+          <td><strong><%= user.username %></strong></td>
+          <td><%= user.nama || '-' %></td>
           <td><%= user.npm || '-' %></td>
           <td><%= user.email || '-' %></td>
+
+          <!-- Kolom Phone Number (punya beberapa fallback) -->
           <td><%= user.phone || user.phoneNumber || user.hp || '-' %></td>
-          <td><%= user.role || '-' %></td>
-          <!-- Biarkan mentah; akan diformat relatif oleh script DataTables -->
-          <td data-rawtime="<%= user.updatedAt || user.time || user.lastUpdate || '' %>">
-            <%= user.updatedAt || user.time || user.lastUpdate || '' %>
+
+          <td>
+            <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>">
+              <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
+              <%= user.role === 'admin' ? 'Admin' : 'User' %>
+            </span>
           </td>
+
+          <!-- Biarkan mentah: akan di-format relatif oleh script DataTables -->
+          <td data-rawtime="<%= user.updatedAt || user.time || user.lastUpdate || '' %>">
+            <%= user.updatedAt || user.time || user.lastUpdate || '-' %>
+          </td>
+
           <td class="no-export">
-            <a href="/dashboard/edit/<%= user._id %>" class="btn btn-sm btn-primary">Edit</a>
-            <button class="btn btn-sm btn-danger" onclick="confirmDelete('<%= user._id %>')">Delete</button>
+            <button class="btn-action btn-edit"
+                    onclick="window.location.href='/dashboard/edit/<%= user._id %>'"
+                    title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-action btn-delete"
+                    onclick="confirmDelete('<%= user._id %>')"
+                    title="Hapus">
+              <i class="fas fa-trash"></i>
+            </button>
           </td>
         </tr>
       <% }) %>
@@ -48,7 +70,6 @@
   </table>
 </div>
 
-<!-- Aksi Delete -->
 <script>
   function confirmDelete(id) {
     if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
@@ -76,3 +97,179 @@
     outline:none;
   }
 </style>
+
+<!-- Inisialisasi DataTables (butuh jQuery + DataTables + Buttons sudah dimuat di header) -->
+<script>
+(() => {
+  // ===== Helpers =====
+  const libsReady = () =>
+    !!window.jQuery && !!$.fn.DataTable && !!$.fn.dataTable && !!$.fn.dataTable.Buttons;
+
+  const whenDOMReady = (cb) => {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", cb, { once: true });
+    } else cb();
+  };
+
+  const debounce = (fn, wait = 160) => {
+    let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
+  };
+
+  function formatRelativeTime(dateString) {
+    if (!dateString) return 'Tidak pernah';
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return '—';
+    const now = new Date();
+    const diffSec = Math.floor((now - d) / 1000);
+    const abs = Math.abs(diffSec);
+
+    const units = [
+      ["tahun", 365*24*3600],
+      ["bulan", 30*24*3600],
+      ["hari", 24*3600],
+      ["jam", 3600],
+      ["menit", 60],
+      ["detik", 1],
+    ];
+    for (const [name, sec] of units) {
+      const v = Math.floor(abs / sec);
+      if (v >= 1) return (diffSec >= 0) ? `${v} ${name} yang lalu` : `dalam ${v} ${name}`;
+    }
+    return "baru saja";
+  }
+
+  function normalizeToISO(s) {
+    if (!s) return null;
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) return d.toISOString();
+
+    // fallback: dd/mm/yyyy hh:mm(:ss)
+    const m = String(s).match(
+      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+    );
+    if (m) {
+      const [_, dd, mm, yyyy, HH="00", MM="00", SS="00"] = m;
+      const year = yyyy.length === 2 ? Number("20" + yyyy) : Number(yyyy);
+      const iso = new Date(year, Number(mm)-1, Number(dd), Number(HH), Number(MM), Number(SS));
+      if (!isNaN(iso.getTime())) return iso.toISOString();
+    }
+    return null;
+  }
+
+  // Bersihkan nomor untuk sort/export (hanya digit + '+')
+  function normalizePhone(text) {
+    if (!text) return "";
+    const only = String(text).replace(/[^0-9+]/g, "");
+    // pastikan '+' di depan jika ada
+    return only.replace(/(.*)\+/g, "+$1");
+  }
+
+  whenDOMReady(() => {
+    if (!libsReady()) return console.error("DataTables/Buttons belum siap.");
+    const $table = $("#usersTable");
+    if (!$table.length) return;
+
+    const dt = $table.DataTable({
+      responsive: true,
+      autoWidth: false,
+      lengthChange: true,   // items per page
+      paging: true,
+      ordering: true,
+      searching: false,     // kita pakai search bar custom (#tableSearch)
+      pageLength: 10,
+
+      // DOM: B = Buttons, l = length menu, r = processing, t = table, i = info, p = pagination
+      dom: "Blrtip",
+
+      // Export: Excel, PDF, Print
+      buttons: [
+        {
+          extend: "excelHtml5",
+          title: "Users",
+          exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
+        },
+        {
+          extend: "pdfHtml5",
+          title: "Users",
+          orientation: "landscape",
+          pageSize: "A4",
+          exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
+        },
+        {
+          extend: "print",
+          title: "Users",
+          exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
+        }
+      ],
+
+      order: [[0, "asc"]],
+
+      columnDefs: [
+        { targets: 0, width: 56, type: "num", className: "dt-center" }, // No
+        { targets: 6, className: "dt-center" },                          // Role
+
+        // Phone Number (index 5): sort/export menggunakan versi angka-bersih
+        {
+          targets: 5,
+          render: function (data, type) {
+            const text = (data || "").toString();
+            if (type === "sort" || type === "type" || type === "export") return normalizePhone(text);
+            return text; // display apa adanya
+          }
+        },
+
+        // Terakhir Update (index 7): display relatif; sort/export pakai ISO
+        {
+          targets: 7,
+          render: function (data, type, row, meta) {
+            const cell = dt.cell(meta.row, meta.col).node();
+            const rawAttr = cell && cell.getAttribute ? cell.getAttribute("data-rawtime") : null;
+            const raw = (rawAttr || data || "").toString().trim();
+            const iso = normalizeToISO(raw) || raw || "";
+
+            if (type === "display") {
+              const title = iso ? new Date(iso).toLocaleString() : "";
+              const rel = iso ? formatRelativeTime(iso) : "—";
+              return `<time datetime="${iso}" title="${title}">${rel}</time>`;
+            }
+            return iso; // sort/export
+          }
+        }
+      ],
+
+      drawCallback: function () {
+        // Refresh relative time tiap redraw
+        $table.find("time[datetime]").each(function () {
+          const iso = this.getAttribute("datetime");
+          if (iso) this.textContent = formatRelativeTime(iso);
+        });
+      }
+    });
+
+    // Letakkan tombol export di wrapper kiri atas
+    dt.buttons().container().appendTo('#usersTable_wrapper .col-md-6:eq(0)');
+
+    // Search bar custom
+    const $search = $("#tableSearch");
+    if ($search.length) {
+      $search.on("input", debounce(function () {
+        dt.search(this.value).draw();
+      }, 200));
+    }
+
+    function exportBody(data, row, col, node) {
+      if (!node) return data;
+
+      // Ambil ISO dari <time> untuk kolom tanggal
+      const time = node.querySelector && node.querySelector("time[datetime]");
+      if (time) return time.getAttribute("datetime") || "";
+
+      // Phone number: angka bersih
+      if (col === 5) return normalizePhone(node.textContent || data || "");
+
+      // Default: gunakan text content
+      return node.textContent || data || "";
+    }
+  });
+})();
+</script>

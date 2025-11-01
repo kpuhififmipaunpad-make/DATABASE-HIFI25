@@ -1,58 +1,82 @@
-<%- include('partials/header') %>
-
-    <div class="relative w-full flex flex-wrap">
-
-        <!-- Login Section -->
-        <div class="w-full md:w-1/2 flex flex-col">
-            <div class="h-screen">
-
-                <div class="flex flex-col justify-center md:justify-start my-auto pt-8 px-8 md:px-24 lg:px-32">
-                      <div class="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-3 shadow-md" role="alert">
-                        <div class="flex">
-                          <div class="py-1"><svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/></svg></div>
-                          <div>
-                            <p class="font-bold">Update website datahifi.com</p>
-                            <p class="text-sm">Berkenaan dengan update yang dilakukan, dimohon untuk melakukan <a href="/forgot" class="underline decoration-solid">ubah password</a> terlebih dulu.</p>
-                          </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-center mt-8 mb-3">
-                        <img src="/img/LogoHIFI-2.png" alt="logo HIFI" width="40" height="20">
-                        <p class="text-3xl pl-2">Login</p>
-                     </div>
-                    <%- include ./partials/message.ejs %>
-                    <form class="flex flex-col pt-3" action="/auth/login" method="post">
-                        <div class="flex flex-col">
-                            <label for="email" class="text-lg">Username</label>
-                            <input type="text" id="email" placeholder="Username"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline"
-                                name="username" autocomplete="off">
-                        </div>
-    
-                        <div class="flex flex-col pt-4">
-                            <label for="password" class="text-lg">Password</label>
-                            <div class="flex flex-row shadow appearance-none border rounded mt-1">
-                                <input type="password" id="password" placeholder="Password" class="w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline appearance-none rounded" name="password">
-                                <button id="seePassButton" class="px-3" type="button"><i id="seePassIcon" class="fa-solid fa-eye"></i></button>
-                            </div>
-                        </div>
-    
-                        <button type="submit" class="bg-black text-white font-bold text-lg hover:bg-gray-700 p-2 mt-8 transition duration-500">Login</button>
-                    </form>
-    
-                    <div class="text-center pt-12 pb-12">
-                        <p>Lupa password? <a href="/forgot" class="underline font-semibold">Ubah password</a></p>
-                        <p>Belum punya akun? <a href="/auth/signup" class="underline font-semibold">Buat akun</a></p>
-                    </div>
-                    <p class="text-sm text-gray-500 mt-auto mb-2"><i class="fa-regular fa-circle-question"></i> Hubungi ADMD jika mengalami kendala.</p>
-                </div>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Database HIFI</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="gradient-bg-1">
+    <!-- Alert Message -->
+    <% if(message && message.length > 0) { %>
+    <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
+        <div class="flex items-center">
+            <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %> text-2xl mr-3 text-white"></i>
+            <div class="text-sm font-medium text-white"><%= message %></div>
+            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
+    </div>
+    <% } %>
 
-        <!-- Image Section -->
-        <div class="w-1/2 shadow-2xl">
-            <img class="object-cover w-full h-screen hidden md:block" src="https://source.unsplash.com/IXUM4cJynP0">
+    <div class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="glass-card p-8 md:p-12 w-full max-w-md">
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo for login page with clean modern design" class="h-24 w-auto mx-auto mb-4">
+                <h1 class="text-3xl font-bold text-white mb-2">Login</h1>
+                <p class="text-white/80">Masuk ke akun Database HIFI Anda</p>
+            </div>
+
+            <!-- Login Form -->
+            <form action="/auth/login" method="POST" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-user mr-2"></i>Username
+                    </label>
+                    <input type="text" id="username" name="username" required 
+                           class="glass-input" placeholder="Masukkan username">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required 
+                               class="glass-input pr-12" placeholder="Masukkan password">
+                        <button type="button" id="seePassButton" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
+                            <i class="fas fa-eye" id="seePassIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember" name="remember" 
+                               class="h-4 w-4 rounded border-white/30 bg-white/20">
+                        <label for="remember" class="ml-2 text-sm text-white/90">Ingat saya</label>
+                    </div>
+                    <a href="/forgot" class="text-sm text-white/90 hover:text-white">Lupa password?</a>
+                </div>
+
+                <button type="submit" class="glass-button w-full">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+
+                <p class="text-center text-white/80 text-sm">
+                    Belum punya akun? 
+                    <a href="/auth/signup" class="text-white font-semibold hover:underline">Daftar di sini</a>
+                </p>
+            </form>
         </div>
     </div>
 
-    <%- include('partials/footer') %>
+    <script src="/javascript/dom.js"></script>
+</body>
+</html>

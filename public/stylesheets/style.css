@@ -856,27 +856,63 @@ input::-ms-reveal, input::-ms-clear { display: none; }
   .table-toolbar{ width: 100%; }
   .dt-bottom{ gap:8px; }
 }
-/* Sembunyikan default search box DataTables (biar tidak duplikat) */
+/* Sembunyikan search bawaan DataTables (biar tidak duplikat) */
 .dataTables_wrapper .dataTables_filter { display: none !important; }
 
-/* Gaya tombol export hijau */
-.dt-buttons .dt-button, .dt-btn-green {
+/* Warna & kontras pagination bawah (#usersTable saja) */
+#usersTable_wrapper .dataTables_info{
+  color: #E5E7EB;             /* abu terang di bg gelap */
+  font-weight: 600;
+}
+#usersTable_wrapper .dataTables_paginate{
+  margin-top: 6px;
+}
+#usersTable_wrapper .dataTables_paginate .paginate_button{
+  border-radius: 10px !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  background: rgba(255,255,255,.06) !important;
+  color: #E5E7EB !important;
+  padding: 6px 10px !important;
+  margin: 0 2px !important;
+}
+#usersTable_wrapper .dataTables_paginate .paginate_button.current{
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,.18);
+}
+#usersTable_wrapper .dataTables_paginate .paginate_button:hover{
+  background: rgba(255,255,255,.14) !important;
+  color: #fff !important;
+}
+#usersTable_wrapper .dataTables_paginate .paginate_button.disabled{
+  color: #9CA3AF !important;
+  background: transparent !important;
+  border-color: rgba(255,255,255,.08) !important;
+}
+
+/* Hapus pointer di baris tabel karena tidak ada detail click */
+#usersTable tbody tr { cursor: default; }
+
+/* Tombol export hijau */
+.dt-buttons .dt-button, .dt-btn-green{
   background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
   color: #fff !important;
   border: none !important;
   border-radius: 12px !important;
   padding: 10px 14px !important;
   font-weight: 700 !important;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, .35) !important;
   margin-right: 8px !important;
 }
-.dt-buttons .dt-button:hover, .dt-btn-green:hover {
+.dt-buttons .dt-button:hover, .dt-btn-green:hover{
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 8px 22px rgba(16,185,129,.45) !important;
 }
 
-/* Rapihin area info & pagination bawah */
-.dt-bottom { display:flex; justify-content: space-between; align-items:center; gap:12px; flex-wrap:wrap; padding-top:8px; }
+/* Kalau komponen TOP lama masih tersisa, sembunyikan */
+#searchNama, #itemsPerPage, #pageSelect { display:none !important; }
+
 
 /* =========================================================
    End of file

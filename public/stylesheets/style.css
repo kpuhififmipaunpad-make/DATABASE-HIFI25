@@ -49,7 +49,7 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -199,7 +199,7 @@ body {
 #usersTable thead { background: var(--gradient-primary); color: #fff; }
 #usersTable thead th { padding: 14px; border: none; font-weight: 700; font-size: 13.5px; }
 #usersTable tbody td { padding: 14px; border: none; font-size: 14px; color: #111827; }
-#usersTable tbody tr { border-bottom: 1px solid rgba(0,0,0,.06); transition: background .15s, transform .12s; cursor: default; }
+#usersTable tbody tr { border-bottom: 1px solid rgba(0,0,0,.06); transition: background .15s, transform .12s; cursor: pointer; }
 #usersTable tbody tr:hover { background: rgba(30,58,138,.06); }
 #usersTable tbody tr.shown { background: rgba(220,20,60,.06); }
 
@@ -851,6 +851,9 @@ input::-ms-reveal, input::-ms-clear { display: none; }
   background: transparent !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
 }
+
+/* Hapus pointer di baris tabel karena tidak ada detail click */
+#usersTable tbody tr { cursor: default; }
 
 /* Tombol export hijau */
 .dt-buttons .dt-button, .dt-btn-green{

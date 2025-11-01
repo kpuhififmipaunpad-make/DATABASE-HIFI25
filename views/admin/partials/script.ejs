@@ -1,12 +1,16 @@
 <!-- Font Awesome Icon -->
 <script src="https://kit.fontawesome.com/7cc967098c.js" crossorigin="anonymous"></script>
+
 <!-- Iconify -->
 <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@2.2.1/dist/iconify.min.js"></script>
 
-<!-- jQuery & UI -->
+<!-- jQuery & jQuery UI -->
 <script src="/adminlte/plugins/jquery/jquery.min.js"></script>
 <script src="/adminlte/plugins/jquery-ui/jquery-ui.min.js"></script>
-<script>$.widget.bridge('uibutton', $.ui.button)</script>
+<script>
+  // Resolve conflict in jQuery UI tooltip with Bootstrap tooltip
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
 
 <!-- Bootstrap -->
 <script src="/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -15,7 +19,7 @@
 <script src="/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <script src="/adminlte/dist/js/adminlte.js"></script>
 
-<!-- (opsional) libs lain yang sudah ada -->
+<!-- (opsional) libs lain yang mungkin kamu pakai -->
 <script src="/adminlte/plugins/chart.js/Chart.min.js"></script>
 <script src="/adminlte/plugins/sparklines/sparkline.js"></script>
 <script src="/adminlte/plugins/jqvmap/jquery.vmap.min.js"></script>
@@ -43,36 +47,52 @@
 <!-- Page specific: DataTable init for #usersTable -->
 <script>
   $(function () {
-    // HINDARI RE-INIT: kalau sudah ada instance, destroy dulu
-    if ($.fn.DataTable.isDataTable('#usersTable')) {
-      $('#usersTable').DataTable().destroy(true);
+    const $table = $('#usersTable');
+    if (!$table.length) return;
+
+    // Jangan re-init. Kalau sudah hidup, cukup adjust layout.
+    if ($.fn.DataTable.isDataTable($table)) {
+      $table.DataTable().columns.adjust().responsive.recalc();
+      return;
     }
 
-    const dt = $('#usersTable').DataTable({
-      destroy: true,            // guard tambahan agar aman bila di-init lagi
-      retrieve: false,
+    const dt = $table.DataTable({
+      // destroy/retrieve tidak dipakai agar DOM tidak terhapus
       deferRender: true,
-      responsive: { details: { type: 'inline' } },
       autoWidth: false,
       scrollX: true,
+
+      responsive: { details: { type: 'inline' } },
+
       pagingType: 'simple_numbers',
       lengthChange: true,
       pageLength: 10,
-      lengthMenu: [[10, 20, 30, 40, 50, -1], [10, 20, 30, 40, 50, "Semua"]],
+      lengthMenu: [
+        [10, 20, 30, 40, 50, -1],
+        [10, 20, 30, 40, 50, "Semua"]
+      ],
+
       order: [[0, 'asc']],
       columnDefs: [
         { targets: [0, 5, 7], className: 'text-center' },   // No, Role, Aksi
         { targets: 7, orderable: false, searchable: false } // Aksi bukan sorting/search
       ],
+
       dom: 'Bfrtip',
       buttons: [
         { extend: 'copyHtml5',  exportOptions: { columns: ':not(.no-export)' } },
         { extend: 'csvHtml5',   exportOptions: { columns: ':not(.no-export)' } },
         { extend: 'excelHtml5', exportOptions: { columns: ':not(.no-export)' } },
-        { extend: 'pdfHtml5',   exportOptions: { columns: ':not(.no-export)' }, orientation: 'landscape', pageSize: 'A4' },
-        { extend: 'print',      exportOptions: { columns: ':not(.no-export)' } },
+        {
+          extend: 'pdfHtml5',
+          exportOptions: { columns: ':not(.no-export)' },
+          orientation: 'landscape',
+          pageSize: 'A4'
+        },
+        { extend: 'print', exportOptions: { columns: ':not(.no-export)' } },
         'colvis'
       ],
+
       language: {
         search: "Cari:",
         lengthMenu: "Tampilkan _MENU_ data",
@@ -80,15 +100,29 @@
         infoEmpty: "Tidak ada data",
         infoFiltered: "(difilter dari _MAX_ total data)",
         zeroRecords: "Data tidak ditemukan",
-        paginate: { first:"Awal", last:"Akhir", next:"Berikut", previous:"Sebelum" }
+        paginate: {
+          first: "Awal",
+          last: "Akhir",
+          next: "Berikut",
+          previous: "Sebelum"
+        }
       }
     });
 
-    // Pindahkan container tombol ke baris atas kiri
-    if ($('#usersTable_wrapper .col-md-6').length) {
-      dt.buttons().container().appendTo('#usersTable_wrapper .col-md-6:eq(0)');
+    // Taruh tombol export/colvis di kiri atas wrapper
+    const $target = $('#usersTable_wrapper .col-md-6').eq(0);
+    if ($target.length) {
+      dt.buttons().container().appendTo($target);
     }
+
+    // Recalc saat halaman kembali dari bfcache (back button)
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) {
+        dt.columns.adjust().responsive.recalc();
+      }
+    });
   });
 </script>
+
 </body>
 </html>

@@ -104,43 +104,6 @@ function initDataTable() {
   }
 }
 
-// ============================================
-// FORMAT USER DETAILS
-// ============================================
-function formatUserDetails(data) {
-  return `
-    <div class="detail-card glass-card p-4" style="margin: 10px 0;">
-      <div class="row">
-        <div class="col-md-6">
-          <h6 class="text-gradient mb-3">Informasi Personal</h6>
-          <p><strong>NPM:</strong> ${data[2] || '-'}</p>
-          <p><strong>TTL:</strong> ${data[3] || '-'}</p>
-          <p><strong>Tanggal Lahir:</strong> ${data[4] || '-'}</p>
-          <p><strong>Agama:</strong> ${data[5] || '-'}</p>
-          <p><strong>Golongan Darah:</strong> ${data[6] || '-'}</p>
-          <p><strong>No. HP:</strong> ${data[7] || '-'}</p>
-        </div>
-        <div class="col-md-6">
-          <h6 class="text-gradient mb-3">Kontak & Alamat</h6>
-          <p><strong>Email:</strong> ${data[8] || '-'}</p>
-          <p><strong>Alamat Rumah:</strong> ${data[9] || '-'}</p>
-          <p><strong>Alamat Kos:</strong> ${data[10] || '-'}</p>
-          <h6 class="text-gradient mt-3 mb-2">Riwayat</h6>
-          <p><strong>Pendidikan:</strong> ${data[11] || '-'}</p>
-          <p><strong>Organisasi:</strong> ${data[12] || '-'}</p>
-        </div>
-      </div>
-      <div class="mt-3 d-flex gap-2">
-        <button class="btn-action btn-edit" onclick="editUser('${data[0]}')" title="Edit">
-          <i class="fas fa-edit"></i>
-        </button>
-        <button class="btn-action btn-delete" onclick="deleteUser('${data[0]}')" title="Hapus">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
-    </div>
-  `;
-}
 
 // ============================================
 // CHART ANIMATIONS

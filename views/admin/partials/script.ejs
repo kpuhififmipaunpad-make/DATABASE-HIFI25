@@ -1,185 +1,301 @@
-<!-- Page specific script: init DataTables sesuai header CDN -->
 <script>
-(() => {
-  // ===== Utilities =====
-  const libsReady = () =>
-    !!window.jQuery && !!$.fn.DataTable && !!$.fn.dataTable && !!$.fn.dataTable.Buttons;
+// Sample Data - Ganti dengan data dari database Anda
+let allData = [
+    { id: 1, nama: "Ahmad Rizki", email: "ahmad.rizki@email.com", phone: "+62 812-3456-7890", alamat: "Jakarta Selatan", status: "Aktif" },
+    { id: 2, nama: "Siti Nurhaliza", email: "siti.nur@email.com", phone: "+62 813-4567-8901", alamat: "Bandung", status: "Aktif" },
+    { id: 3, nama: "Budi Santoso", email: "budi.santoso@email.com", phone: "+62 814-5678-9012", alamat: "Surabaya", status: "Tidak Aktif" },
+    { id: 4, nama: "Dewi Lestari", email: "dewi.lestari@email.com", phone: "+62 815-6789-0123", alamat: "Yogyakarta", status: "Aktif" },
+    { id: 5, nama: "Eko Prasetyo", email: "eko.prasetyo@email.com", phone: "+62 816-7890-1234", alamat: "Semarang", status: "Aktif" },
+    { id: 6, nama: "Fitri Handayani", email: "fitri.handa@email.com", phone: "+62 817-8901-2345", alamat: "Medan", status: "Tidak Aktif" },
+    { id: 7, nama: "Gunawan Wijaya", email: "gunawan.w@email.com", phone: "+62 818-9012-3456", alamat: "Makassar", status: "Aktif" },
+    { id: 8, nama: "Hendra Kusuma", email: "hendra.kusuma@email.com", phone: "+62 819-0123-4567", alamat: "Palembang", status: "Aktif" },
+    { id: 9, nama: "Indah Permata", email: "indah.permata@email.com", phone: "+62 820-1234-5678", alamat: "Denpasar", status: "Aktif" },
+    { id: 10, nama: "Joko Widodo", email: "joko.widodo@email.com", phone: "+62 821-2345-6789", alamat: "Solo", status: "Tidak Aktif" },
+    { id: 11, nama: "Kartika Sari", email: "kartika.sari@email.com", phone: "+62 822-3456-7890", alamat: "Malang", status: "Aktif" },
+    { id: 12, nama: "Lukman Hakim", email: "lukman.hakim@email.com", phone: "+62 823-4567-8901", alamat: "Bogor", status: "Aktif" },
+    { id: 13, nama: "Maya Anggraini", email: "maya.anggra@email.com", phone: "+62 824-5678-9012", alamat: "Tangerang", status: "Aktif" },
+    { id: 14, nama: "Nugroho Adi", email: "nugroho.adi@email.com", phone: "+62 825-6789-0123", alamat: "Bekasi", status: "Tidak Aktif" },
+    { id: 15, nama: "Olivia Putri", email: "olivia.putri@email.com", phone: "+62 826-7890-1234", alamat: "Depok", status: "Aktif" },
+    { id: 16, nama: "Prasetyo Budi", email: "prasetyo.budi@email.com", phone: "+62 827-8901-2345", alamat: "Cirebon", status: "Aktif" },
+    { id: 17, nama: "Qori Amanda", email: "qori.amanda@email.com", phone: "+62 828-9012-3456", alamat: "Pekanbaru", status: "Aktif" },
+    { id: 18, nama: "Rudi Hartono", email: "rudi.hartono@email.com", phone: "+62 829-0123-4567", alamat: "Balikpapan", status: "Tidak Aktif" },
+    { id: 19, nama: "Sinta Dewi", email: "sinta.dewi@email.com", phone: "+62 830-1234-5678", alamat: "Samarinda", status: "Aktif" },
+    { id: 20, nama: "Tono Suryanto", email: "tono.surya@email.com", phone: "+62 831-2345-6789", alamat: "Pontianak", status: "Aktif" },
+    { id: 21, nama: "Umi Kalsum", email: "umi.kalsum@email.com", phone: "+62 832-3456-7890", alamat: "Manado", status: "Aktif" },
+    { id: 22, nama: "Vino Bastian", email: "vino.bastian@email.com", phone: "+62 833-4567-8901", alamat: "Ambon", status: "Tidak Aktif" },
+    { id: 23, nama: "Wati Susanti", email: "wati.susanti@email.com", phone: "+62 834-5678-9012", alamat: "Jayapura", status: "Aktif" },
+    { id: 24, nama: "Xaverius Tan", email: "xaverius.tan@email.com", phone: "+62 835-6789-0123", alamat: "Kupang", status: "Aktif" },
+    { id: 25, nama: "Yanti Rahayu", email: "yanti.rahayu@email.com", phone: "+62 836-7890-1234", alamat: "Mataram", status: "Aktif" }
+];
 
-  const whenDOMReady = (cb) => {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", cb, { once: true });
-    } else cb();
-  };
+let filteredData = [...allData];
+let currentPage = 1;
+let itemsPerPage = 10;
 
-  // Poll pendek untuk nunggu CDN (karena semua <script> pakai defer)
-  function bootWhenReady(fn, interval = 50) {
-    const tryInit = () => (libsReady() ? fn() : setTimeout(tryInit, interval));
-    tryInit();
-  }
+// Initialize table on page load
+document.addEventListener('DOMContentLoaded', function() {
+    renderTable();
+    setupSearch();
+});
 
-  const debounce = (fn, wait = 160) => {
-    let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
-  };
-
-  // Format waktu relatif (display), tapi sort/export tetap ISO
-  function formatRelativeTime(dateString) {
-    if (!dateString) return 'Tidak pernah';
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return '—';
-    const now = new Date();
-    const diffSec = Math.floor((now - d) / 1000);
-    const abs = Math.abs(diffSec);
-    const units = [
-      ["tahun", 365*24*3600],
-      ["bulan", 30*24*3600],
-      ["hari", 24*3600],
-      ["jam", 3600],
-      ["menit", 60],
-      ["detik", 1],
-    ];
-    for (const [name, sec] of units) {
-      const v = Math.floor(abs / sec);
-      if (v >= 1) return (diffSec >= 0) ? `${v} ${name} yang lalu` : `dalam ${v} ${name}`;
-    }
-    return "baru saja";
-  }
-
-  // Normalisasi tanggal ke ISO utk sort/export stabil
-  function normalizeToISO(s) {
-    if (!s) return null;
-    const d1 = new Date(s);
-    if (!isNaN(d1.getTime())) return d1.toISOString();
-    // fallback dd/mm/yyyy hh:mm(:ss)
-    const m = String(s).match(
-      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
-    );
-    if (m) {
-      const [_, dd, mm, yyyy, HH="00", MM="00", SS="00"] = m;
-      const year = yyyy.length === 2 ? Number("20" + yyyy) : Number(yyyy);
-      const iso = new Date(year, Number(mm)-1, Number(dd), Number(HH), Number(MM), Number(SS));
-      if (!isNaN(iso.getTime())) return iso.toISOString();
-    }
-    return null;
-  }
-
-  // Bersihkan nomor HP utk sort/export (hanya digit + '+')
-  function normalizePhone(text) {
-    if (!text) return "";
-    const only = String(text).replace(/[^0-9+]/g, "");
-    // pastikan '+' tetap di depan bila ada
-    return only.replace(/(.*)\+/g, "+$1");
-  }
-
-  whenDOMReady(() => {
-    bootWhenReady(() => {
-      const $table = $("#usersTable");
-      if (!$table.length) return;
-
-      const dt = $table.DataTable({
-        responsive: true,
-        autoWidth: false,
-        lengthChange: true,         // items per page
-        paging: true,
-        ordering: true,
-        searching: false,           // kita pakai search bar custom (#tableSearch)
-        pageLength: 10,
-        lengthMenu: [[10, 20, 30, 40, 50, -1], [10, 20, 30, 40, 50, "All"]],
-
-        // DOM CDN (tanpa Bootstrap): B = Buttons, l = length, r, t, i = info, p = pagination
-        dom: "Blrtip",
-
-        // Export: Excel, PDF, Print
-        buttons: [
-          {
-            extend: "excelHtml5",
-            title: "Users",
-            exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-          },
-          {
-            extend: "pdfHtml5",
-            title: "Users",
-            orientation: "landscape",
-            pageSize: "A4",
-            exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-          },
-          {
-            extend: "print",
-            title: "Users",
-            exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-          }
-        ],
-
-        // Kolom sesuai tabel: 0 No, 1 Username, 2 Nama, 3 NPM, 4 Email, 5 Phone, 6 Role, 7 Update, 8 Aksi
-        order: [[0, "asc"]],
-
-        columnDefs: [
-          { targets: 0, width: 56, type: "num", className: "dt-center" }, // No
-          { targets: 6, className: "dt-center" },                          // Role
-
-          // Phone Number (index 5): sort/export gunakan angka bersih
-          {
-            targets: 5,
-            render: function (data, type) {
-              const text = (data || "").toString();
-              if (type === "sort" || type === "type" || type === "export") return normalizePhone(text);
-              return text; // display apa adanya
-            }
-          },
-
-          // Terakhir Update (index 7): display relatif; sort/export pakai ISO
-          {
-            targets: 7,
-            render: function (data, type, row, meta) {
-              // Ambil dari atribut data-rawtime (jika ada), fallback ke isi sel
-              const cell = dt.cell(meta.row, meta.col).node();
-              const rawAttr = cell && cell.getAttribute ? cell.getAttribute("data-rawtime") : null;
-              const raw = (rawAttr || data || "").toString().trim();
-              const iso = normalizeToISO(raw) || raw || "";
-
-              if (type === "display") {
-                const title = iso ? new Date(iso).toLocaleString() : "";
-                const rel = iso ? formatRelativeTime(iso) : "—";
-                return `<time datetime="${iso}" title="${title}">${rel}</time>`;
-              }
-              return iso; // sort/export
-            }
-          }
-        ],
-
-        drawCallback: function () {
-          // Refresh teks relatif setiap redraw
-          $table.find("time[datetime]").each(function () {
-            const iso = this.getAttribute("datetime");
-            if (iso) this.textContent = formatRelativeTime(iso);
-          });
-        }
-      });
-
-      // DOM "B" sudah me-render Buttons di atas tabel, jadi tidak perlu appendTo wrapper bootstrap.
-
-      // Search bar custom (#tableSearch di table.ejs)
-      const $search = $("#tableSearch");
-      if ($search.length) {
-        $search.on("input", debounce(function () {
-          dt.search(this.value).draw();
-        }, 200));
-      }
-
-      // Formatter isi saat export (Excel/PDF/Print)
-      function exportBody(data, row, col, node) {
-        if (!node) return data;
-
-        // Ambil ISO dari <time> untuk kolom tanggal
-        const time = node.querySelector && node.querySelector("time[datetime]");
-        if (time) return time.getAttribute("datetime") || "";
-
-        // Phone number: angka bersih
-        if (col === 5) return normalizePhone(node.textContent || data || "");
-
-        // Default: gunakan text content
-        return (node.textContent || data || "").trim();
-      }
+// Render table with current data
+function renderTable() {
+    const tableBody = document.getElementById('tableBody');
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const paginatedData = filteredData.slice(start, end);
+    
+    tableBody.innerHTML = '';
+    
+    paginatedData.forEach((item, index) => {
+        const globalIndex = start + index + 1;
+        const statusBadge = item.status === 'Aktif' 
+            ? '<span class="badge bg-success">Aktif</span>' 
+            : '<span class="badge bg-danger">Tidak Aktif</span>';
+        
+        const row = `
+            <tr>
+                <td>${globalIndex}</td>
+                <td><strong>${item.nama}</strong></td>
+                <td>${item.email}</td>
+                <td><i class="fas fa-phone me-2 text-primary"></i>${item.phone}</td>
+                <td>${item.alamat}</td>
+                <td>${statusBadge}</td>
+                <td class="no-print">
+                    <button class="btn btn-sm btn-primary" onclick="editItem(${item.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteItem(${item.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
     });
-  });
-})();
+    
+    renderPagination();
+    updatePageInfo();
+}
+
+// Setup search functionality
+function setupSearch() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        filteredData = allData.filter(item => {
+            return item.nama.toLowerCase().includes(searchTerm) ||
+                   item.email.toLowerCase().includes(searchTerm) ||
+                   item.phone.toLowerCase().includes(searchTerm) ||
+                   item.alamat.toLowerCase().includes(searchTerm);
+        });
+        
+        currentPage = 1;
+        renderTable();
+    });
+}
+
+// Render pagination
+function renderPagination() {
+    const pagination = document.getElementById('pagination');
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    
+    pagination.innerHTML = '';
+    
+    // Previous button
+    const prevClass = currentPage === 1 ? 'disabled' : '';
+    pagination.innerHTML += `
+        <li class="page-item ${prevClass}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+    `;
+    
+    // Page numbers
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+    
+    if (startPage > 1) {
+        pagination.innerHTML += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="changePage(1); return false;">1</a>
+            </li>
+        `;
+        if (startPage > 2) {
+            pagination.innerHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const activeClass = i === currentPage ? 'active' : '';
+        pagination.innerHTML += `
+            <li class="page-item ${activeClass}">
+                <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+            </li>
+        `;
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            pagination.innerHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+        pagination.innerHTML += `
+            <li class="page-item">
+                <a class="page-link" href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a>
+            </li>
+        `;
+    }
+    
+    // Next button
+    const nextClass = currentPage === totalPages ? 'disabled' : '';
+    pagination.innerHTML += `
+        <li class="page-item ${nextClass}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>
+    `;
+}
+
+// Change page
+function changePage(page) {
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    if (page < 1 || page > totalPages) return;
+    
+    currentPage = page;
+    renderTable();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Change items per page
+function changeItemsPerPage() {
+    const select = document.getElementById('itemsPerPage');
+    itemsPerPage = parseInt(select.value);
+    currentPage = 1;
+    renderTable();
+}
+
+// Update page info
+function updatePageInfo() {
+    const pageInfo = document.getElementById('pageInfo');
+    const start = (currentPage - 1) * itemsPerPage + 1;
+    const end = Math.min(start + itemsPerPage - 1, filteredData.length);
+    const total = filteredData.length;
+    
+    pageInfo.textContent = `Menampilkan ${start}-${end} dari ${total} data`;
+}
+
+// Export to Excel
+function exportToExcel() {
+    const dataToExport = filteredData.map((item, index) => ({
+        'No': index + 1,
+        'Nama': item.nama,
+        'Email': item.email,
+        'Phone Number': item.phone,
+        'Alamat': item.alamat,
+        'Status': item.status
+    }));
+    
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+    
+    // Set column widths
+    worksheet['!cols'] = [
+        { wch: 5 },  // No
+        { wch: 20 }, // Nama
+        { wch: 25 }, // Email
+        { wch: 18 }, // Phone
+        { wch: 20 }, // Alamat
+        { wch: 12 }  // Status
+    ];
+    
+    XLSX.writeFile(workbook, `Data_Table_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+// Export to PDF
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'mm', 'a4'); // landscape orientation
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.setTextColor(102, 126, 234);
+    doc.text('Data Table Report', 14, 15);
+    
+    // Add date
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${new Date().toLocaleString('id-ID')}`, 14, 22);
+    
+    // Prepare table data
+    const tableData = filteredData.map((item, index) => [
+        index + 1,
+        item.nama,
+        item.email,
+        item.phone,
+        item.alamat,
+        item.status
+    ]);
+    
+    // Add table
+    doc.autoTable({
+        head: [['No', 'Nama', 'Email', 'Phone Number', 'Alamat', 'Status']],
+        body: tableData,
+        startY: 28,
+        theme: 'grid',
+        headStyles: {
+            fillColor: [102, 126, 234],
+            textColor: 255,
+            fontSize: 10,
+            fontStyle: 'bold',
+            halign: 'center'
+        },
+        bodyStyles: {
+            fontSize: 9
+        },
+        columnStyles: {
+            0: { cellWidth: 12, halign: 'center' },
+            1: { cellWidth: 40 },
+            2: { cellWidth: 50 },
+            3: { cellWidth: 35 },
+            4: { cellWidth: 40 },
+            5: { cellWidth: 20, halign: 'center' }
+        },
+        margin: { top: 28 }
+    });
+    
+    doc.save(`Data_Table_${new Date().toISOString().split('T')[0]}.pdf`);
+}
+
+// Print table
+function printTable() {
+    window.print();
+}
+
+// Edit item (placeholder function)
+function editItem(id) {
+    const item = allData.find(i => i.id === id);
+    alert(`Edit item: ${item.nama}\nFitur edit akan diimplementasikan sesuai kebutuhan Anda.`);
+    // Implement your edit logic here
+}
+
+// Delete item (placeholder function)
+function deleteItem(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+        allData = allData.filter(i => i.id !== id);
+        filteredData = filteredData.filter(i => i.id !== id);
+        
+        // Adjust current page if needed
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+        }
+        
+        renderTable();
+        alert('Data berhasil dihapus!');
+    }
+}
 </script>

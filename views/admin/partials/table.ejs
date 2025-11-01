@@ -14,14 +14,14 @@
     </thead>
     <tbody>
       <% users.forEach((user, index) => { %>
-        <tr>
+        <tr data-id="<%= user._id %>">
           <td><%= index + 1 %></td>
           <td><strong><%= user.username %></strong></td>
           <td><%= user.nama || '-' %></td>
           <td><%= user.npm || '-' %></td>
           <td><%= user.email || '-' %></td>
           <td>
-            <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>">
+            <span class="badge-glass <%= user.role === 'admin' ? 'badge-red' : 'badge-blue' %>">
               <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
               <%= user.role === 'admin' ? 'Admin' : 'User' %>
             </span>

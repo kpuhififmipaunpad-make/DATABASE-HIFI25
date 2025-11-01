@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,14 +9,14 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="gradient-bg-1">
+<body>
     <!-- Alert Message -->
     <% if(message && message.length > 0) { %>
     <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
         <div class="flex items-center">
             <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %> text-2xl mr-3 text-white"></i>
             <div class="text-sm font-medium text-white"><%= message %></div>
-            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200">
+            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200 transition-smooth">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -24,58 +24,80 @@
     <% } %>
 
     <div class="min-h-screen flex items-center justify-center px-4 py-12">
-        <div class="glass-card p-8 md:p-12 w-full max-w-md">
+        <div class="glass-card p-10 md:p-14 w-full max-w-lg">
             <!-- Logo -->
-            <div class="text-center mb-8">
-                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo for password reset page with secure design elements" class="h-24 w-auto mx-auto mb-4">
-                <h1 class="text-3xl font-bold text-white mb-2">Lupa Password</h1>
-                <p class="text-white/80">Reset password akun Anda</p>
+            <div class="text-center mb-10 animate-scaleIn">
+                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo for password reset page with secure blue red design elements and lock symbol" class="h-28 w-auto mx-auto mb-6">
+                <h1 class="text-4xl font-bold text-white mb-3">Lupa Password</h1>
+                <p class="text-white/80 text-lg">Reset password akun Database HIFI Anda</p>
             </div>
 
             <!-- Forgot Password Form -->
-            <form action="/forgot" method="POST" class="space-y-6">
+            <form action="/forgot" method="POST" class="space-y-6 animate-fadeInUp">
+                <div class="glass-card p-6 bg-blue-600/10">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-400 text-xl mr-3 mt-1"></i>
+                        <p class="text-white/90 text-sm">
+                            Masukkan username dan email yang terdaftar untuk mengatur ulang password Anda.
+                        </p>
+                    </div>
+                </div>
+
                 <div>
-                    <label for="username" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-user mr-2"></i>Username
+                    <label for="username" class="block text-sm font-semibold text-white mb-2">
+                        <i class="fas fa-user mr-2 text-blue-400"></i>Username
                     </label>
                     <input type="text" id="username" name="username" required 
                            class="glass-input" placeholder="Masukkan username Anda">
                 </div>
 
                 <div>
-                    <label for="email" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-envelope mr-2"></i>Email Terdaftar
+                    <label for="email" class="block text-sm font-semibold text-white mb-2">
+                        <i class="fas fa-envelope mr-2 text-blue-400"></i>Email Terdaftar
                     </label>
                     <input type="email" id="email" name="email" required 
-                           class="glass-input" placeholder="Email yang terdaftar">
+                           class="glass-input" placeholder="Email yang terdaftar di akun Anda">
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-lock mr-2"></i>Password Baru
+                    <label for="password" class="block text-sm font-semibold text-white mb-2">
+                        <i class="fas fa-lock mr-2 text-red-400"></i>Password Baru
                     </label>
                     <div class="relative">
                         <input type="password" id="password" name="password" required 
-                               class="glass-input pr-12" placeholder="Password baru Anda">
+                               class="glass-input pr-14" placeholder="Buat password baru yang kuat">
                         <button type="button" id="seePassButton" 
-                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
-                            <i class="fas fa-eye" id="seePassIcon"></i>
+                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-smooth">
+                            <i class="fas fa-eye text-xl" id="seePassIcon"></i>
                         </button>
                     </div>
+                    <p class="text-white/60 text-xs mt-2">Password minimal 8 karakter</p>
                 </div>
 
-                <button type="submit" class="glass-button w-full">
+                <button type="submit" class="glass-button w-full text-lg py-4 ripple bg-gradient-to-r from-blue-600/30 to-red-600/30 hover:from-blue-600/40 hover:to-red-600/40">
                     <i class="fas fa-key mr-2"></i>Reset Password
                 </button>
 
-                <p class="text-center text-white/80 text-sm">
+                <div class="relative my-8">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-white/20"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-transparent text-white/70 font-medium">atau</span>
+                    </div>
+                </div>
+
+                <p class="text-center text-white/80 text-base">
                     Ingat password Anda? 
-                    <a href="/auth/login" class="text-white font-semibold hover:underline">Login di sini</a>
+                    <a href="/auth/login" class="text-white font-bold hover:text-blue-300 transition-smooth">
+                        Login di sini
+                    </a>
                 </p>
             </form>
         </div>
     </div>
 
     <script src="/javascript/dom.js"></script>
+    <script src="/javascript/animations.js"></script>
 </body>
 </html>

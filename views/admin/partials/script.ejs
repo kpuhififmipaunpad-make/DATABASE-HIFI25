@@ -1,8 +1,11 @@
 <script>
 (() => {
-  // --- Tunggu library siap (karena semua <script> di header pakai defer)
+  // ===== helpers: tunggu jQuery + DataTables siap =====
   const libsReady = () =>
-    !!window.jQuery && !!$.fn.DataTable && !!$.fn.dataTable && !!$.fn.dataTable.Buttons;
+    !!window.jQuery &&
+    !!$.fn.DataTable &&
+    !!$.fn.dataTable &&
+    !!$.fn.dataTable.Buttons;
 
   const whenDOMReady = (cb) => {
     if (document.readyState === "loading") {
@@ -12,151 +15,70 @@
     }
   };
 
-  function boot() {
-    // Pastikan jQuery + DataTables ada
-    if (!libsReady()) {
-      console.error("jQuery atau DataTables tidak ditemukan!");
-      return;
-    }
-    if (!document.getElementById("usersTable")) {
-      // Halaman ini tidak punya tabel
-      return;
-    }
-
-    // Namespace global kecil (sudah dibuat di header)
-    window.__HIFI__ = window.__HIFI__ || {};
-
-    // Kalau sudah pernah di-init, hancurkan dulu biar aman
-    if ($.fn.DataTable.isDataTable("#usersTable")) {
-      try { $("#usersTable").DataTable().destroy(); } catch (e) {}
-    }
-    if (window.__HIFI__.usersTableInited) {
-      try { $("#usersTable").DataTable().destroy(); } catch (e) {}
-    }
-
-    // Escape HTML sederhana
-    const esc = (v) =>
-      (v == null || String(v).trim() === "" ? "-" :
-        String(v).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])));
-
-    // Format tanggal
-    const formatDate = (dateStr) => {
-      if (!dateStr || dateStr === "-") return "-";
-      try {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
-      } catch { return dateStr; }
+  const debounce = (fn, wait = 160) => {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(null, args), wait);
     };
+  };
 
-    // Template child row — selaras dengan field di edit.ejs
-    function buildDetail(ds) {
-      return `
-        <div class="dt-detail">
-          <div class="detail-card">
-            <div class="detail-item">
-              <b><i class="fas fa-user"></i> Nama Lengkap</b>
-              <span>${esc(ds.nama)}</span>
-            </div>
-            <div class="detail-item">
-              <b><i class="fas fa-id-card"></i> NPM</b>
-              <span>${esc(ds.npm)}</span>
-            </div>
-            <div class="detail-item">
-              <b><i class="fas fa-envelope"></i> Email</b>
-              <span>${esc(ds.email)}</span>
-            </div>
-            <div class="detail-item">
-              <b><i class="fas fa-phone"></i> No. HP</b>
-              <span>${esc(ds.hp)}</span>
-            </div>
-
-            <div class="detail-item">
-              <b><i class="fas fa-map-marker-alt"></i> Tempat Lahir</b>
-              <span>${esc(ds.ttl)}</span>
-            </div>
-            <div class="detail-item">
-              <b><i class="fas fa-calendar"></i> Tanggal Lahir</b>
-              <span>${formatDate(ds.tgl)}</span>
-            </div>
-            <div class="detail-item">
-              <b><i class="fas fa-pray"></i> Agama</b>
-              <span>${esc(ds.agama)}</span>
-            </div>
-            <div class="detail-item">
-              <b><i class="fas fa-tint"></i> Golongan Darah</b>
-              <span>${esc(ds.goldar)}</span>
-            </div>
-
-            <div class="detail-item" style="grid-column:1/-1">
-              <b><i class="fas fa-home"></i> Alamat Rumah</b>
-              <span>${esc(ds.rumah)}</span>
-            </div>
-            <div class="detail-item" style="grid-column:1/-1">
-              <b><i class="fas fa-building"></i> Alamat Kos</b>
-              <span>${esc(ds.kos)}</span>
-            </div>
-
-            <div class="detail-item" style="grid-column:1/-1">
-              <b><i class="fas fa-graduation-cap"></i> Pendidikan</b>
-              <span>${esc(ds.pendidikan)}</span>
-            </div>
-            <div class="detail-item" style="grid-column:1/-1">
-              <b><i class="fas fa-users"></i> Kepanitiaan</b>
-              <span>${esc(ds.panitia)}</span>
-            </div>
-            <div class="detail-item" style="grid-column:1/-1">
-              <b><i class="fas fa-sitemap"></i> Organisasi</b>
-              <span>${esc(ds.organisasi)}</span>
-            </div>
-            <div class="detail-item" style="grid-column:1/-1">
-              <b><i class="fas fa-certificate"></i> Pelatihan</b>
-              <span>${esc(ds.pelatihan)}</span>
-            </div>
-            <div class="detail-item" style="grid-column:1/-1">
-              <b><i class="fas fa-trophy"></i> Prestasi</b>
-              <span>${esc(ds.prestasi)}</span>
-            </div>
-
-            <div class="detail-actions">
-              <a class="btn-primary-gradient" href="/dashboard/edit/${esc(ds.id)}">
-                <i class="fas fa-pen"></i> Edit Data Lengkap
-              </a>
-            </div>
-          </div>
-        </div>`;
+  function boot() {
+    if (!libsReady()) {
+      console.error("jQuery/DataTables belum siap.");
+      return;
     }
+    const $table = $("#usersTable");
+    if (!$table.length) return;
+
+    // Bersihkan instance/handler lama kalau ada
+    try {
+      if ($.fn.DataTable.isDataTable($table)) {
+        $table.DataTable().destroy(true);
+      }
+    } catch (_) {}
+    $("#searchNama").off(".tbl");
+    $("#itemsPerPage").off(".tbl");
+    $("#btnRefresh").off(".tbl");
+    $table.find("tbody").off(".tbl");
 
     // Inisialisasi DataTable
-    const dt = $("#usersTable").DataTable({
+    const dt = $table.DataTable({
+      // Stabilitas layout
+      autoWidth: false,
+      scrollX: true,
+      scrollCollapse: true,
+      deferRender: true,
+
+      // UX
       responsive: false,
-      lengthChange: false,      // pakai kontrol custom
-      searching: false,         // pakai search custom
+      lengthChange: false,     // pakai kontrol custom
+      searching: false,        // pakai search custom
       pagingType: "simple_numbers",
       pageLength: 10,
-      dom: "Bt<'dt-bottom'ip>", // B=buttons, t=table, i=info, p=pagination
-      // ✅ default: urut kolom No (index 0) → 1..akhir
+
+      // Default urutan: kolom No (index 0) → 1..akhir
+      // (Jika ingin urut "Terakhir Update" terbaru dulu: ganti ke [[7,'desc']])
       order: [[0, "asc"]],
-      // Performa & stabilitas layout saat Show All
-      scrollX: true,
-      autoWidth: false,
-      deferRender: true,
+
+      dom: "Bt<'dt-bottom'ip>",
+
       columnDefs: [
-        { targets: 0, width: "64px", type: "num" },                // kolom No numeric
-        { targets: 8, orderable: false, className: "no-detail" },  // kolom Aksi
-        // Sort akurat untuk kolom "Terakhir Update" (index 7) dari atribut data-time/data-order
+        { targets: 0, width: 64, type: "num", className: "dt-col-no dt-center" }, // No
+        { targets: 6, width: 120, className: "dt-center" },                       // Role
         {
-          targets: 7,
-          createdCell: function(td/*, cellData, rowData, row, col*/) {
+          targets: 7, // Terakhir Update
+          createdCell: function (td) {
+            // Tarik nilai waktu mentah dari atribut data-time (di-render EJS):
+            // prioritas u.time -> updatedAt -> updated_at -> lastUpdate -> updated -> createdAt
             const raw = td.getAttribute("data-time");
-            if (raw) {
-              const t = new Date(raw).getTime();
-              td.setAttribute("data-order", isFinite(t) ? String(t) : "-1");
-            } else {
-              td.setAttribute("data-order", "-1");
-            }
+            const ts = raw ? new Date(raw).getTime() : NaN;
+            td.setAttribute("data-order", Number.isFinite(ts) ? String(ts) : "-1");
           }
-        }
+        },
+        { targets: 8, width: 120, orderable: false, className: "no-detail dt-center" } // Aksi
       ],
+
       language: {
         paginate: { first: "«", previous: "‹", next: "›", last: "»" },
         info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
@@ -165,6 +87,7 @@
         zeroRecords: "Data tidak ditemukan",
         emptyTable: "Tidak ada data tersedia"
       },
+
       buttons: [
         {
           extend: "excel",
@@ -189,82 +112,109 @@
           exportOptions: { columns: [0,1,2,3,4,5,6,7] }
         }
       ],
-      // Setelah draw, pastikan kolom menyesuaikan lebar (mengurangi glitch saat banyak baris)
-      drawCallback: function() {
-        this.api().columns.adjust();
+
+      initComplete: function () {
+        // Stabilkan kolom setelah initial paint/font load
+        const api = this.api();
+        api.columns.adjust();
+        requestAnimationFrame(() => api.columns.adjust());
+        setTimeout(() => api.columns.adjust(), 120);
+
+        // Pindahkan tombol export ke holder kustom bila ada
+        const $holder = $("#exportButtons");
+        if ($holder.length) {
+          $holder.empty();
+          api.buttons().container().appendTo($holder);
+        } else {
+          api.buttons().container().insertBefore($table);
+        }
+      },
+
+      drawCallback: function () {
+        // Jaga agar tidak melebar saat filter/ubah page length
+        const api = this.api();
+        api.columns.adjust();
+        requestAnimationFrame(() => api.columns.adjust());
       }
     });
 
-    // Pasang tombol export ke holder (fallback kalau #exportButtons tidak ada)
-    const $holder = $("#exportButtons");
-    if ($holder.length) {
-      $holder.empty();
-      dt.buttons().container().appendTo($holder);
-    } else {
-      dt.buttons().container().insertBefore("#usersTable");
-    }
-
-    // ===== CUSTOM SEARCH (kolom Nama) =====
-    $("#searchNama").off("input.tbl").on("input.tbl", function () {
-      dt.column(2).search(this.value).draw(false);
+    // ======== Search (kolom Nama = index 2) dengan debounce ========
+    const onSearch = debounce(function () {
+      const val = this.value || "";
+      dt.column(2).search(val).draw(false);
       dt.columns.adjust();
-    });
+      requestAnimationFrame(() => dt.columns.adjust());
+    }, 140);
+    $("#searchNama").on("input.tbl", onSearch);
 
-    // ===== CUSTOM ITEMS PER PAGE =====
-    $("#itemsPerPage").off("change.tbl").on("change.tbl", function () {
-      const val = parseInt(this.value, 10);
-      dt.page.len(val === -1 ? -1 : val).draw(false);
-      // adjust 2x untuk pastikan layout stabil saat Show All
+    // ======== Items per page ========
+    $("#itemsPerPage").on("change.tbl", function () {
+      const v = parseInt(this.value, 10);
+      dt.page.len(v === -1 ? -1 : v).draw(false);
       dt.columns.adjust();
+      requestAnimationFrame(() => dt.columns.adjust());
       setTimeout(() => dt.columns.adjust(), 0);
-      console.log("Items per page changed to:", val === -1 ? "ALL" : val);
     });
 
-    // ===== REFRESH BUTTON =====
-    $("#btnRefresh").off("click.tbl").on("click.tbl", function () {
-      const btn = $(this);
-      btn.find("i").addClass("fa-spin");
-      setTimeout(() => location.reload(), 300);
+    // ======== Refresh ========
+    $("#btnRefresh").on("click.tbl", function () {
+      const $i = $(this).find("i");
+      $i.addClass("fa-spin");
+      setTimeout(() => location.reload(), 280);
     });
 
-    // ===== TOGGLE DETAIL ROW =====
-    $("#usersTable tbody")
-      .off("click.tbl", "tr.clickable-row td:not(.no-detail)")
+    // ======== Row detail (klik baris) ========
+    $table.find("tbody")
       .on("click.tbl", "tr.clickable-row td:not(.no-detail)", function (e) {
-        if ($(e.target).closest(".btn-action, button, a, form").length) return;
-
-        const $tr = $(this).closest("tr.clickable-row");
-        const row = dt.row($tr);
-        const ds  = $tr.get(0).dataset;
+        if ($(e.target).closest(".btn-action,button,a,form").length) return;
+        const $tr  = $(this).closest("tr.clickable-row");
+        const row  = dt.row($tr);
+        const ds   = $tr.get(0).dataset;
 
         if (row.child.isShown()) {
           row.child.hide();
           $tr.removeClass("shown");
         } else {
           dt.rows().every(function () {
-            if (this.child.isShown()) {
+            if (this.child && this.child.isShown && this.child.isShown()) {
               this.child.hide();
               $(this.node()).removeClass("shown");
             }
           });
           row.child(buildDetail(ds)).show();
           $tr.addClass("shown");
-          // Adjust kolom setelah child terbuka supaya tidak geser
           dt.columns.adjust();
-          setTimeout(() => dt.columns.adjust(), 0);
+          requestAnimationFrame(() => dt.columns.adjust());
         }
       });
 
-    window.__HIFI__.usersTableInited = true; // tandai sukses init
-    console.log("✅ DataTable initialized successfully!");
-    console.log("Total rows:", dt.rows().count());
-    console.log("Page length:", dt.page.len());
+    // ======== Stabilkan saat resize / tab berubah ========
+    window.addEventListener("resize", debounce(() => {
+      dt.columns.adjust();
+    }, 120));
+
+    // Jika ada Bootstrap tab/collapse, adjust saat tab aktif
+    document.addEventListener("shown.bs.tab", () => {
+      dt.columns.adjust();
+      requestAnimationFrame(() => dt.columns.adjust());
+    });
+    document.addEventListener("shown.bs.collapse", () => {
+      dt.columns.adjust();
+      requestAnimationFrame(() => dt.columns.adjust());
+    });
+
+    // Ekspos kecil untuk debug
+    window.__HIFI__ = window.__HIFI__ || {};
+    window.__HIFI__.usersTableInited = true;
+    window.__HIFI__.usersDT = dt;
+
+    console.log("✅ DataTable initialized. rows:", dt.rows().count(), "pageLen:", dt.page.len());
   }
 
-  // Tunggu library siap dulu (maks 4 detik)
+  // Tunggu library siap
   (function waitLibs(tries = 0) {
     if (libsReady()) return whenDOMReady(boot);
-    if (tries > 80) return console.error("DataTables libs gagal dimuat.");
+    if (tries > 120) return console.error("Gagal memuat DataTables/Buttons.");
     setTimeout(() => waitLibs(tries + 1), 50);
   })();
 })();

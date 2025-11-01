@@ -10,32 +10,33 @@
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
       }[m])));
 
-  // Template child row — disamakan dengan field di edit.ejs
+  // Template child row — sesuai dengan field di edit.ejs
   function buildDetail(ds) {
     return `
       <div class="dt-detail">
         <div class="detail-card">
-          <div class="detail-item"><b>Nama Lengkap</b><span>${esc(ds.nama)}</span></div>
-          <div class="detail-item"><b>NPM</b><span>${esc(ds.npm)}</span></div>
-          <div class="detail-item"><b>Tempat Lahir</b><span>${esc(ds.ttl)}</span></div>
-          <div class="detail-item"><b>Tanggal Lahir</b><span>${esc(ds.tgl)}</span></div>
-          <div class="detail-item"><b>Agama</b><span>${esc(ds.agama)}</span></div>
-          <div class="detail-item"><b>Golongan Darah</b><span>${esc(ds.goldar)}</span></div>
-          <div class="detail-item"><b>No. HP</b><span>${esc(ds.hp)}</span></div>
-          <div class="detail-item"><b>Email</b><span>${esc(ds.email)}</span></div>
+          <div class="detail-item"><b><i class="fas fa-user"></i> Nama Lengkap</b><span>${esc(ds.nama)}</span></div>
+          <div class="detail-item"><b><i class="fas fa-id-card"></i> NPM</b><span>${esc(ds.npm)}</span></div>
+          <div class="detail-item"><b><i class="fas fa-envelope"></i> Email</b><span>${esc(ds.email)}</span></div>
+          <div class="detail-item"><b><i class="fas fa-phone"></i> No. HP</b><span>${esc(ds.hp)}</span></div>
+          
+          <div class="detail-item"><b><i class="fas fa-map-marker-alt"></i> Tempat Lahir</b><span>${esc(ds.ttl)}</span></div>
+          <div class="detail-item"><b><i class="fas fa-calendar"></i> Tanggal Lahir</b><span>${esc(ds.tgl)}</span></div>
+          <div class="detail-item"><b><i class="fas fa-pray"></i> Agama</b><span>${esc(ds.agama)}</span></div>
+          <div class="detail-item"><b><i class="fas fa-tint"></i> Golongan Darah</b><span>${esc(ds.goldar)}</span></div>
 
-          <div class="detail-item" style="grid-column:1/-1"><b>Alamat Rumah</b><span>${esc(ds.rumah)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b>Alamat Kos</b><span>${esc(ds.kos)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-home"></i> Alamat Rumah</b><span>${esc(ds.rumah)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-building"></i> Alamat Kos</b><span>${esc(ds.kos)}</span></div>
 
-          <div class="detail-item" style="grid-column:1/-1"><b>Pendidikan</b><span>${esc(ds.pendidikan)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b>Kepanitiaan</b><span>${esc(ds.panitia)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b>Organisasi</b><span>${esc(ds.organisasi)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b>Pelatihan</b><span>${esc(ds.pelatihan)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b>Prestasi</b><span>${esc(ds.prestasi)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-graduation-cap"></i> Pendidikan</b><span>${esc(ds.pendidikan)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-users"></i> Kepanitiaan</b><span>${esc(ds.panitia)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-sitemap"></i> Organisasi</b><span>${esc(ds.organisasi)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-certificate"></i> Pelatihan</b><span>${esc(ds.pelatihan)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-trophy"></i> Prestasi</b><span>${esc(ds.prestasi)}</span></div>
 
           <div class="detail-actions" style="grid-column:1/-1">
             <a class="btn-primary-gradient" href="/dashboard/edit/${esc(ds.id)}">
-              <i class="fas fa-pen"></i>&nbsp; Edit
+              <i class="fas fa-pen"></i> Edit Data Lengkap
             </a>
           </div>
         </div>
@@ -45,10 +46,10 @@
   // Cek apakah sudah ter-inisialisasi sebelumnya
   const alreadyInit = $.fn.DataTable.isDataTable('#usersTable');
 
-  // Inisialisasi (retrieve:true agar reuse instance lama jika ada)
+  // Inisialisasi DataTable (retrieve:true agar reuse instance lama jika ada)
   const dt = $('#usersTable').DataTable({
-    responsive: false,              // pakai child kustom
-    retrieve: true,                 // <- kunci anti re-initialize
+    responsive: false,              // pakai child row kustom
+    retrieve: true,                 // kunci anti re-initialize
     lengthChange: false,
     pagingType: 'simple_numbers',
     pageLength: 10,
@@ -58,11 +59,39 @@
       { targets: [0], width: 48 },
       { targets: [8], orderable: false } // kolom Aksi
     ],
+    language: {
+      paginate: {
+        first: '«',
+        previous: '‹',
+        next: '›',
+        last: '»'
+      },
+      info: 'Menampilkan _START_ - _END_ dari _TOTAL_ data',
+      infoEmpty: 'Tidak ada data',
+      infoFiltered: '(disaring dari _MAX_ total data)',
+      zeroRecords: 'Data tidak ditemukan',
+      emptyTable: 'Tidak ada data tersedia'
+    },
     // Hanya buat tombol saat pertama kali init
     buttons: alreadyInit ? [] : [
-      { extend: 'excel', text: '<i class="fas fa-file-excel"></i> Export Excel', className: 'dt-btn-green' },
-      { extend: 'pdf',   text: '<i class="fas fa-file-pdf"></i> Export PDF',     className: 'dt-btn-green' },
-      { extend: 'print', text: '<i class="fas fa-print"></i> Print',             className: 'dt-btn-green' }
+      { 
+        extend: 'excel', 
+        text: '<i class="fas fa-file-excel"></i> Excel', 
+        className: 'dt-btn-green',
+        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] }
+      },
+      { 
+        extend: 'pdf', 
+        text: '<i class="fas fa-file-pdf"></i> PDF', 
+        className: 'dt-btn-green',
+        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] }
+      },
+      { 
+        extend: 'print', 
+        text: '<i class="fas fa-print"></i> Print', 
+        className: 'dt-btn-green',
+        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] }
+      }
     ]
   });
 
@@ -84,23 +113,40 @@
       dt.page.len(parseInt(this.value, 10)).draw(false);
     });
 
-    // Refresh
+    // Refresh button
     $('#btnRefresh').off('click.tbl').on('click.tbl', function(){
-      location.reload();
+      var btn = $(this);
+      btn.find('i').addClass('fa-spin');
+      setTimeout(function() {
+        location.reload();
+      }, 300);
     });
 
     // Toggle child row (klik baris selain tombol Aksi)
     $('#usersTable')
       .off('click.tbl', 'tbody td:not(.no-detail)')
       .on('click.tbl', 'tbody td:not(.no-detail)', function (e) {
+        // Jangan toggle jika klik button/link
         if ($(e.target).closest('.btn-action, button, a').length) return;
+        
         const $tr = $(this).closest('tr');
         const row = dt.row($tr);
         const ds  = $tr.get(0).dataset;       // data-* yang kita set di table.ejs
+        
         if (row.child.isShown()) {
-          row.child.hide(); $tr.removeClass('shown');
+          row.child.hide(); 
+          $tr.removeClass('shown');
         } else {
-          row.child(buildDetail(ds)).show(); $tr.addClass('shown');
+          // Tutup row lain yang terbuka
+          dt.rows().every(function() {
+            if (this.child.isShown()) {
+              this.child.hide();
+              $(this.node()).removeClass('shown');
+            }
+          });
+          
+          row.child(buildDetail(ds)).show(); 
+          $tr.addClass('shown');
         }
       });
   }

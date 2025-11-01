@@ -1,397 +1,515 @@
-<!-- ============================================
-     HIFI Database - Admin Table (FIXED)
-     Professional DataTable with Responsive Design
-     ============================================ -->
-
-<div class="glass-card">
-  <!-- Table Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h4 class="text-gradient mb-1">
-        <i class="fas fa-users"></i> Data Warga HIFI
-      </h4>
-      <p class="text-muted mb-0" style="font-size: 14px;">
-        Total: <strong id="totalUsers"><%= users.length %></strong> warga terdaftar
-      </p>
+<!-- Data Table Section -->
+<div class="table-section">
+  <div class="table-header">
+    <div class="table-title">
+      <i class="fas fa-table"></i>
+      <h5>Data Warga HIFI</h5>
     </div>
-    <div class="d-flex gap-2">
-      <button onclick="HIFIAdmin.refreshData()" class="btn-glass" id="refreshBtn" title="Refresh Data">
-        <i class="fas fa-sync-alt"></i> Refresh
+    <div class="table-actions">
+      <button class="btn-refresh" onclick="window.location.reload()">
+        <i class="fas fa-sync-alt"></i>
+        <span>Refresh Data</span>
       </button>
-      <a href="/dashboard/tambah" class="btn-primary-gradient">
-        <i class="fas fa-plus"></i> Tambah Data
-      </a>
     </div>
   </div>
-
-  <!-- DataTable Wrapper -->
+  
   <div class="table-responsive">
-    <table id="usersTable" class="table table-hover table-glass" style="width:100%">
+    <table id="usersTable" class="table table-hover" style="width:100%">
       <thead>
         <tr>
-          <th style="width: 5%;">No</th>
-          <th style="width: 20%;">Nama Lengkap</th>
-          <th style="width: 15%;">NPM</th>
-          <th style="width: 20%;">Email</th>
-          <th style="width: 15%;">No. HP</th>
-          <th style="width: 15%;">Alamat Kos</th>
-          <th style="width: 10%;" class="no-export text-center">Aksi</th>
+          <th>No</th>
+          <th>Nama</th>
+          <th>NPM</th>
+          <th>Tempat Lahir</th>
+          <th>Tanggal Lahir</th>
+          <th>Agama</th>
+          <th>Gol. Darah</th>
+          <th>No. HP</th>
+          <th>Email</th>
+          <th>Alamat Rumah</th>
+          <th>Alamat Kos</th>
+          <th>Pendidikan</th>
+          <th>Organisasi</th>
+          <th class="no-export">Aksi</th>
         </tr>
       </thead>
       <tbody>
-        <% if(users && users.length > 0) { %>
-          <% users.forEach((user, index) => { %>
-            <tr>
-              <td class="text-center"><%= index + 1 %></td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <div class="avatar me-2" style="background: linear-gradient(135deg, #DC143C, #1E3A8A); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;">
-                    <%= user.nama_lengkap ? user.nama_lengkap.charAt(0).toUpperCase() : 'U' %>
-                  </div>
-                  <div>
-                    <strong><%= user.nama_lengkap || '-' %></strong>
-                    <br>
-                    <small class="text-muted"><%= user.tempat_lahir || '-' %></small>
-                  </div>
-                </div>
-              </td>
-              <td><strong><%= user.npm || '-' %></strong></td>
-              <td>
-                <i class="fas fa-envelope text-muted me-1"></i>
-                <%= user.email || '-' %>
-              </td>
-              <td>
-                <i class="fas fa-phone text-muted me-1"></i>
-                <%= user.no_hp || '-' %>
-              </td>
-              <td>
-                <i class="fas fa-map-marker-alt text-muted me-1"></i>
-                <%= user.alamat_kos ? (user.alamat_kos.length > 30 ? user.alamat_kos.substring(0, 30) + '...' : user.alamat_kos) : '-' %>
-              </td>
-              <td class="text-center no-export">
-                <div class="d-flex justify-content-center gap-1">
-                  <button class="btn-action btn-view" onclick="viewUserDetails('<%= user._id %>')" title="Lihat Detail">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="btn-action btn-edit" onclick="HIFIAdmin.editUser('<%= user._id %>')" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="btn-action btn-delete" onclick="HIFIAdmin.deleteUser('<%= user._id %>')" title="Hapus">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          <% }) %>
-        <% } else { %>
+        <% users.forEach((user, index) => { %>
           <tr>
-            <td colspan="7" class="text-center">
-              <div class="empty-state py-5">
-                <div class="empty-state-icon">
-                  <i class="fas fa-users-slash"></i>
-                </div>
-                <div class="empty-state-title">Belum Ada Data</div>
-                <div class="empty-state-text">Silakan tambahkan data warga HIFI terlebih dahulu</div>
-                <a href="/dashboard/tambah" class="btn-primary-gradient mt-3">
-                  <i class="fas fa-plus"></i> Tambah Data Pertama
-                </a>
+            <td><%= index + 1 %></td>
+            <td><strong><%= user.nama %></strong></td>
+            <td><%= user.npm %></td>
+            <td><%= user.tempat_lahir %></td>
+            <td><%= user.tanggal_lahir %></td>
+            <td><%= user.agama %></td>
+            <td><span class="badge badge-red"><%= user.golongan_darah %></span></td>
+            <td><%= user.no_hp %></td>
+            <td><%= user.email %></td>
+            <td><%= user.alamat_rumah %></td>
+            <td><%= user.alamat_kos %></td>
+            <td><%= user.pendidikan %></td>
+            <td><%= user.organisasi %></td>
+            <td class="no-export">
+              <div class="action-buttons">
+                <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user.id %>'" title="Edit Data">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action btn-delete" onclick="deleteUser('<%= user.id %>')" title="Hapus Data">
+                  <i class="fas fa-trash"></i>
+                </button>
               </div>
             </td>
           </tr>
-        <% } %>
+        <% }); %>
       </tbody>
     </table>
   </div>
 </div>
 
-<!-- User Detail Modal -->
-<div id="userDetailModal" class="modal-overlay" style="display: none;">
-  <div class="modal-glass">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h5 class="text-gradient mb-0">
-        <i class="fas fa-user-circle"></i> Detail Warga
-      </h5>
-      <button onclick="closeUserDetailModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6B7280;">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div id="userDetailContent">
-      <!-- Content will be loaded dynamically -->
-    </div>
-  </div>
-</div>
-
-<script>
-// View User Details Function
-function viewUserDetails(userId) {
-  const modal = document.getElementById('userDetailModal');
-  const content = document.getElementById('userDetailContent');
-  
-  if (!modal || !content) return;
-  
-  // Show modal
-  modal.style.display = 'flex';
-  modal.style.alignItems = 'center';
-  modal.style.justifyContent = 'center';
-  
-  // Show loading
-  content.innerHTML = `
-    <div class="text-center py-5">
-      <div class="spinner mx-auto"></div>
-      <p class="mt-3 text-muted">Memuat data...</p>
-    </div>
-  `;
-  
-  // Fetch user data
-  fetch('/dashboard/user/' + userId)
-    .then(response => response.json())
-    .then(user => {
-      content.innerHTML = `
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <h6 class="text-gradient mb-3">
-              <i class="fas fa-user"></i> Informasi Personal
-            </h6>
-            <table class="table table-borderless">
-              <tr>
-                <td width="40%"><strong>Nama Lengkap</strong></td>
-                <td>: ${user.nama_lengkap || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>NPM</strong></td>
-                <td>: ${user.npm || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>Tempat Lahir</strong></td>
-                <td>: ${user.tempat_lahir || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>Tanggal Lahir</strong></td>
-                <td>: ${user.tanggal_lahir || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>Agama</strong></td>
-                <td>: ${user.agama || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>Golongan Darah</strong></td>
-                <td>: ${user.golongan_darah || '-'}</td>
-              </tr>
-            </table>
-          </div>
-          <div class="col-md-6 mb-3">
-            <h6 class="text-gradient mb-3">
-              <i class="fas fa-address-book"></i> Kontak & Alamat
-            </h6>
-            <table class="table table-borderless">
-              <tr>
-                <td width="40%"><strong>No. HP</strong></td>
-                <td>: ${user.no_hp || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>Email</strong></td>
-                <td>: ${user.email || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>Alamat Rumah</strong></td>
-                <td>: ${user.alamat_rumah || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>Alamat Kos</strong></td>
-                <td>: ${user.alamat_kos || '-'}</td>
-              </tr>
-            </table>
-          </div>
-          <div class="col-12">
-            <h6 class="text-gradient mb-3">
-              <i class="fas fa-history"></i> Riwayat
-            </h6>
-            <table class="table table-borderless">
-              <tr>
-                <td width="20%"><strong>Pendidikan</strong></td>
-                <td>: ${user.riwayat_pendidikan || '-'}</td>
-              </tr>
-              <tr>
-                <td><strong>Organisasi</strong></td>
-                <td>: ${user.riwayat_organisasi || '-'}</td>
-              </tr>
-            </table>
-          </div>
-        </div>
-        <div class="d-flex gap-2 justify-content-end mt-4">
-          <button onclick="closeUserDetailModal()" class="btn-glass">
-            <i class="fas fa-times"></i> Tutup
-          </button>
-          <button onclick="HIFIAdmin.editUser('${user._id}')" class="btn-primary-gradient">
-            <i class="fas fa-edit"></i> Edit Data
-          </button>
-        </div>
-      `;
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      content.innerHTML = `
-        <div class="alert-glass alert-error">
-          <i class="fas fa-exclamation-circle"></i>
-          Gagal memuat data. Silakan coba lagi.
-        </div>
-      `;
-    });
-}
-
-function closeUserDetailModal() {
-  const modal = document.getElementById('userDetailModal');
-  if (modal) {
-    modal.style.display = 'none';
-  }
-}
-
-// Close modal when clicking outside
-document.getElementById('userDetailModal')?.addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeUserDetailModal();
-  }
-});
-</script>
-
 <style>
-/* Additional table styling */
-#usersTable {
-  border-collapse: separate;
-  border-spacing: 0;
+/* ============================================
+   TABLE SECTION STYLING
+   ============================================ */
+.table-section {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 30px;
 }
 
-#usersTable thead th {
-  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-  color: white;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  padding: 16px;
-  border: none;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-#usersTable tbody td {
-  padding: 12px 16px;
-  vertical-align: middle;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  color: #374151;
-}
-
-#usersTable tbody tr {
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-#usersTable tbody tr:hover {
-  background: rgba(30, 58, 138, 0.05);
-  transform: translateX(2px);
-}
-
-#usersTable tbody tr.shown {
-  background: rgba(220, 20, 60, 0.05);
-}
-
-.avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.me-2 {
-  margin-right: 8px;
-}
-
-/* DataTable Controls Styling */
-.dataTables_wrapper .dataTables_length,
-.dataTables_wrapper .dataTables_filter {
-  margin-bottom: 0;
-}
-
-.dataTables_wrapper .dataTables_length label,
-.dataTables_wrapper .dataTables_filter label {
+.table-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 0;
-  font-weight: 500;
-  color: #374151;
+  gap: 12px;
 }
 
-.dataTables_wrapper .dt-buttons {
+.table-title i {
+  font-size: 24px;
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.table-title h5 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.table-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-refresh {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  font-size: 14px;
+}
+
+.btn-refresh:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-refresh:active {
+  transform: translateY(0);
+}
+
+.btn-refresh i {
+  font-size: 16px;
+  transition: transform 0.6s ease;
+}
+
+.btn-refresh:hover i {
+  transform: rotate(360deg);
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* DataTables Wrapper */
+.dataTables_wrapper {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.dataTables_filter,
+.dataTables_length {
+  margin-bottom: 20px;
+}
+
+.dataTables_filter label,
+.dataTables_length label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
+
+.dataTables_filter input,
+.dataTables_length select {
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 10px 16px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1F2937;
+  min-width: 200px;
+}
+
+.dataTables_filter input:focus,
+.dataTables_length select:focus {
+  outline: none;
+  border-color: #1E3A8A;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+.dataTables_filter input::placeholder {
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+/* Table Styling */
+table.dataTable {
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+}
+
+table.dataTable thead th {
+  background: linear-gradient(135deg, #1F2937 0%, #374151 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px !important;
+  padding: 18px 16px !important;
+  border: none !important;
+  white-space: nowrap;
+}
+
+table.dataTable thead th:first-child {
+  border-radius: 12px 0 0 12px !important;
+}
+
+table.dataTable thead th:last-child {
+  border-radius: 0 12px 12px 0 !important;
+}
+
+table.dataTable tbody tr {
+  background: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.3s ease !important;
+}
+
+table.dataTable tbody tr:hover {
+  background: rgba(30, 58, 138, 0.04) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px) !important;
+}
+
+table.dataTable tbody td {
+  padding: 16px !important;
+  border: none !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  vertical-align: middle !important;
+}
+
+table.dataTable tbody tr td:first-child {
+  border-radius: 12px 0 0 12px !important;
+  font-weight: 700 !important;
+  color: #1F2937 !important;
+}
+
+table.dataTable tbody tr td:last-child {
+  border-radius: 0 12px 12px 0 !important;
+}
+
+table.dataTable tbody td strong {
+  color: #1F2937;
+  font-weight: 700;
+}
+
+/* Action Buttons */
+.action-buttons {
   display: flex;
   gap: 8px;
+  justify-content: center;
 }
 
-.dataTables_wrapper .top-controls {
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.dataTables_wrapper .bottom-controls {
-  padding-top: 16px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-/* Modal Styling */
-#userDetailModal {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  padding: 20px;
-}
-
-#userDetailModal .modal-glass {
-  position: relative;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-#userDetailModal .table-borderless td {
-  padding: 8px 0;
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
   font-size: 14px;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-edit:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+}
+
+/* Badge Styling */
+.badge-red {
+  background: rgba(220, 20, 60, 0.15);
+  color: #DC143C;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Pagination */
+.dataTables_paginate {
+  margin-top: 24px !important;
+  display: flex;
+  justify-content: center;
+}
+
+.dataTables_paginate .pagination {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dataTables_paginate .page-item {
+  list-style: none;
+}
+
+.dataTables_paginate .page-item .page-link {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 10px 16px;
+  color: #374151;
+  background: #F9FAFB;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dataTables_paginate .page-item.active .page-link {
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+}
+
+.dataTables_paginate .page-item .page-link:hover:not(.active) {
+  background: rgba(30, 58, 138, 0.1);
+  border-color: #1E3A8A;
+  transform: translateY(-2px);
+}
+
+.dataTables_paginate .page-item.disabled .page-link {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(249, 250, 251, 0.5);
+}
+
+/* DataTables Info */
+.dataTables_info {
+  color: #6B7280;
+  font-weight: 600;
+  font-size: 14px;
+  padding-top: 16px;
+}
+
+/* Export Buttons */
+.dt-buttons {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dt-button {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  font-size: 14px !important;
+}
+
+.dt-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+.dt-button i {
+  font-size: 14px;
+}
+
+/* Responsive Child Rows */
+table.dataTable tbody tr.child {
+  background: rgba(249, 250, 251, 0.95) !important;
+}
+
+table.dataTable tbody tr.child > td {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+table.dataTable tbody tr.child ul.dtr-details {
+  list-style: none;
+  margin: 0;
+  padding: 16px 20px;
+  width: 100%;
+}
+
+table.dataTable tbody tr.child ul.dtr-details li {
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+  padding: 10px 0;
+  display: flex;
+  gap: 12px;
+}
+
+table.dataTable tbody tr.child ul.dtr-details li:last-child {
+  border-bottom: 0;
+}
+
+table.dataTable tbody tr.child span.dtr-title {
+  display: inline-block;
+  min-width: 160px;
+  font-weight: 700;
   color: #374151;
 }
 
-#userDetailModal .table-borderless strong {
+table.dataTable tbody tr.child span.dtr-data {
   color: #1F2937;
+  font-weight: 500;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  #usersTable thead {
-    display: none;
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .table-section {
+    padding: 24px 16px;
   }
   
-  #usersTable tbody td {
-    display: block;
-    text-align: left;
-    padding: 8px 16px;
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
   
-  #usersTable tbody td:first-child {
-    padding-top: 16px;
-    font-weight: 700;
-    background: rgba(30, 58, 138, 0.05);
+  .table-actions {
+    width: 100%;
   }
   
-  #usersTable tbody td:last-child {
-    padding-bottom: 16px;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  }
-  
-  #usersTable tbody td:before {
-    content: attr(data-label);
-    font-weight: 700;
-    display: inline-block;
-    width: 120px;
-    color: #1E3A8A;
+  .btn-refresh {
+    width: 100%;
+    justify-content: center;
   }
 }
-</style>
+
+@media screen and (max-width: 768px) {
+  .table-section {
+    padding: 20px 12px;
+    border-radius: 16px;
+  }
+  
+  .table-title h5 {
+    font-size: 18px;
+  }
+  
+  .table-title i {
+    font-size: 20px;
+  }
+  
+  .btn-refresh {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+  
+  .dataTables_filter input,
+  .dataTables_length select {
+    min-width: 150px;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  
+  table.dataTable thead th {
+    font-size: 11px !important;
+    padding: 14px 10px !important;
+  }

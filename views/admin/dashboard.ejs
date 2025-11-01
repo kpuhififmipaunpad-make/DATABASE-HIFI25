@@ -1,106 +1,1087 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <%- include('partials/header') %>
-  <title>Dashboard Admin - HIFI Database</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - HIFI Database</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/img/LogoHIFI-2.png">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  
+  <style>
+    /* ============================================
+       ADMIN DASHBOARD SPECIFIC STYLES
+       ============================================ */
+    
+    body {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Main Layout */
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar Enhanced */
+    .sidebar-glass {
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+      backdrop-filter: blur(20px);
+      width: 280px;
+      position: fixed;
+      height: 100vh;
+      left: 0;
+      top: 0;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+    }
+    
+    .sidebar-glass.collapsed {
+      width: 80px;
+    }
+    
+    .sidebar-logo {
+      padding: 24px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-logo img {
+      height: 50px;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-glass.collapsed .sidebar-logo img {
+      height: 40px;
+    }
+    
+    .sidebar-logo h4 {
+      color: white;
+      margin-top: 12px;
+      font-weight: 700;
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-glass.collapsed .sidebar-logo h4 {
+      display: none;
+    }
+    
+    .sidebar-menu {
+      padding: 20px 12px;
+    }
+    
+    .sidebar-menu-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      font-size: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sidebar-menu-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: var(--gradient-primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-menu-item:hover {
+      background: rgba(220, 20, 60, 0.15);
+      color: white;
+      transform: translateX(4px);
+    }
+    
+    .sidebar-menu-item:hover::before {
+      transform: scaleY(1);
+    }
+    
+    .sidebar-menu-item.active {
+      background: linear-gradient(135deg, rgba(220, 20, 60, 0.2) 0%, rgba(30, 58, 138, 0.2) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    }
+    
+    .sidebar-menu-item.active::before {
+      transform: scaleY(1);
+    }
+    
+    .sidebar-menu-item i {
+      font-size: 20px;
+      width: 24px;
+      margin-right: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-glass.collapsed .sidebar-menu-item span {
+      display: none;
+    }
+    
+    .sidebar-glass.collapsed .sidebar-menu-item {
+      justify-content: center;
+      padding: 14px 8px;
+    }
+    
+    .sidebar-glass.collapsed .sidebar-menu-item i {
+      margin-right: 0;
+      font-size: 22px;
+    }
+    
+    /* Content Wrapper */
+    .content-wrapper {
+      margin-left: 280px;
+      width: calc(100% - 280px);
+      min-height: 100vh;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0;
+    }
+    
+    .content-wrapper.expanded {
+      margin-left: 80px;
+      width: calc(100% - 80px);
+    }
+    
+    /* Top Navigation */
+    .top-nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .top-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .sidebar-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    }
+    
+    .sidebar-toggle:hover {
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 6px 16px rgba(220, 20, 60, 0.4);
+    }
+    
+    .page-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .top-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .notification-bell {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(220, 20, 60, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #DC143C;
+    }
+    
+    .notification-bell:hover {
+      background: rgba(220, 20, 60, 0.2);
+      transform: scale(1.1);
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: linear-gradient(135deg, #DC143C 0%, #FF1744 100%);
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4);
+    }
+    
+    .profile-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: rgba(30, 58, 138, 0.08);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .profile-section:hover {
+      background: rgba(30, 58, 138, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .profile-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    }
+    
+    .profile-info h6 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1F2937;
+    }
+    
+    .profile-info p {
+      margin: 0;
+      font-size: 12px;
+      color: #6B7280;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 32px;
+      background: transparent;
+    }
+    
+    /* Stats Cards Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #DC143C 0%, #1E3A8A 100%);
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+    
+    .stat-card:hover::before {
+      transform: scaleX(1);
+    }
+    
+    .stat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: white;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.4s ease;
+    }
+    
+    .stat-card:hover .stat-card-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    .stat-card-icon.red {
+      background: linear-gradient(135deg, #DC143C 0%, #FF1744 100%);
+    }
+    
+    .stat-card-icon.blue {
+      background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+    }
+    
+    .stat-card-icon.green {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    }
+    
+    .stat-card-icon.purple {
+      background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    }
+    
+    .stat-card-body h3 {
+      font-size: 36px;
+      font-weight: 800;
+      margin: 0 0 8px 0;
+      background: linear-gradient(135deg, #1F2937 0%, #374151 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-card-body p {
+      margin: 0;
+      color: #6B7280;
+      font-size: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-card-footer {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #10B981;
+      font-weight: 600;
+    }
+    
+    .stat-card-footer i {
+      font-size: 14px;
+    }
+    
+    /* Data Table Section */
+    .table-section {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+    }
+    
+    .table-header h5 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .table-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn-refresh {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-refresh:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    /* DataTables Styling */
+    .dataTables_wrapper {
+      background: transparent !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+    }
+    
+    .dataTables_filter,
+    .dataTables_length {
+      margin-bottom: 20px;
+    }
+    
+    .dataTables_filter label,
+    .dataTables_length label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .dataTables_filter input,
+    .dataTables_length select {
+      background: rgba(249, 250, 251, 1);
+      border: 2px solid rgba(229, 231, 235, 1);
+      border-radius: 10px;
+      padding: 10px 16px;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .dataTables_filter input:focus,
+    .dataTables_length select:focus {
+      outline: none;
+      border-color: #1E3A8A;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+    
+    table.dataTable {
+      border-collapse: separate !important;
+      border-spacing: 0 8px !important;
+      width: 100% !important;
+    }
+    
+    table.dataTable thead th {
+      background: linear-gradient(135deg, #1F2937 0%, #374151 100%) !important;
+      color: white !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      font-size: 13px !important;
+      letter-spacing: 0.5px !important;
+      padding: 18px 16px !important;
+      border: none !important;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    table.dataTable thead th:first-child {
+      border-radius: 12px 0 0 12px !important;
+    }
+    
+    table.dataTable thead th:last-child {
+      border-radius: 0 12px 12px 0 !important;
+    }
+    
+    table.dataTable tbody tr {
+      background: white !important;
+      border-radius: 12px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    table.dataTable tbody tr:hover {
+      background: rgba(30, 58, 138, 0.04) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+      transform: scale(1.01) !important;
+    }
+    
+    table.dataTable tbody td {
+      padding: 16px !important;
+      border: none !important;
+      color: #374151 !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      vertical-align: middle !important;
+    }
+    
+    table.dataTable tbody tr td:first-child {
+      border-radius: 12px 0 0 12px !important;
+    }
+    
+    table.dataTable tbody tr td:last-child {
+      border-radius: 0 12px 12px 0 !important;
+    }
+    
+    /* Action Buttons */
+    .btn-action {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0 3px;
+    }
+    
+    .btn-edit {
+      background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .btn-edit:hover {
+      transform: scale(1.15);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+    }
+    
+    .btn-delete {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-delete:hover {
+      transform: scale(1.15);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+    }
+    
+    /* Pagination */
+    .dataTables_paginate {
+      margin-top: 24px !important;
+    }
+    
+    .dataTables_paginate .pagination {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+    
+    .dataTables_paginate .page-item .page-link {
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 10px 16px;
+      color: #374151;
+      background: rgba(249, 250, 251, 1);
+      font-weight: 600;
+      transition: all 0.3s ease;
+      min-width: 44px;
+      text-align: center;
+    }
+    
+    .dataTables_paginate .page-item.active .page-link {
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    }
+    
+    .dataTables_paginate .page-item .page-link:hover {
+      background: rgba(30, 58, 138, 0.1);
+      border-color: #1E3A8A;
+      transform: translateY(-2px);
+    }
+    
+    .dataTables_paginate .page-item.disabled .page-link {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: rgba(249, 250, 251, 0.5);
+    }
+    
+    /* DataTables Info */
+    .dataTables_info {
+      color: #6B7280;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    /* Export Buttons */
+    .dt-buttons {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .dt-button {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 10px !important;
+      padding: 10px 18px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    }
+    
+    .dt-button:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+    }
+    
+    /* Responsive Design */
+    @media screen and (max-width: 1024px) {
+      .sidebar-glass {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar-glass.active {
+        transform: translateX(0);
+      }
+      
+      .content-wrapper {
+        margin-left: 0;
+        width: 100%;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+      }
+      
+      .top-nav {
+        padding: 12px 16px;
+      }
+      
+      .main-content {
+        padding: 20px 16px;
+      }
+      
+      .table-section {
+        padding: 20px 16px;
+      }
+    }
+    
+    @media screen and (max-width: 768px) {
+      .page-title {
+        font-size: 20px;
+      }
+      
+      .profile-info {
+        display: none;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .table-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      
+      .table-actions {
+        width: 100%;
+      }
+      
+      .btn-refresh {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    
+    /* Scrollbar */
+    .sidebar-glass::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .sidebar-glass::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .sidebar-glass::-webkit-scrollbar-thumb {
+      background: rgba(220, 20, 60, 0.5);
+      border-radius: 10px;
+    }
+    
+    .sidebar-glass::-webkit-scrollbar-thumb:hover {
+      background: rgba(220, 20, 60, 0.7);
+    }
+    
+    /* Loading State */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
+  
+  <div class="admin-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar-glass" id="sidebar">
+      <div class="sidebar-logo">
+        <img src="/img/LogoHIFI-2.png" alt="HIFI Logo">
+        <h4>HIFI Database</h4>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <a href="/dashboard" class="sidebar-menu-item active">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/dashboard" class="sidebar-menu-item">
+          <i class="fas fa-users"></i>
+          <span>Data Warga</span>
+        </a>
+        <a href="/profile" class="sidebar-menu-item">
+          <i class="fas fa-user"></i>
+          <span>Profile</span>
+        </a>
+        <a href="/logout" class="sidebar-menu-item">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <div class="content-wrapper" id="contentWrapper">
+      
+      <!-- Top Navigation -->
+      <nav class="top-nav">
+        <div class="top-nav-left">
+          <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="page-title">Dashboard Admin</h1>
+        </div>
+        
+        <div class="top-nav-right">
+          <div class="notification-bell">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">3</span>
+          </div>
+          
+          <div class="profile-section">
+            <div class="profile-avatar">
+              <%= user.username.charAt(0).toUpperCase() %>
+            </div>
+            <div class="profile-info">
+              <h6><%= user.username %></h6>
+              <p>Administrator</p>
+            </div>
+          </div>
+        </div>
+      </nav>
+      
+      <!-- Main Content Area -->
+      <main class="main-content">
+        
+        <!-- Alert Messages -->
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert alert-glass alert-error animate-fadeInUp">
+            <i class="fas fa-exclamation-circle"></i>
+            <span><%= error %></span>
+          </div>
+        <% } %>
+        
+        <% if (typeof success !== 'undefined' && success) { %>
+          <div class="alert alert-glass alert-success animate-fadeInUp">
+            <i class="fas fa-check-circle"></i>
+            <span><%= success %></span>
+          </div>
+        <% } %>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-card-icon red">
+                <i class="fas fa-users"></i>
+              </div>
+            </div>
+            <div class="stat-card-body">
+              <h3><%= users.length %></h3>
+              <p>Total Warga</p>
+            </div>
+            <div class="stat-card-footer">
+              <i class="fas fa-arrow-up"></i>
+              <span>+12% dari bulan lalu</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-card-icon blue">
+                <i class="fas fa-user-plus"></i>
+              </div>
+            </div>
+            <div class="stat-card-body">
+              <h3><%= users.filter(u => {
+                const joinDate = new Date(u.created_at);
+                const now = new Date();
+                const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
+                return joinDate >= monthAgo;
+              }).length %></h3>
+              <p>Pendaftar Baru</p>
+            </div>
+            <div class="stat-card-footer">
+              <i class="fas fa-arrow-up"></i>
+              <span>Bulan ini</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-card-icon green">
+                <i class="fas fa-check-circle"></i>
+              </div>
+            </div>
+            <div class="stat-card-body">
+              <h3><%= users.filter(u => u.is_active).length %></h3>
+              <p>Warga Aktif</p>
+            </div>
+            <div class="stat-card-footer">
+              <i class="fas fa-arrow-up"></i>
+              <span>Status aktif</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-card-icon purple">
+                <i class="fas fa-database"></i>
+              </div>
+            </div>
+            <div class="stat-card-body">
+              <h3>100%</h3>
+              <p>Data Lengkap</p>
+            </div>
+            <div class="stat-card-footer">
+              <i class="fas fa-check"></i>
+              <span>Semua data terverifikasi</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Data Table Section -->
+        <div class="table-section">
+          <div class="table-header">
+            <h5><i class="fas fa-table me-2"></i>Data Warga HIFI</h5>
+            <div class="table-actions">
+              <button class="btn-refresh" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh Data</span>
+              </button>
+            </div>
+          </div>
+          
+          <table id="usersTable" class="table table-hover" style="width:100%">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>NPM</th>
+                <th>Tempat Lahir</th>
+                <th>Tanggal Lahir</th>
+                <th>Agama</th>
+                <th>Golongan Darah</th>
+                <th>No. HP</th>
+                <th>Email</th>
+                <th>Alamat Rumah</th>
+                <th>Alamat Kos</th>
+                <th>Pendidikan</th>
+                <th>Organisasi</th>
+                <th class="no-export">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach((user, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><strong><%= user.nama %></strong></td>
+                  <td><%= user.npm %></td>
+                  <td><%= user.tempat_lahir %></td>
+                  <td><%= user.tanggal_lahir %></td>
+                  <td><%= user.agama %></td>
+                  <td><span class="badge badge-red"><%= user.golongan_darah %></span></td>
+                  <td><%= user.no_hp %></td>
+                  <td><%= user.email %></td>
+                  <td><%= user.alamat_rumah %></td>
+                  <td><%= user.alamat_kos %></td>
+                  <td><%= user.pendidikan %></td>
+                  <td><%= user.organisasi %></td>
+                  <td class="no-export">
+                    <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user.id %>'" title="Edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-action btn-delete" onclick="deleteUser('<%= user.id %>')" title="Hapus">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        
+      </main>
+      
+    </div>
+    
+  </div>
+  
   <!-- Background Shapes -->
   <div class="bg-shape bg-shape-1"></div>
   <div class="bg-shape bg-shape-2"></div>
   <div class="bg-shape bg-shape-3"></div>
-
-  <!-- Sidebar -->
-  <%- include('partials/sidebar') %>
-
-  <!-- Main Content -->
-  <div class="content-wrapper">
-    <!-- Navbar -->
-    <%- include('partials/navbar') %>
-
-    <!-- Messages -->
-    <%- include('partials/message') %>
-
-    <!-- Dashboard Header -->
-    <div class="dashboard-header" data-animate>
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h1 class="dashboard-title mb-2">
-            <i class="fas fa-tachometer-alt"></i> Dashboard Admin
-          </h1>
-          <p class="dashboard-subtitle mb-0">
-            Selamat datang kembali! Kelola data warga HIFI dengan mudah.
-          </p>
-        </div>
-        <div>
-          <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI" style="height: 60px; filter: brightness(0) invert(1);">
-        </div>
-      </div>
-    </div>
-
-    <!-- Statistics Cards -->
-    <div class="stats-grid" data-animate>
-      <!-- Total Warga -->
-      <div class="stat-card">
-        <div class="stat-card-icon">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="stat-card-title">Total Warga</div>
-        <div class="stat-card-value" data-counter="<%= users.length %>">0</div>
-        <div class="stat-card-trend">
-          <i class="fas fa-arrow-up"></i> +12% dari bulan lalu
-        </div>
-      </div>
-
-      <!-- Warga Aktif -->
-      <div class="stat-card">
-        <div class="stat-card-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
-          <i class="fas fa-user-check"></i>
-        </div>
-        <div class="stat-card-title">Warga Aktif</div>
-        <div class="stat-card-value" data-counter="<%= Math.floor(users.length * 0.85) %>">0</div>
-        <div class="stat-card-trend" style="color: #10B981;">
-          <i class="fas fa-arrow-up"></i> +8% dari bulan lalu
-        </div>
-      </div>
-
-      <!-- Data Baru Bulan Ini -->
-      <div class="stat-card">
-        <div class="stat-card-icon" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">
-          <i class="fas fa-user-plus"></i>
-        </div>
-        <div class="stat-card-title">Data Baru Bulan Ini</div>
-        <div class="stat-card-value" data-counter="<%= Math.floor(users.length * 0.15) %>">0</div>
-        <div class="stat-card-trend" style="color: #F59E0B;">
-          <i class="fas fa-arrow-up"></i> Bulan ini
-        </div>
-      </div>
-
-      <!-- Database Status -->
-      <div class="stat-card">
-        <div class="stat-card-icon" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
-          <i class="fas fa-database"></i>
-        </div>
-        <div class="stat-card-title">Status Database</div>
-        <div class="stat-card-value" style="font-size: 20px; color: #10B981;">
-          <i class="fas fa-check-circle"></i> Online
-        </div>
-        <div class="stat-card-trend" style="color: #10B981;">
-          <i class="fas fa-signal"></i> Koneksi stabil
-        </div>
-      </div>
-    </div>
-
-    <!-- Data Table -->
-    <div data-animate>
-      <%- include('partials/table') %>
-    </div>
-
-    <!-- Footer -->
-    <%- include('partials/footer') %>
-  </div>
-
+  
   <!-- Scripts -->
-  <%- include('partials/script') %>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+  <script src="/javascript/animations.js"></script>
+  <script src="/javascript/admin-animations.js"></script>
+  
+  <script>
+    // Delete User Function
+    function deleteUser(id) {
+      if (confirm('Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.')) {
+        const button = event.target.closest('.btn-delete');
+        const originalHTML = button.innerHTML;
+        
+        button.innerHTML = '<div class="loading-spinner"></div>';
+        button.disabled = true;
+        
+        fetch(`/dashboard/delete/${id}`, {
+          method: 'DELETE'
+        })
+        .then(response => {
+          if (response.ok) {
+            button.closest('tr').style.animation = 'fadeOut 0.5s ease-out';
+            setTimeout(() => {
+              window.location.reload();
+            }, 500);
+          } else {
+            throw new Error('Gagal menghapus data');
+          }
+        })
+        .catch(err => {
+          alert('Terjadi kesalahan saat menghapus data!');
+          button.innerHTML = originalHTML;
+          button.disabled = false;
+        });
+      }
+    }
+    
+    // Auto-dismiss alerts
+    setTimeout(() => {
+      document.querySelectorAll('.alert-glass').forEach(alert => {
+        alert.style.animation = 'fadeOut 0.5s ease-out';
+        setTimeout(() => alert.remove(), 500);
+      });
+    }, 5000);
+  </script>
+  
+  <style>
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+  
 </body>
 </html>

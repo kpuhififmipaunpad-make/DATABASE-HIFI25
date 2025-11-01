@@ -117,11 +117,12 @@
   // Inisialisasi DataTable
   const dt = $('#usersTable').DataTable({
     responsive: false,
-    lengthChange: false,
+    lengthChange: false,            // Disable built-in length change (kita pakai custom)
+    searching: false,                // Disable built-in search (kita pakai custom)
     pagingType: 'simple_numbers',
-    pageLength: 10,
-    dom: "Bt<'dt-bottom'ip>",
-    order: [[2, 'asc']],
+    pageLength: 10,                  // Default 10 items per page
+    dom: "Bt<'dt-bottom'ip>",       // B=buttons, t=table, i=info, p=pagination
+    order: [[2, 'asc']],             // Sort by Nama
     columnDefs: [
       { targets: [0], width: '48px' },
       { targets: [8], orderable: false, className: 'no-detail' }
@@ -152,6 +153,7 @@
         text: '<i class="fas fa-file-pdf"></i> PDF', 
         className: 'dt-btn-green',
         title: 'Data Warga HIFI',
+        orientation: 'landscape',
         exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] }
       },
       { 
@@ -168,17 +170,27 @@
   $('#exportButtons').empty();
   dt.buttons().container().appendTo('#exportButtons');
 
-  // Search khusus kolom Nama (index 2)
+  // ===== CUSTOM SEARCH (kolom Nama) =====
   $('#searchNama').off('input.tbl').on('input.tbl', function(){
     dt.column(2).search(this.value).draw();
   });
 
-  // Items per page
+  // ===== CUSTOM ITEMS PER PAGE =====
   $('#itemsPerPage').off('change.tbl').on('change.tbl', function(){
-    dt.page.len(parseInt(this.value, 10)).draw();
+    const val = parseInt(this.value, 10);
+    
+    if (val === -1) {
+      // Show ALL data
+      dt.page.len(-1).draw();
+    } else {
+      // Show specific number per page
+      dt.page.len(val).draw();
+    }
+    
+    console.log('Items per page changed to:', val === -1 ? 'ALL' : val);
   });
 
-  // Refresh button
+  // ===== REFRESH BUTTON =====
   $('#btnRefresh').off('click.tbl').on('click.tbl', function(){
     var btn = $(this);
     btn.find('i').addClass('fa-spin');
@@ -187,11 +199,11 @@
     }, 300);
   });
 
-  // Toggle child row (klik baris selain tombol Aksi)
+  // ===== TOGGLE DETAIL ROW (klik baris) =====
   $('#usersTable tbody')
     .off('click.tbl', 'tr.clickable-row td:not(.no-detail)')
     .on('click.tbl', 'tr.clickable-row td:not(.no-detail)', function (e) {
-      // Jangan toggle jika klik button/link
+      // Jangan toggle jika klik button/link/form
       if ($(e.target).closest('.btn-action, button, a, form').length) return;
       
       const $tr = $(this).closest('tr.clickable-row');
@@ -215,6 +227,8 @@
       }
     });
 
-  console.log('DataTable initialized successfully!');
+  console.log('✅ DataTable initialized successfully!');
+  console.log('Total rows:', dt.rows().count());
+  console.log('Page length:', dt.page.len());
 })();
 </script>

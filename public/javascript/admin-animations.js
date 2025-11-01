@@ -3,6 +3,8 @@
  * Dashboard-specific animations & interactions
  */
 
+'use strict';
+
 // ============================================
 // UTILITIES
 // ============================================
@@ -101,6 +103,16 @@ const HIFI = (() => {
   return { esc, formatDate, buildDetail };
 })();
 
+// Helper: ambil instance DT kalau sudah ada
+function getDT() {
+  try {
+    if (window.jQuery && $.fn && $.fn.DataTable && $.fn.DataTable.isDataTable('#usersTable')) {
+      return $('#usersTable').DataTable();
+    }
+  } catch (_) {}
+  return null;
+}
+
 // ============================================
 // SIDEBAR TOGGLE
 // ============================================
@@ -125,7 +137,9 @@ function initSidebarToggle() {
 }
 
 // ============================================
-// DATATABLE INIT — disesuaikan dengan table.ejs
+// DATATABLE INIT — aman dari konflik
+// - Jika DT SUDAH ada (diinisialisasi script.ejs), JANGAN re-init
+// - Jika DT BELUM ada, init di sini pakai konfigurasi dashboard
 // ============================================
 function initDataTable() {
   if (!window.jQuery || !$.fn.DataTable) return;
@@ -133,11 +147,14 @@ function initDataTable() {
   const $table = $('#usersTable');
   if (!$table.length) return;
 
-  // Destroy kalau sudah ada instance
-  if ($.fn.DataTable.isDataTable('#usersTable')) {
-    $table.DataTable().destroy();
+  // Jika sudah ada instance (mis. dari partials/script.ejs) -> hanya enhance & keluar
+  const existing = getDT();
+  if (existing) {
+    $('.dataTables_wrapper').addClass('glass-card'); // kosmetik
+    return;
   }
 
+  // ---- Belum ada instance -> inisialisasi di sini (mirror script.ejs) ----
   const dt = $table.DataTable({
     responsive: false,
     lengthChange: false,
@@ -189,18 +206,18 @@ function initDataTable() {
   dt.buttons().container().appendTo('#exportButtons');
 
   // Custom SEARCH (kolom Nama / index 2)
-  $('#searchNama').off('input.tbl').on('input.tbl', function () {
+  $('#searchNama').off('input.hifi').on('input.hifi', function () {
     dt.column(2).search(this.value).draw();
   });
 
   // Custom ITEMS PER PAGE
-  $('#itemsPerPage').off('change.tbl').on('change.tbl', function () {
+  $('#itemsPerPage').off('change.hifi').on('change.hifi', function () {
     const val = parseInt(this.value, 10);
     dt.page.len(val === -1 ? -1 : val).draw();
   });
 
   // Refresh
-  $('#btnRefresh').off('click.tbl').on('click.tbl', function(){
+  $('#btnRefresh').off('click.hifi').on('click.hifi', function(){
     const $i = $(this).find('i');
     $i.addClass('fa-spin');
     setTimeout(() => location.reload(), 300);
@@ -208,8 +225,8 @@ function initDataTable() {
 
   // Toggle child-row via klik baris kecuali kolom aksi
   $('#usersTable tbody')
-    .off('click.tbl', 'tr.clickable-row td:not(.no-detail)')
-    .on('click.tbl', 'tr.clickable-row td:not(.no-detail)', function (e) {
+    .off('click.hifi', 'tr.clickable-row td:not(.no-detail)')
+    .on('click.hifi', 'tr.clickable-row td:not(.no-detail)', function (e) {
       if ($(e.target).closest('.btn-action, button, a, form').length) return;
       const $tr = $(this).closest('tr.clickable-row');
       const row = dt.row($tr);
@@ -221,7 +238,7 @@ function initDataTable() {
       } else {
         // Tutup child lain
         dt.rows().every(function () {
-          if (this.child.isShown()) {
+          if (this.child && this.child.isShown()) {
             this.child.hide();
             $(this.node()).removeClass('shown');
           }
@@ -231,7 +248,6 @@ function initDataTable() {
       }
     });
 
-  // Ehanced wrapper styling (opsional)
   $('.dataTables_wrapper').addClass('glass-card');
 }
 
@@ -278,7 +294,7 @@ function initSearchHighlight() {
     const term = this.value.toLowerCase();
     document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
       const hit = tr.textContent.toLowerCase().includes(term);
-      tr.style.backgroundColor = hit && term ? 'rgba(220,20,60,0.05)' : '';
+      tr.style.backgroundColor = (hit && term) ? 'rgba(220,20,60,0.05)' : '';
     });
   });
 }
@@ -344,8 +360,8 @@ document.addEventListener('click', (e) => {
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
   initSidebarToggle();
-  initDataTable();
-  initSearchHighlight();
+  initDataTable();       // aman: adopt existing or init once
+  initSearchHighlight(); // hanya highlight ringan (tidak ganggu filter DT)
   initCharts();
   animateStatCards();
 

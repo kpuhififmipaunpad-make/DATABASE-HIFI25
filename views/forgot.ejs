@@ -1,53 +1,81 @@
-<%- include ./partials/header.ejs %> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password | Database HIFI</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="gradient-bg-1">
+    <!-- Alert Message -->
+    <% if(message && message.length > 0) { %>
+    <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
+        <div class="flex items-center">
+            <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %> text-2xl mr-3 text-white"></i>
+            <div class="text-sm font-medium text-white"><%= message %></div>
+            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <% } %>
 
-<div id="forgot-background" class="flex items-center justify-center h-screen bg-cover bg-no-repeat bg-center text-indigo-900">
-   <div class="w-full flex flex-wrap">
-
-      <!-- Image Section -->
-      <div class="w-1/2">
-         <div class="hidden md:flex items-center justify-center">
-            <img class="w-2/3" src="/img/forgot.png" alt="forgot-image">
-         </div>
-      </div>
-
-      <!-- Form Section -->
-      <div class="relative w-full md:w-1/2 flex flex-col">
-         <div class="flex items-center justify-center md:justify-start">
-            <div class="w-3/4 md:w-2/3">
-               <div class="flex flex-col">
-                  <p class="text-3xl xl:text-5xl mb-3">Forgot <br>Your Password?</p>
-                  <%- include ./partials/message.ejs %>
-                  <form class="flex flex-col mt-3" action="/forgot" method="post">
-                     <div class="flex flex-col">
-                        <label for="username" class="text-lg">Username</label>
-                        <input type="text" id="username" placeholder="Username"
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline"
-                           name="username">
-                     </div>
-                     
-                     <div class="flex flex-col pt-4">
-                        <label for="email" class="text-lg">Email</label>
-                        <input type="text" id="email" placeholder="youremail@mail.com"
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline"
-                           name="email">
-                     </div>
-            
-                     <div class="flex flex-col pt-4">
-                        <label for="password" class="text-lg">New Password</label>
-                        <input type="password" id="password" placeholder="Enter New Password" 
-                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mt-1 leading-tight focus:outline-none focus:shadow-outline" 
-                           name="password">
-                     </div>
-            
-                     <button type="submit" class="bg-indigo-500 text-white font-bold text-lg  p-2 mt-8 rounded-lg hover:bg-indigo-900 transition duration-500">Change Password</button>
-                 </form>
-               </div>
-               <p class="text-sm text-gray-400 mt-5"><i class="fa-regular fa-circle-question"></i> Hubungi ADMD jika mengalami kendala.</p>
+    <div class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="glass-card p-8 md:p-12 w-full max-w-md">
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo for password reset page with secure design elements" class="h-24 w-auto mx-auto mb-4">
+                <h1 class="text-3xl font-bold text-white mb-2">Lupa Password</h1>
+                <p class="text-white/80">Reset password akun Anda</p>
             </div>
-         </div>
-      </div>
 
-   </div>
-</div>
+            <!-- Forgot Password Form -->
+            <form action="/forgot" method="POST" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-user mr-2"></i>Username
+                    </label>
+                    <input type="text" id="username" name="username" required 
+                           class="glass-input" placeholder="Masukkan username Anda">
+                </div>
 
-<%- include ./partials/footer.ejs %>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Email Terdaftar
+                    </label>
+                    <input type="email" id="email" name="email" required 
+                           class="glass-input" placeholder="Email yang terdaftar">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-lock mr-2"></i>Password Baru
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required 
+                               class="glass-input pr-12" placeholder="Password baru Anda">
+                        <button type="button" id="seePassButton" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white">
+                            <i class="fas fa-eye" id="seePassIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="glass-button w-full">
+                    <i class="fas fa-key mr-2"></i>Reset Password
+                </button>
+
+                <p class="text-center text-white/80 text-sm">
+                    Ingat password Anda? 
+                    <a href="/auth/login" class="text-white font-semibold hover:underline">Login di sini</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script src="/javascript/dom.js"></script>
+</body>
+</html>

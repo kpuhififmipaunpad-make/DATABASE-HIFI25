@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,14 +9,14 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="gradient-bg-1">
+<body>
     <!-- Alert Message -->
     <% if(message && message.length > 0) { %>
     <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
         <div class="flex items-center">
             <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %> text-2xl mr-3 text-white"></i>
             <div class="text-sm font-medium text-white"><%= message %></div>
-            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200">
+            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200 transition-smooth">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -26,16 +26,16 @@
     <!-- Navbar -->
     <nav class="glass-navbar sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <a href="/" class="flex items-center">
-                    <img src="/img/LogoHIFI-2.png" alt="HIFI Logo in navbar with modern minimalist style" class="h-12 w-auto">
-                    <span class="ml-3 text-white text-xl font-bold">Database HIFI</span>
+            <div class="flex justify-between items-center h-20">
+                <a href="/" class="flex items-center animate-fadeIn">
+                    <img src="/img/LogoHIFI-2.png" alt="HIFI Logo in profile navbar with modern minimalist red blue style" class="h-14 w-auto">
+                    <span class="ml-3 text-white text-2xl font-bold">Database HIFI</span>
                 </a>
-                <div class="flex items-center space-x-4">
-                    <a href="/" class="glass-button text-sm">
+                <div class="flex items-center space-x-3">
+                    <a href="/" class="glass-button text-sm ripple">
                         <i class="fas fa-home mr-2"></i>Home
                     </a>
-                    <a href="/auth/logout" class="glass-button text-sm bg-red-500/20 hover:bg-red-500/30">
+                    <a href="/auth/logout" class="glass-button text-sm ripple bg-red-500/25 hover:bg-red-500/35">
                         <i class="fas fa-sign-out-alt mr-2"></i>Logout
                     </a>
                 </div>
@@ -44,106 +44,130 @@
     </nav>
 
     <!-- Profile Section -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="glass-card p-8">
-            <h1 class="text-3xl font-bold text-white mb-8 text-center">
-                <i class="fas fa-user-circle mr-3"></i>Profil Saya
-            </h1>
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="glass-card p-10">
+            <div class="text-center mb-10">
+                <div class="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-600/40 to-red-600/40 flex items-center justify-center animate-scaleIn">
+                    <i class="fas fa-user-circle text-7xl text-white"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-2">Profil Saya</h1>
+                <p class="text-white/80 text-lg">Kelola informasi pribadi Anda</p>
+            </div>
 
-            <form action="/profile" method="POST" class="space-y-6">
-                <!-- Personal Info -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Username</label>
-                        <input type="text" name="username" value="<%= user.username %>" 
-                               class="glass-input" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Nama Lengkap</label>
-                        <input type="text" name="nama" value="<%= user.nama || '' %>" 
-                               class="glass-input" placeholder="Nama lengkap">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">NPM</label>
-                        <input type="number" name="npm" value="<%= user.npm || '' %>" 
-                               class="glass-input" placeholder="Nomor Pokok Mahasiswa">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Email</label>
-                        <input type="email" name="email" value="<%= user.email || '' %>" 
-                               class="glass-input" placeholder="email@example.com">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Tempat Lahir</label>
-                        <input type="text" name="ttl" value="<%= user.ttl || '' %>" 
-                               class="glass-input" placeholder="Kota lahir">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Tanggal Lahir</label>
-                        <input type="date" name="tgl" value="<%= user.tgl || '' %>" 
-                               class="glass-input">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Agama</label>
-                        <input type="text" name="agama" value="<%= user.agama || '' %>" 
-                               class="glass-input" placeholder="Agama">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Golongan Darah</label>
-                        <input type="text" name="goldar" value="<%= user.goldar || '' %>" 
-                               class="glass-input" placeholder="A/B/AB/O">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">No. HP</label>
-                        <input type="text" name="hp" value="<%= user.hp || '' %>" 
-                               class="glass-input" placeholder="08xxxxxxxxxx">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Alamat Rumah</label>
-                        <input type="text" name="rumah" value="<%= user.rumah || '' %>" 
-                               class="glass-input" placeholder="Alamat lengkap">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-white mb-2">Alamat Kos</label>
-                        <input type="text" name="kos" value="<%= user.kos || '' %>" 
-                               class="glass-input" placeholder="Alamat kos (jika ada)">
+            <form action="/profile" method="POST" class="space-y-8">
+                <!-- Account Information -->
+                <div class="glass-card p-6">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-user-shield mr-3 text-blue-400"></i>Informasi Akun
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Username</label>
+                            <input type="text" name="username" value="<%= user.username %>" 
+                                   class="glass-input" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Email</label>
+                            <input type="email" name="email" value="<%= user.email || '' %>" 
+                                   class="glass-input" placeholder="email@example.com">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Additional Info -->
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Riwayat Pendidikan</label>
-                        <textarea name="pendidikan" rows="3" class="glass-input" 
-                                  placeholder="SD, SMP, SMA"><%= user.pendidikan || '' %></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Riwayat Kepanitiaan</label>
-                        <textarea name="panitia" rows="3" class="glass-input" 
-                                  placeholder="Kepanitiaan yang pernah diikuti"><%= user.panitia || '' %></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Riwayat Organisasi</label>
-                        <textarea name="organisasi" rows="3" class="glass-input" 
-                                  placeholder="Organisasi yang pernah diikuti"><%= user.organisasi || '' %></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Riwayat Pelatihan</label>
-                        <textarea name="pelatihan" rows="3" class="glass-input" 
-                                  placeholder="Pelatihan yang pernah diikuti"><%= user.pelatihan || '' %></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Prestasi</label>
-                        <textarea name="prestasi" rows="3" class="glass-input" 
-                                  placeholder="Prestasi yang pernah diraih"><%= user.prestasi || '' %></textarea>
+                <!-- Personal Information -->
+                <div class="glass-card p-6">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-id-card mr-3 text-red-400"></i>Informasi Pribadi
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Nama Lengkap</label>
+                            <input type="text" name="nama" value="<%= user.nama || '' %>" 
+                                   class="glass-input" placeholder="Nama lengkap Anda">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">NPM</label>
+                            <input type="number" name="npm" value="<%= user.npm || '' %>" 
+                                   class="glass-input" placeholder="Nomor Pokok Mahasiswa">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Tempat Lahir</label>
+                            <input type="text" name="ttl" value="<%= user.ttl || '' %>" 
+                                   class="glass-input" placeholder="Kota kelahiran">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Tanggal Lahir</label>
+                            <input type="date" name="tgl" value="<%= user.tgl || '' %>" 
+                                   class="glass-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Agama</label>
+                            <input type="text" name="agama" value="<%= user.agama || '' %>" 
+                                   class="glass-input" placeholder="Agama Anda">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Golongan Darah</label>
+                            <input type="text" name="goldar" value="<%= user.goldar || '' %>" 
+                                   class="glass-input" placeholder="A/B/AB/O" maxlength="3">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">No. HP</label>
+                            <input type="tel" name="hp" value="<%= user.hp || '' %>" 
+                                   class="glass-input" placeholder="08xxxxxxxxxx">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Alamat Rumah</label>
+                            <input type="text" name="rumah" value="<%= user.rumah || '' %>" 
+                                   class="glass-input" placeholder="Alamat lengkap rumah">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-white mb-2">Alamat Kos</label>
+                            <input type="text" name="kos" value="<%= user.kos || '' %>" 
+                                   class="glass-input" placeholder="Alamat kos di Bandung (jika ada)">
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex space-x-4">
-                    <button type="submit" class="glass-button flex-1">
+                <!-- Academic & Activities -->
+                <div class="glass-card p-6">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-graduation-cap mr-3 text-blue-400"></i>Akademik & Aktivitas
+                    </h2>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Riwayat Pendidikan</label>
+                            <textarea name="pendidikan" rows="3" class="glass-input" 
+                                      placeholder="SD: ..., SMP: ..., SMA: ..."><%= user.pendidikan || '' %></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Riwayat Kepanitiaan</label>
+                            <textarea name="panitia" rows="3" class="glass-input" 
+                                      placeholder="Kepanitiaan yang pernah diikuti"><%= user.panitia || '' %></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Riwayat Organisasi</label>
+                            <textarea name="organisasi" rows="3" class="glass-input" 
+                                      placeholder="Organisasi yang pernah diikuti"><%= user.organisasi || '' %></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Riwayat Pelatihan</label>
+                            <textarea name="pelatihan" rows="3" class="glass-input" 
+                                      placeholder="Pelatihan/workshop yang pernah diikuti"><%= user.pelatihan || '' %></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-white mb-2">Prestasi</label>
+                            <textarea name="prestasi" rows="3" class="glass-input" 
+                                      placeholder="Prestasi yang pernah diraih"><%= user.prestasi || '' %></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 pt-4">
+                    <button type="submit" class="glass-button flex-1 py-4 text-lg ripple bg-green-600/25 hover:bg-green-600/35">
                         <i class="fas fa-save mr-2"></i>Simpan Perubahan
                     </button>
-                    <a href="/" class="glass-button flex-1 text-center bg-gray-500/20 hover:bg-gray-500/30">
+                    <a href="/" class="glass-button flex-1 text-center py-4 text-lg ripple bg-gray-500/20 hover:bg-gray-500/30">
                         <i class="fas fa-times mr-2"></i>Batal
                     </a>
                 </div>
@@ -152,5 +176,6 @@
     </div>
 
     <script src="/javascript/dom.js"></script>
+    <script src="/javascript/animations.js"></script>
 </body>
 </html>

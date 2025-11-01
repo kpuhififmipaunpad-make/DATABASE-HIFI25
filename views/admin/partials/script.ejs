@@ -1,221 +1,400 @@
-<script>
-(() => {
-  // ===== helpers: tunggu jQuery + DataTables siap =====
-  const libsReady = () =>
-    !!window.jQuery &&
-    !!$.fn.DataTable &&
-    !!$.fn.dataTable &&
-    !!$.fn.dataTable.Buttons;
+// ============================================
+// DATA MANAGEMENT & SEARCH FUNCTIONALITY
+// ============================================
 
-  const whenDOMReady = (cb) => {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", cb, { once: true });
-    } else {
-      cb();
-    }
-  };
+(function() {
+    'use strict';
 
-  const debounce = (fn, wait = 160) => {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn.apply(null, args), wait);
-    };
-  };
-
-  function boot() {
-    if (!libsReady()) {
-      console.error("jQuery/DataTables belum siap.");
-      return;
-    }
-    const $table = $("#usersTable");
-    if (!$table.length) return;
-
-    // Bersihkan instance/handler lama kalau ada
-    try {
-      if ($.fn.DataTable.isDataTable($table)) {
-        $table.DataTable().destroy(true);
-      }
-    } catch (_) {}
-    $("#searchNama").off(".tbl");
-    $("#itemsPerPage").off(".tbl");
-    $("#btnRefresh").off(".tbl");
-    $table.find("tbody").off(".tbl");
-
-    // Inisialisasi DataTable
-    const dt = $table.DataTable({
-      // Stabilitas layout
-      autoWidth: false,
-      scrollX: true,
-      scrollCollapse: true,
-      deferRender: true,
-
-      // UX
-      responsive: false,
-      lengthChange: false,     // pakai kontrol custom
-      searching: false,        // pakai search custom
-      pagingType: "simple_numbers",
-      pageLength: 10,
-
-      // Default urutan: kolom No (index 0) → 1..akhir
-      // (Jika ingin urut "Terakhir Update" terbaru dulu: ganti ke [[7,'desc']])
-      order: [[0, "asc"]],
-
-      dom: "Bt<'dt-bottom'ip>",
-
-      columnDefs: [
-        { targets: 0, width: 64, type: "num", className: "dt-col-no dt-center" }, // No
-        { targets: 6, width: 120, className: "dt-center" },                       // Role
+    // Sample data - replace dengan actual data source
+    let originalData = [
         {
-          targets: 7, // Terakhir Update
-          createdCell: function (td) {
-            // Tarik nilai waktu mentah dari atribut data-time (di-render EJS):
-            // prioritas u.time -> updatedAt -> updated_at -> lastUpdate -> updated -> createdAt
-            const raw = td.getAttribute("data-time");
-            const ts = raw ? new Date(raw).getTime() : NaN;
-            td.setAttribute("data-order", Number.isFinite(ts) ? String(ts) : "-1");
-          }
-        },
-        { targets: 8, width: 120, orderable: false, className: "no-detail dt-center" } // Aksi
-      ],
-
-      language: {
-        paginate: { first: "«", previous: "‹", next: "›", last: "»" },
-        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-        infoEmpty: "Tidak ada data",
-        infoFiltered: "(disaring dari _MAX_ total data)",
-        zeroRecords: "Data tidak ditemukan",
-        emptyTable: "Tidak ada data tersedia"
-      },
-
-      buttons: [
-        {
-          extend: "excel",
-          text: '<i class="fas fa-file-excel"></i> Excel',
-          className: "dt-btn-green",
-          title: "Data Warga HIFI",
-          exportOptions: { columns: [0,1,2,3,4,5,6,7] }
+            id: 1,
+            kode: 'PRD001',
+            nama: 'Laptop Dell XPS 13',
+            kategori: 'Elektronik',
+            status: 'active',
+            tanggalUpdate: new Date('2025-01-15T10:30:00'),
+            keterangan: 'Stok tersedia'
         },
         {
-          extend: "pdf",
-          text: '<i class="fas fa-file-pdf"></i> PDF',
-          className: "dt-btn-green",
-          title: "Data Warga HIFI",
-          orientation: "landscape",
-          exportOptions: { columns: [0,1,2,3,4,5,6,7] }
+            id: 2,
+            kode: 'PRD002',
+            nama: 'Mouse Wireless Logitech',
+            kategori: 'Aksesoris',
+            status: 'active',
+            tanggalUpdate: new Date('2025-01-16T14:20:00'),
+            keterangan: 'Pre-order'
         },
         {
-          extend: "print",
-          text: '<i class="fas fa-print"></i> Print',
-          className: "dt-btn-green",
-          title: "Data Warga HIFI",
-          exportOptions: { columns: [0,1,2,3,4,5,6,7] }
+            id: 3,
+            kode: 'PRD003',
+            nama: 'Keyboard Mechanical RGB',
+            kategori: 'Aksesoris',
+            status: 'inactive',
+            tanggalUpdate: new Date('2025-01-10T09:15:00'),
+            keterangan: 'Habis'
+        },
+        {
+            id: 4,
+            kode: 'PRD004',
+            nama: 'Monitor LG 27 inch 4K',
+            kategori: 'Elektronik',
+            status: 'active',
+            tanggalUpdate: new Date('2025-01-17T16:45:00'),
+            keterangan: 'Baru masuk'
+        },
+        {
+            id: 5,
+            kode: 'PRD005',
+            nama: 'Headset Gaming Razer',
+            kategori: 'Aksesoris',
+            status: 'active',
+            tanggalUpdate: new Date('2025-01-17T08:30:00'),
+            keterangan: 'Limited edition'
         }
-      ],
+    ];
 
-      initComplete: function () {
-        // Stabilkan kolom setelah initial paint/font load
-        const api = this.api();
-        api.columns.adjust();
-        requestAnimationFrame(() => api.columns.adjust());
-        setTimeout(() => api.columns.adjust(), 120);
+    let filteredData = [...originalData];
+    let latestUpdateTime = null;
 
-        // Pindahkan tombol export ke holder kustom bila ada
-        const $holder = $("#exportButtons");
-        if ($holder.length) {
-          $holder.empty();
-          api.buttons().container().appendTo($holder);
-        } else {
-          api.buttons().container().insertBefore($table);
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+
+    /**
+     * Format date to Indonesian locale
+     * @param {Date} date - Date object to format
+     * @returns {string} - Formatted date string
+     */
+    function formatDate(date) {
+        if (!(date instanceof Date) || isNaN(date)) {
+            return 'Invalid Date';
         }
-      },
 
-      drawCallback: function () {
-        // Jaga agar tidak melebar saat filter/ubah page length
-        const api = this.api();
-        api.columns.adjust();
-        requestAnimationFrame(() => api.columns.adjust());
-      }
-    });
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
 
-    // ======== Search (kolom Nama = index 2) dengan debounce ========
-    const onSearch = debounce(function () {
-      const val = this.value || "";
-      dt.column(2).search(val).draw(false);
-      dt.columns.adjust();
-      requestAnimationFrame(() => dt.columns.adjust());
-    }, 140);
-    $("#searchNama").on("input.tbl", onSearch);
+        return new Intl.DateTimeFormat('id-ID', options).format(date);
+    }
 
-    // ======== Items per page ========
-    $("#itemsPerPage").on("change.tbl", function () {
-      const v = parseInt(this.value, 10);
-      dt.page.len(v === -1 ? -1 : v).draw(false);
-      dt.columns.adjust();
-      requestAnimationFrame(() => dt.columns.adjust());
-      setTimeout(() => dt.columns.adjust(), 0);
-    });
+    /**
+     * Get relative time description
+     * @param {Date} date - Date to compare
+     * @returns {string} - Relative time string
+     */
+    function getRelativeTime(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
 
-    // ======== Refresh ========
-    $("#btnRefresh").on("click.tbl", function () {
-      const $i = $(this).find("i");
-      $i.addClass("fa-spin");
-      setTimeout(() => location.reload(), 280);
-    });
+        if (diffMins < 1) return 'Baru saja';
+        if (diffMins < 60) return `${diffMins} menit lalu`;
+        if (diffHours < 24) return `${diffHours} jam lalu`;
+        if (diffDays < 7) return `${diffDays} hari lalu`;
+        return formatDate(date);
+    }
 
-    // ======== Row detail (klik baris) ========
-    $table.find("tbody")
-      .on("click.tbl", "tr.clickable-row td:not(.no-detail)", function (e) {
-        if ($(e.target).closest(".btn-action,button,a,form").length) return;
-        const $tr  = $(this).closest("tr.clickable-row");
-        const row  = dt.row($tr);
-        const ds   = $tr.get(0).dataset;
+    /**
+     * Check if data is recently updated (within 24 hours)
+     * @param {Date} date - Date to check
+     * @returns {boolean}
+     */
+    function isRecentlyUpdated(date) {
+        const now = new Date();
+        const diffHours = (now - date) / 3600000;
+        return diffHours < 24;
+    }
 
-        if (row.child.isShown()) {
-          row.child.hide();
-          $tr.removeClass("shown");
+    /**
+     * Sort data by date (newest first)
+     * @param {Array} data - Data array to sort
+     * @returns {Array} - Sorted data array
+     */
+    function sortByDateDesc(data) {
+        return data.sort((a, b) => {
+            const dateA = new Date(a.tanggalUpdate);
+            const dateB = new Date(b.tanggalUpdate);
+            return dateB - dateA;
+        });
+    }
+
+    /**
+     * Get latest update time from data
+     * @param {Array} data - Data array
+     * @returns {Date|null} - Latest date or null
+     */
+    function getLatestUpdate(data) {
+        if (!data || data.length === 0) return null;
+        
+        const sortedData = sortByDateDesc([...data]);
+        return sortedData[0].tanggalUpdate;
+    }
+
+    // ============================================
+    // DATA RENDERING
+    // ============================================
+
+    /**
+     * Render table rows
+     * @param {Array} data - Data to render
+     */
+    function renderTable(data) {
+        const tableBody = document.getElementById('tableBody');
+        const totalDataEl = document.getElementById('totalData');
+        const lastUpdateEl = document.getElementById('lastUpdate');
+
+        if (!tableBody) return;
+
+        // Sort data by date (newest first)
+        const sortedData = sortByDateDesc([...data]);
+
+        // Update total data count
+        if (totalDataEl) {
+            totalDataEl.textContent = sortedData.length;
+        }
+
+        // Update last update time
+        latestUpdateTime = getLatestUpdate(sortedData);
+        if (lastUpdateEl && latestUpdateTime) {
+            lastUpdateEl.textContent = getRelativeTime(latestUpdateTime);
+        }
+
+        // Clear table body
+        tableBody.innerHTML = '';
+
+        // Check if data is empty
+        if (sortedData.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="no-data">
+                        😔 Tidak ada data yang ditemukan
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // Render each row
+        sortedData.forEach((item, index) => {
+            const row = document.createElement('tr');
+            const isNew = isRecentlyUpdated(item.tanggalUpdate);
+            
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td><strong>${escapeHtml(item.kode)}</strong></td>
+                <td>
+                    ${escapeHtml(item.nama)}
+                    ${isNew ? '<span class="new-badge">BARU</span>' : ''}
+                </td>
+                <td>${escapeHtml(item.kategori)}</td>
+                <td>
+                    <span class="status-badge ${item.status === 'active' ? 'status-active' : 'status-inactive'}">
+                        ${item.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                    </span>
+                </td>
+                <td>${formatDate(item.tanggalUpdate)}</td>
+                <td>${escapeHtml(item.keterangan)}</td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    /**
+     * Escape HTML to prevent XSS
+     * @param {string} text - Text to escape
+     * @returns {string} - Escaped text
+     */
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ============================================
+    // SEARCH FUNCTIONALITY
+    // ============================================
+
+    /**
+     * Filter data based on search query
+     * @param {string} query - Search query
+     */
+    function filterData(query) {
+        const searchQuery = query.toLowerCase().trim();
+
+        if (!searchQuery) {
+            filteredData = [...originalData];
         } else {
-          dt.rows().every(function () {
-            if (this.child && this.child.isShown && this.child.isShown()) {
-              this.child.hide();
-              $(this.node()).removeClass("shown");
+            filteredData = originalData.filter(item => {
+                return (
+                    item.kode.toLowerCase().includes(searchQuery) ||
+                    item.nama.toLowerCase().includes(searchQuery) ||
+                    item.kategori.toLowerCase().includes(searchQuery) ||
+                    item.status.toLowerCase().includes(searchQuery) ||
+                    item.keterangan.toLowerCase().includes(searchQuery)
+                );
+            });
+        }
+
+        renderTable(filteredData);
+    }
+
+    /**
+     * Debounce function to limit search frequency
+     * @param {Function} func - Function to debounce
+     * @param {number} wait - Wait time in ms
+     * @returns {Function} - Debounced function
+     */
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+
+    /**
+     * Initialize event listeners
+     */
+    function initEventListeners() {
+        const searchInput = document.getElementById('searchInput');
+
+        if (searchInput) {
+            // Debounced search (300ms delay)
+            const debouncedSearch = debounce((e) => {
+                filterData(e.target.value);
+            }, 300);
+
+            searchInput.addEventListener('input', debouncedSearch);
+
+            // Clear search on Escape key
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    filterData('');
+                }
+            });
+        }
+    }
+
+    // ============================================
+    // AUTO-REFRESH LAST UPDATE TIME
+    // ============================================
+
+    /**
+     * Update relative time every minute
+     */
+    function startAutoRefresh() {
+        setInterval(() => {
+            const lastUpdateEl = document.getElementById('lastUpdate');
+            if (lastUpdateEl && latestUpdateTime) {
+                lastUpdateEl.textContent = getRelativeTime(latestUpdateTime);
             }
-          });
-          row.child(buildDetail(ds)).show();
-          $tr.addClass("shown");
-          dt.columns.adjust();
-          requestAnimationFrame(() => dt.columns.adjust());
+        }, 60000); // Update every 1 minute
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+
+    /**
+     * Initialize application
+     */
+    function init() {
+        // Sort original data by date
+        originalData = sortByDateDesc(originalData);
+        filteredData = [...originalData];
+
+        // Render initial table
+        renderTable(filteredData);
+
+        // Setup event listeners
+        initEventListeners();
+
+        // Start auto-refresh for relative time
+        startAutoRefresh();
+
+        console.log('✅ Table initialized successfully');
+    }
+
+    // ============================================
+    // PUBLIC API (if needed for external access)
+    // ============================================
+
+    window.TableManager = {
+        /**
+         * Add new data to table
+         * @param {Object} newData - New data object
+         */
+        addData: function(newData) {
+            if (!newData.tanggalUpdate) {
+                newData.tanggalUpdate = new Date();
+            }
+            originalData.unshift(newData);
+            filterData(document.getElementById('searchInput')?.value || '');
+        },
+
+        /**
+         * Update existing data
+         * @param {number} id - Data ID to update
+         * @param {Object} updates - Update object
+         */
+        updateData: function(id, updates) {
+            const index = originalData.findIndex(item => item.id === id);
+            if (index !== -1) {
+                originalData[index] = {
+                    ...originalData[index],
+                    ...updates,
+                    tanggalUpdate: new Date()
+                };
+                filterData(document.getElementById('searchInput')?.value || '');
+            }
+        },
+
+        /**
+         * Refresh table data
+         * @param {Array} newData - New data array
+         */
+        refreshData: function(newData) {
+            originalData = sortByDateDesc([...newData]);
+            filterData(document.getElementById('searchInput')?.value || '');
+        },
+
+        /**
+         * Get current filtered data
+         * @returns {Array}
+         */
+        getData: function() {
+            return [...filteredData];
         }
-      });
+    };
 
-    // ======== Stabilkan saat resize / tab berubah ========
-    window.addEventListener("resize", debounce(() => {
-      dt.columns.adjust();
-    }, 120));
+    // ============================================
+    // START APPLICATION
+    // ============================================
 
-    // Jika ada Bootstrap tab/collapse, adjust saat tab aktif
-    document.addEventListener("shown.bs.tab", () => {
-      dt.columns.adjust();
-      requestAnimationFrame(() => dt.columns.adjust());
-    });
-    document.addEventListener("shown.bs.collapse", () => {
-      dt.columns.adjust();
-      requestAnimationFrame(() => dt.columns.adjust());
-    });
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 
-    // Ekspos kecil untuk debug
-    window.__HIFI__ = window.__HIFI__ || {};
-    window.__HIFI__.usersTableInited = true;
-    window.__HIFI__.usersDT = dt;
-
-    console.log("✅ DataTable initialized. rows:", dt.rows().count(), "pageLen:", dt.page.len());
-  }
-
-  // Tunggu library siap
-  (function waitLibs(tries = 0) {
-    if (libsReady()) return whenDOMReady(boot);
-    if (tries > 120) return console.error("Gagal memuat DataTables/Buttons.");
-    setTimeout(() => waitLibs(tries + 1), 50);
-  })();
 })();
-</script>

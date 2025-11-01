@@ -1847,3 +1847,221 @@ input::-ms-clear {
 .shadow-md { box-shadow: var(--shadow-md); }
 .shadow-lg { box-shadow: var(--shadow-lg); }
 .shadow-xl { box-shadow: var(--shadow-xl); }
+
+
+/* ============================================
+   ADMIN DASHBOARD - STYLING IMPROVEMENTS
+   (Tambahan untuk merapikan tampilan)
+   ============================================ */
+
+/* Perbaikan Kontras Sidebar */
+.sidebar-glass {
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.sidebar-menu-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600 !important;
+}
+
+.sidebar-menu-item:hover {
+  background: rgba(220, 20, 60, 0.2) !important;
+  color: white !important;
+}
+
+.sidebar-menu-item.active {
+  background: linear-gradient(135deg, rgba(220, 20, 60, 0.25) 0%, rgba(30, 58, 138, 0.25) 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+/* Perbaikan Stat Cards */
+.stat-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(220, 20, 60, 0.1) !important;
+}
+
+.stat-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.stat-card-body h3 {
+  color: #1F2937 !important;
+  font-weight: 800 !important;
+}
+
+.stat-card-body p {
+  color: #6B7280 !important;
+  font-weight: 600 !important;
+}
+
+/* Perbaikan DataTable */
+.dataTables_wrapper {
+  padding: 0 !important;
+}
+
+.dataTables_filter input,
+.dataTables_length select {
+  border: 2px solid #E5E7EB !important;
+  padding: 10px 16px !important;
+  border-radius: 10px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.dataTables_filter input:focus,
+.dataTables_length select:focus {
+  border-color: #1E3A8A !important;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1) !important;
+  outline: none !important;
+}
+
+/* Perbaikan Table Header */
+table.dataTable thead th {
+  background: linear-gradient(135deg, #1F2937 0%, #374151 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  padding: 18px 16px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-size: 13px !important;
+}
+
+/* Perbaikan Table Body */
+table.dataTable tbody td {
+  color: #374151 !important;
+  font-weight: 500 !important;
+  padding: 16px !important;
+  vertical-align: middle !important;
+}
+
+table.dataTable tbody tr:hover {
+  background: rgba(30, 58, 138, 0.05) !important;
+}
+
+/* Perbaikan Pagination */
+.dataTables_paginate .page-item .page-link {
+  border: 2px solid transparent !important;
+  border-radius: 10px !important;
+  padding: 10px 16px !important;
+  color: #374151 !important;
+  background: #F9FAFB !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.dataTables_paginate .page-item.active .page-link {
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
+  color: white !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3) !important;
+}
+
+.dataTables_paginate .page-item .page-link:hover {
+  background: rgba(30, 58, 138, 0.1) !important;
+  border-color: #1E3A8A !important;
+  transform: translateY(-2px);
+}
+
+/* Perbaikan Action Buttons */
+.btn-action {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+}
+
+.btn-action:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Perbaikan Export Buttons */
+.dt-buttons .dt-button {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  margin-right: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.dt-buttons .dt-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Perbaikan Alert Messages */
+.alert-glass {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  border-left-width: 4px !important;
+  font-weight: 600 !important;
+}
+
+.alert-success {
+  border-left-color: #10B981 !important;
+  color: #065F46 !important;
+}
+
+.alert-error {
+  border-left-color: #EF4444 !important;
+  color: #991B1B !important;
+}
+
+/* Perbaikan Badge */
+.badge-red {
+  background: rgba(220, 20, 60, 0.15) !important;
+  color: #DC143C !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+}
+
+/* Perbaikan Kontras Text di Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .stat-card-body h3,
+  .stat-card-body p,
+  table.dataTable tbody td {
+    color: #F9FAFB !important;
+  }
+  
+  .sidebar-menu-item {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+}
+
+/* Perbaikan Responsive */
+@media screen and (max-width: 768px) {
+  .stat-card {
+    padding: 20px !important;
+  }
+  
+  .stat-card-body h3 {
+    font-size: 28px !important;
+  }
+  
+  table.dataTable thead th,
+  table.dataTable tbody td {
+    padding: 12px 8px !important;
+    font-size: 13px !important;
+  }
+  
+  .btn-action {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}

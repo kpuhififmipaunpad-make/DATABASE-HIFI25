@@ -1,9 +1,9 @@
 <!-- =========================
-     TABLE.EJS (Dashboard - versi baru, stabil & responsif)
+     TABLE.EJS (Dashboard - versi baru, sinkron dgn script.ejs)
      ========================= -->
 <style>
   /* Toolbar ringkas agar tidak ketiban CSS global */
-  .table-toolbar{
+  .table-toolbar {
     display:flex; justify-content:space-between; align-items:center;
     gap:16px; margin-bottom:24px; flex-wrap:wrap; padding:20px;
     background:rgba(255,255,255,0.9); backdrop-filter:blur(10px);
@@ -34,7 +34,7 @@
   }
   .btn-glass:hover{ background:#1E3A8A; color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(30,58,138,.3); }
 
-  #exportButtons{ display:flex; flex-wrap:wrap; gap:8px; }
+  #exportButtons{ display:flex; gap:8px; }
   .dt-btn-green{
     background:linear-gradient(135deg,#10B981 0%,#059669 100%) !important; color:#fff !important;
     border:none !important; border-radius:12px !important; padding:10px 16px !important; font-weight:600 !important;
@@ -59,39 +59,11 @@
 
   @keyframes fadeInUp{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
 
-  /* ===== Stabilitas & Responsif tabel (hindari geser ke samping) ===== */
-  .table-responsive{
-    overflow-x:auto;                 /* aktifkan scroll horizontal jika perlu */
-    overflow-y:visible;
-    max-width:100%;
-    -webkit-overflow-scrolling:touch;/* smooth di iOS */
-  }
-  #usersTable{
-    width:100%;
-    table-layout:auto;               /* biar DT hitung ulang lebar kolom saat page length berubah */
-    border-collapse:separate;
-  }
-  #usersTable th, #usersTable td{
-    word-break:break-word;
-    overflow-wrap:anywhere;          /* cegah sel melebar karena kata panjang (email, alamat) */
-    vertical-align:middle;
-  }
-  /* Jangan scale baris saat hover (bisa bikin layout jank waktu 50/100/All) */
-  .table-glass tbody tr:hover{ transform:none; }
-
-  /* Kolom aksi & nomor tetap ramping */
-  #usersTable th:first-child, #usersTable td:first-child{ width:60px; text-align:center; white-space:nowrap; }
-  #usersTable th:last-child, #usersTable td:last-child{ width:120px; text-align:center; }
-
-  /* Responsif toolbar & detail */
   @media (max-width:768px){
     .table-toolbar{ flex-direction:column; align-items:stretch; }
     .toolbar-left,.toolbar-right{ width:100%; justify-content:space-between; }
     .toolbar-search{ min-width:100%; }
     .detail-card{ grid-template-columns:1fr; }
-  }
-  @media (max-width:480px){
-    #exportButtons{ width:100%; }
   }
 </style>
 
@@ -99,7 +71,6 @@
 <div class="table-toolbar">
   <div class="toolbar-left">
     <span class="toolbar-label">Tampilkan</span>
-    <!-- paksa tampil (override CSS lama yang sempat display:none !important) -->
     <select id="itemsPerPage" class="toolbar-select" aria-label="Items per page" style="display:inline-block !important;">
       <option value="10" selected>10 / page</option>
       <option value="25">25 / page</option>
@@ -110,7 +81,6 @@
   </div>
 
   <div class="toolbar-right">
-    <!-- paksa tampil (override CSS lama yang sempat display:none !important) -->
     <input id="searchNama" class="toolbar-search" type="search" placeholder="🔍 Cari Nama..." aria-label="Cari Nama" style="display:block !important;">
     <button id="btnRefresh" type="button" class="btn-glass">
       <i class="fas fa-sync-alt" aria-hidden="true"></i>
@@ -121,9 +91,8 @@
 </div>
 
 <!-- TABEL -->
-<!-- Hapus class 'nowrap' agar sel boleh membungkus teks (mencegah melebar) -->
-<div class="table-responsive">
-  <table id="usersTable" class="display table-glass" style="width:100%">
+<div class="table-responsive" style="overflow:visible">
+  <table id="usersTable" class="display nowrap table-glass" style="width:100%">
     <thead>
       <tr>
         <th style="width:60px; text-align:center;">No</th>
@@ -140,8 +109,10 @@
     <tbody>
       <% users.forEach(function(u, i){ %>
         <% 
+          // Fallback berlapis: cocokkan dgn arsip awal yang pakai 'time'
           const __lastUpdate = u.updatedAt || u.time || u.updated_at || u.lastUpdate || u.updated || u.createdAt;
-          const __ts = __lastUpdate ? new Date(__lastUpdate).getTime() : 0; // untuk sorting stabil
+          const __ts = __lastUpdate ? new Date(__lastUpdate).getTime() : 0;
+          function fmtID(d){ try { return new Date(d).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' }) } catch(e){ return '-' } }
         %>
         <tr
           class="clickable-row"
@@ -170,16 +141,15 @@
           <td><%= u.email || '-' %></td>
           <td><%= u.hp || '-' %></td>
           <td style="text-align:center;">
-            <span class="badge-glass <%= (u.role === 'Admin') ? 'badge-red' : 'badge-blue' %>">
-              <i class="fas fa-<%= (u.role === 'Admin') ? 'user-shield' : 'user' %>"></i>
-              <%= (u.role || 'User') %>
+            <span class="badge-glass <%= (u.role === 'Admin' || u.role === 'admin') ? 'badge-red' : 'badge-blue' %>">
+              <i class="fas fa-<%= (u.role === 'Admin' || u.role === 'admin') ? 'user-shield' : 'user' %>"></i>
+              <%= (u.role ? (u.role === 'admin' ? 'Admin' : u.role) : 'User') %>
             </span>
           </td>
-          <!-- Fallback tanggal versi lama + data-order Unix TS untuk sort yang benar -->
-          <td data-time="<%= __lastUpdate || '' %>" data-order="<%= __ts %>">
-            <%= __lastUpdate
-                  ? new Date(__lastUpdate).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' })
-                  : '-' %>
+          <!-- Pakai hidden timestamp utk sorting stabil + tampilkan date lokal -->
+          <td data-time="<%= __lastUpdate || '' %>">
+            <span class="dt-order" style="display:none;"><%= __ts %></span>
+            <%= __lastUpdate ? fmtID(__lastUpdate) : '-' %>
           </td>
           <td class="no-detail" style="text-align:center;" onclick="event.stopPropagation()">
             <a class="btn-action btn-edit" title="Edit" href="/dashboard/edit/<%= u._id %>">

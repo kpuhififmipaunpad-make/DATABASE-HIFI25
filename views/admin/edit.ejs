@@ -1,151 +1,393 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User | Database HIFI</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <%- include('partials/header') %>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
+    }
+    
+    .wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .content-wrapper {
+      flex: 1;
+      margin-left: 260px;
+      padding: 80px 30px 30px;
+      transition: all 0.3s ease;
+    }
+    
+    .content-wrapper.expanded {
+      margin-left: 80px;
+    }
+    
+    .edit-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      margin-bottom: 30px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .breadcrumb-glass {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 12px 20px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+    }
+    
+    .breadcrumb-glass a {
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .breadcrumb-glass a:hover {
+      opacity: 0.8;
+    }
+    
+    .edit-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .section-divider {
+      border: none;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(220, 20, 60, 0.3), transparent);
+      margin: 32px 0;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1F2937;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .section-title i {
+      color: #DC143C;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 2px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn-cancel {
+      background: rgba(107, 114, 128, 0.1);
+      color: #374151;
+      border: 2px solid #9CA3AF;
+      border-radius: 12px;
+      padding: 12px 32px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-cancel:hover {
+      background: rgba(107, 114, 128, 0.2);
+      transform: scale(1.02);
+    }
+    
+    @media (max-width: 768px) {
+      .content-wrapper {
+        margin-left: 0;
+        padding: 80px 15px 20px;
+      }
+      
+      .edit-card {
+        padding: 24px;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
-<body class="gradient-bg-1">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <aside class="glass-sidebar w-64 hidden md:block">
-            <div class="p-6">
-                <div class="flex items-center mb-8">
-                    <img src="/img/LogoHIFI-2.png" alt="HIFI Admin Logo for edit page with management interface" class="h-12 w-auto">
-                    <span class="ml-3 text-white text-lg font-bold">Admin Panel</span>
-                </div>
-                <nav class="space-y-2">
-                    <a href="/dashboard" class="flex items-center px-4 py-3 text-white/80 hover:bg-white/10 rounded-lg">
-                        <i class="fas fa-dashboard mr-3"></i>Dashboard
-                    </a>
-                    <a href="/" class="flex items-center px-4 py-3 text-white/80 hover:bg-white/10 rounded-lg">
-                        <i class="fas fa-home mr-3"></i>Home
-                    </a>
-                    <a href="/auth/logout" class="flex items-center px-4 py-3 text-white/80 hover:bg-white/10 rounded-lg">
-                        <i class="fas fa-sign-out-alt mr-3"></i>Logout
-                    </a>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
-            <!-- Top Navbar -->
-            <nav class="glass-navbar">
-                <div class="px-6 py-4 flex justify-between items-center">
-                    <h2 class="text-2xl font-bold text-white">Edit User</h2>
-                    <span class="text-white/90">
-                        <i class="fas fa-user-circle mr-2"></i><%= nama %>
-                    </span>
-                </div>
-            </nav>
-
-            <!-- Edit Form -->
-            <div class="p-6">
-                <div class="glass-card p-8 max-w-4xl mx-auto">
-                    <h3 class="text-2xl font-bold text-white mb-6">
-                        <i class="fas fa-user-edit mr-2"></i>Edit Data User: <%= user.username %>
-                    </h3>
-                    
-                    <form action="/dashboard/edit/<%= user._id %>?_method=PUT" method="POST" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Username</label>
-                                <input type="text" name="username" value="<%= user.username %>" 
-                                       class="glass-input" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Nama Lengkap</label>
-                                <input type="text" name="nama" value="<%= user.nama || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">NPM</label>
-                                <input type="number" name="npm" value="<%= user.npm || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Email</label>
-                                <input type="email" name="email" value="<%= user.email || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Tempat Lahir</label>
-                                <input type="text" name="ttl" value="<%= user.ttl || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Tanggal Lahir</label>
-                                <input type="date" name="tgl" value="<%= user.tgl || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Agama</label>
-                                <input type="text" name="agama" value="<%= user.agama || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Golongan Darah</label>
-                                <input type="text" name="goldar" value="<%= user.goldar || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">No. HP</label>
-                                <input type="text" name="hp" value="<%= user.hp || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Alamat Rumah</label>
-                                <input type="text" name="rumah" value="<%= user.rumah || '' %>" 
-                                       class="glass-input">
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-white mb-2">Alamat Kos</label>
-                                <input type="text" name="kos" value="<%= user.kos || '' %>" 
-                                       class="glass-input">
-                            </div>
-                        </div>
-
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Pendidikan</label>
-                                <textarea name="pendidikan" rows="3" class="glass-input"><%= user.pendidikan || '' %></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Kepanitiaan</label>
-                                <textarea name="panitia" rows="3" class="glass-input"><%= user.panitia || '' %></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Organisasi</label>
-                                <textarea name="organisasi" rows="3" class="glass-input"><%= user.organisasi || '' %></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Pelatihan</label>
-                                <textarea name="pelatihan" rows="3" class="glass-input"><%= user.pelatihan || '' %></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white mb-2">Prestasi</label>
-                                <textarea name="prestasi" rows="3" class="glass-input"><%= user.prestasi || '' %></textarea>
-                            </div>
-                        </div>
-
-                        <div class="flex space-x-4 mt-8">
-                            <button type="submit" class="glass-button flex-1 bg-green-500/20 hover:bg-green-500/30">
-                                <i class="fas fa-save mr-2"></i>Simpan Perubahan
-                            </button>
-                            <a href="/dashboard" class="glass-button flex-1 text-center bg-gray-500/20 hover:bg-gray-500/30">
-                                <i class="fas fa-arrow-left mr-2"></i>Kembali
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<body>
+  <div class="wrapper">
+    <%- include('partials/sidebar', {nama: nama}) %>
+    <%- include('partials/navbar', {nama: nama}) %>
+    
+    <div class="content-wrapper">
+      <div class="edit-container">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title">Edit Data Anggota</h1>
+          <div class="breadcrumb-glass">
+            <a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+            <i class="fas fa-chevron-right" style="font-size: 12px;"></i>
+            <span>Edit Data</span>
+          </div>
         </div>
+        
+        <!-- Edit Form -->
+        <div class="edit-card">
+          <form action="/dashboard/edit/<%= user._id %>?_method=PUT" method="POST" data-validate>
+            <!-- Account Information -->
+            <div class="section-title">
+              <i class="fas fa-user-circle"></i>
+              Informasi Akun
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Username</label>
+                <input 
+                  type="text" 
+                  name="username" 
+                  class="form-control-glass" 
+                  value="<%= user.username %>"
+                  required
+                >
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  class="form-control-glass" 
+                  value="<%= user.email || '' %>"
+                  required
+                >
+              </div>
+            </div>
+            
+            <hr class="section-divider">
+            
+            <!-- Personal Data -->
+            <div class="section-title">
+              <i class="fas fa-id-card"></i>
+              Data Pribadi
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input 
+                  type="text" 
+                  name="nama" 
+                  class="form-control-glass" 
+                  value="<%= user.nama || '' %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">NPM</label>
+                <input 
+                  type="number" 
+                  name="npm" 
+                  class="form-control-glass" 
+                  value="<%= user.npm || '' %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Tempat Lahir</label>
+                <input 
+                  type="text" 
+                  name="ttl" 
+                  class="form-control-glass" 
+                  value="<%= user.ttl || '' %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Tanggal Lahir</label>
+                <input 
+                  type="date" 
+                  name="tgl" 
+                  class="form-control-glass" 
+                  value="<%= user.tgl || '' %>"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Agama</label>
+                <select name="agama" class="form-control-glass">
+                  <option value="">Pilih Agama</option>
+                  <option value="Islam" <%= user.agama === 'Islam' ? 'selected' : '' %>>Islam</option>
+                  <option value="Kristen" <%= user.agama === 'Kristen' ? 'selected' : '' %>>Kristen</option>
+                  <option value="Katolik" <%= user.agama === 'Katolik' ? 'selected' : '' %>>Katolik</option>
+                  <option value="Hindu" <%= user.agama === 'Hindu' ? 'selected' : '' %>>Hindu</option>
+                  <option value="Buddha" <%= user.agama === 'Buddha' ? 'selected' : '' %>>Buddha</option>
+                  <option value="Konghucu" <%= user.agama === 'Konghucu' ? 'selected' : '' %>>Konghucu</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Golongan Darah</label>
+                <select name="goldar" class="form-control-glass">
+                  <option value="">Pilih Golongan Darah</option>
+                  <option value="A" <%= user.goldar === 'A' ? 'selected' : '' %>>A</option>
+                  <option value="B" <%= user.goldar === 'B' ? 'selected' : '' %>>B</option>
+                  <option value="AB" <%= user.goldar === 'AB' ? 'selected' : '' %>>AB</option>
+                  <option value="O" <%= user.goldar === 'O' ? 'selected' : '' %>>O</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">No. HP</label>
+                <input 
+                  type="tel" 
+                  name="hp" 
+                  class="form-control-glass" 
+                  value="<%= user.hp || '' %>"
+                  placeholder="08xxxxxxxxxx"
+                >
+              </div>
+            </div>
+            
+            <hr class="section-divider">
+            
+            <!-- Address -->
+            <div class="section-title">
+              <i class="fas fa-map-marker-alt"></i>
+              Alamat
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Alamat Rumah</label>
+              <textarea 
+                name="rumah" 
+                class="form-control-glass" 
+                rows="3"
+                placeholder="Jalan, Kelurahan, Kecamatan, Kota"
+              ><%= user.rumah || '' %></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Alamat Kos</label>
+              <textarea 
+                name="kos" 
+                class="form-control-glass" 
+                rows="3"
+                placeholder="Alamat kos di Bandung"
+              ><%= user.kos || '' %></textarea>
+            </div>
+            
+            <hr class="section-divider">
+            
+            <!-- History & Experience -->
+            <div class="section-title">
+              <i class="fas fa-graduation-cap"></i>
+              Riwayat & Pengalaman
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Pendidikan</label>
+              <textarea 
+                name="pendidikan" 
+                class="form-control-glass" 
+                rows="3"
+                placeholder="SD, SMP, SMA"
+              ><%= user.pendidikan || '' %></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Kepanitiaan</label>
+              <textarea 
+                name="panitia" 
+                class="form-control-glass" 
+                rows="3"
+                placeholder="Riwayat kepanitiaan"
+              ><%= user.panitia || '' %></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Organisasi</label>
+              <textarea 
+                name="organisasi" 
+                class="form-control-glass" 
+                rows="3"
+                placeholder="Riwayat organisasi"
+              ><%= user.organisasi || '' %></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Pelatihan</label>
+              <textarea 
+                name="pelatihan" 
+                class="form-control-glass" 
+                rows="3"
+                placeholder="Pelatihan yang pernah diikuti"
+              ><%= user.pelatihan || '' %></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Prestasi</label>
+              <textarea 
+                name="prestasi" 
+                class="form-control-glass" 
+                rows="3"
+                placeholder="Prestasi yang pernah diraih"
+              ><%= user.prestasi || '' %></textarea>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button type="submit" class="btn-primary-gradient ripple-container" style="flex: 1;">
+                <i class="fas fa-save"></i>
+                Simpan Perubahan
+              </button>
+              <a href="/dashboard" class="btn-cancel" style="flex: 1;">
+                <i class="fas fa-times"></i>
+                Batal
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-
-    <script src="/javascript/dom.js"></script>
+  </div>
+  
+  <%- include('partials/script') %>
+  <script src="/javascript/animations.js"></script>
+  <script src="/javascript/admin-animations.js"></script>
 </body>
 </html>

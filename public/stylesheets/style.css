@@ -636,3 +636,71 @@ table.dataTable > tbody > tr.child span.dtr-data{ color:#111827; }
   .dataTables_wrapper .dataTables_paginate a{ color:#93C5FD; }
   .dataTables_wrapper .dataTables_paginate a:hover{ background: rgba(255,255,255,0.12); }
 }
+
+/* ===== DataTables pagination fallback (tanpa skin bootstrap) ===== */
+.dataTables_wrapper .dataTables_paginate ul,
+.dataTables_wrapper .dataTables_paginate ul.pagination{
+  list-style: none;            /* hilangin bullet */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}
+.dataTables_wrapper .dataTables_paginate ul li{ list-style: none; }
+.dataTables_wrapper .dataTables_paginate ul li a,
+.dataTables_wrapper .dataTables_paginate a{
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--primary-blue);
+  transition: var(--transition-smooth);
+}
+.dataTables_wrapper .dataTables_paginate ul li.active a,
+.dataTables_wrapper .dataTables_paginate a:hover{
+  background: rgba(30,58,138,.12);
+  color: var(--primary-blue);
+}
+
+
+/* ===== DataTables Responsive child row styling ===== */
+table.dataTable > tbody > tr.child { 
+  background: rgba(255,255,255,0.95);
+}
+table.dataTable > tbody > tr.child > td{
+  background: rgba(255,255,255,0.95);
+  padding: 0;                   /* biar list rata pinggir */
+}
+table.dataTable > tbody > tr.child td > ul,
+table.dataTable > tbody > tr.child ul.dtr-details{
+  list-style: none;             /* hilangin bullet • */
+  margin: 0;
+  padding: 12px 16px;
+  width: 100%;
+}
+table.dataTable > tbody > tr.child ul.dtr-details li{
+  list-style: none;
+  border-bottom: 1px dashed rgba(0,0,0,0.08);
+  padding: 6px 0;
+}
+table.dataTable > tbody > tr.child span.dtr-title{
+  display: inline-block;
+  min-width: 160px;
+  font-weight: 700;
+  color: #374151;
+}
+table.dataTable > tbody > tr.child span.dtr-data{ color:#111827; }
+
+/* Dark mode penyesuaian */
+@media (prefers-color-scheme: dark){
+  table.dataTable > tbody > tr.child,
+  table.dataTable > tbody > tr.child > td{
+    background: rgba(51,65,85,0.85); color:#F8FAFC;
+  }
+  table.dataTable > tbody > tr.child ul.dtr-details li{ border-color: rgba(255,255,255,0.12); }
+  table.dataTable > tbody > tr.child span.dtr-title,
+  table.dataTable > tbody > tr.child span.dtr-data{ color:#F8FAFC; }
+}
+

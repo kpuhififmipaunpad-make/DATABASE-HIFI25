@@ -1,266 +1,78 @@
-<!-- Page specific script: MERGED (patokan utama = DataTables) -->
-<script>
-(() => {
-  // ===== Utilities =====
-  const libsReady = () =>
-    !!window.jQuery && !!$.fn.DataTable && !!$.fn.dataTable && !!$.fn.dataTable.Buttons;
+      <!-- Font Awesome Icon -->
+      <script src="https://kit.fontawesome.com/7cc967098c.js" crossorigin="anonymous"></script>
+      <!-- Iconify -->
+      <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@2.2.1/dist/iconify.min.js"></script>
+      <!-- jQuery -->
+      <script src="/adminlte/plugins/jquery/jquery.min.js"></script>
+      <!-- jQuery UI 1.11.4 -->
+      <script src="/adminlte/plugins/jquery-ui/jquery-ui.min.js"></script>
+      <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+      <script>
+      $.widget.bridge('uibutton', $.ui.button)
+      </script>
+      <!-- Bootstrap 4 -->
+      <script src="/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <!-- ChartJS -->
+      <script src="/adminlte/plugins/chart.js/Chart.min.js"></script>
+      <!-- Sparkline -->
+      <script src="/adminlte/plugins/sparklines/sparkline.js"></script>
+      <!-- JQVMap -->
+      <script src="/adminlte/plugins/jqvmap/jquery.vmap.min.js"></script>
+      <script src="/adminlte/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+      <!-- jQuery Knob Chart -->
+      <script src="/adminlte/plugins/jquery-knob/jquery.knob.min.js"></script>
+      <!-- daterangepicker -->
+      <script src="/adminlte/plugins/moment/moment.min.js"></script>
+      <script src="/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
+      <!-- Tempusdominus Bootstrap 4 -->
+      <script src="/adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+      <!-- Summernote -->
+      <script src="/adminlte/plugins/summernote/summernote-bs4.min.js"></script>
+      <!-- overlayScrollbars -->
+      <script src="/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+      <!-- AdminLTE App -->
+      <script src="/adminlte/dist/js/adminlte.js"></script>
+      <!-- AdminLTE for demo purposes -->
+      <script src="/adminlte/dist/js/demo.js"></script>
+      <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+      <script src="/adminlte/dist/js/pages/dashboard.js"></script>
+      <!-- bs-custom-file-input -->
+      <script src="/adminlte/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
-  const whenDOMReady = (cb) => {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", cb, { once: true });
-    } else cb();
-  };
+      <!-- DataTables  & Plugins -->
+      <script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+      <script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+      <script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+      <script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+      <script src="/adminlte/plugins/jszip/jszip.min.js"></script>
+      <script src="/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+      <script src="/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+      <script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+      <!-- Show Entries Buttons -->
 
-  // Poll pendek untuk nunggu CDN (karena semua <script> pakai defer)
-  function bootWhenReady(fn, interval = 50) {
-    const tryInit = () => (libsReady() ? fn() : setTimeout(tryInit, interval));
-    tryInit();
-  }
-
-  const debounce = (fn, wait = 200) => {
-    let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
-  };
-
-  // Format waktu relatif (display), tapi sort/export tetap ISO
-  function formatRelativeTime(dateString) {
-    if (!dateString) return 'Tidak pernah';
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return '—';
-    const now = new Date();
-    const diffSec = Math.floor((now - d) / 1000);
-    const abs = Math.abs(diffSec);
-    const units = [
-      ["tahun", 365*24*3600],
-      ["bulan", 30*24*3600],
-      ["hari", 24*3600],
-      ["jam", 3600],
-      ["menit", 60],
-      ["detik", 1],
-    ];
-    for (const [name, sec] of units) {
-      const v = Math.floor(abs / sec);
-      if (v >= 1) return (diffSec >= 0) ? `${v} ${name} yang lalu` : `dalam ${v} ${name}`;
-    }
-    return "baru saja";
-  }
-
-  // Normalisasi tanggal ke ISO utk sort/export stabil
-  function normalizeToISO(s) {
-    if (!s) return null;
-    const d1 = new Date(s);
-    if (!isNaN(d1.getTime())) return d1.toISOString();
-    const m = String(s).match(
-      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
-    );
-    if (m) {
-      const [_, dd, mm, yyyy, HH="00", MM="00", SS="00"] = m;
-      const year = yyyy.length === 2 ? Number("20" + yyyy) : Number(yyyy);
-      const iso = new Date(year, Number(mm)-1, Number(dd), Number(HH), Number(MM), Number(SS));
-      if (!isNaN(iso.getTime())) return iso.toISOString();
-    }
-    return null;
-  }
-
-  // Bersihkan nomor HP utk sort/export (hanya digit + '+')
-  function normalizePhone(text) {
-    if (!text) return "";
-    const only = String(text).replace(/[^0-9+]/g, "");
-    // pastikan '+' (jika ada) tetap di depan
-    return only.replace(/(.*)\+/g, "+$1");
-  }
-
-  // Cari indeks kolom berdasarkan teks header
-  function detectColumnIndexes($table) {
-    const headers = $table.find('thead th').map(function(){return (this.textContent||"").trim().toLowerCase();}).get();
-    const phoneIdx = headers.findIndex(h => /(phone|hp|telepon|no\.?\s*hp)/i.test(h));
-    const updateIdx = headers.findIndex(h => /(update|updated|terakhir|last)/i.test(h));
-    return { phoneIdx, updateIdx };
-  }
-
-  whenDOMReady(() => {
-    bootWhenReady(() => {
-      const $table = $("#usersTable");
-      if (!$table.length) return;
-
-      // Deteksi kolom dinamis
-      const { phoneIdx, updateIdx } = detectColumnIndexes($table);
-
-      const dt = $table.DataTable({
-        responsive: true,
-        autoWidth: false,
-        lengthChange: true,         // items per page
-        paging: true,
-        ordering: true,
-        searching: false,           // pakai search bar custom (#tableSearch / #searchInput)
-        pageLength: 10,
-        lengthMenu: [[10, 20, 30, 40, 50, -1], [10, 20, 30, 40, 50, "All"]],
-        // B = Buttons, l = length, r, t, i = info, p = pagination
-        dom: "Blrtip",
-
-        // Bahasa (info sesuai kebutuhan kamu)
-        language: {
-          lengthMenu: "Tampilkan _MENU_ data per halaman",
-          info: "Menampilkan _START_–_END_ dari _TOTAL_ data",
-          infoEmpty: "Menampilkan 0 data",
-          paginate: { previous: "‹", next: "›" },
-          zeroRecords: "Tidak ada data yang cocok"
-        },
-
-        // Export: Excel, PDF, Print
-        buttons: [
-          {
-            extend: "excelHtml5",
-            title: "Data Table",
-            exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-          },
-          {
-            extend: "pdfHtml5",
-            title: "Data Table",
-            orientation: "landscape",
-            pageSize: "A4",
-            exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-          },
-          {
-            extend: "print",
-            title: "Data Table",
-            exportOptions: { columns: ":not(.no-export)", format: { body: exportBody } }
-          }
-        ],
-
-        // Urutan default: kolom pertama
-        order: [[0, "asc"]],
-
-        columnDefs: [
-          { targets: 0, width: 56, type: "num", className: "dt-center" },
-
-          // Phone Number: sort/export gunakan angka bersih (jika kolom terdeteksi)
-          ...(phoneIdx >= 0 ? [{
-            targets: phoneIdx,
-            render: function (data, type) {
-              const text = (data || "").toString();
-              if (type === "sort" || type === "type" || type === "export") return normalizePhone(text);
-              return text;
-            }
-          }] : []),
-
-          // Terakhir Update: display relatif; sort/export pakai ISO (jika kolom terdeteksi)
-          ...(updateIdx >= 0 ? [{
-            targets: updateIdx,
-            render: function (data, type) {
-              const raw = (data || "").toString().trim();
-              const iso = normalizeToISO(raw) || raw || "";
-              if (type === "display") {
-                const title = iso ? new Date(iso).toLocaleString('id-ID') : "";
-                const rel = iso ? formatRelativeTime(iso) : "—";
-                return `<time datetime="${iso}" title="${title}">${rel}</time>`;
-              }
-              return iso; // sort/export pakai ISO
-            }
-          }] : [])
-        ],
-
-        drawCallback: function () {
-          // Refresh teks relatif setiap redraw
-          $table.find("time[datetime]").each(function () {
-            const iso = this.getAttribute("datetime");
-            if (iso) this.textContent = formatRelativeTime(iso);
-          });
-          // Perbarui info halaman custom (bila ada #pageInfo)
-          updatePageInfoBridge();
-          // Sinkronkan select itemsPerPage (bila ada)
-          syncItemsPerPageSelect();
-        }
-      });
-
-      // ===== Bridge: Search bar custom (#tableSearch dan #searchInput) =====
-      const $searchA = $("#tableSearch");
-      const $searchB = $("#searchInput");
-      const doSearch = debounce(function (val) { dt.search(val).draw(); }, 200);
-      if ($searchA.length) $searchA.on("input", function(){ doSearch(this.value); });
-      if ($searchB.length) $searchB.on("input", function(){ doSearch(this.value); });
-
-      // ===== Bridge: Items per page custom (#itemsPerPage) =====
-      const $len = $("#itemsPerPage");
-      function syncItemsPerPageSelect() {
-        if (!$len.length) return;
-        const cur = dt.page.len();
-        if (String($len.val()) !== String(cur)) $len.val(String(cur));
-      }
-      if ($len.length) {
-        syncItemsPerPageSelect();
-        $len.on("change", function(){
-          const n = parseInt(this.value, 10) || 10;
-          dt.page.len(n).draw();
-        });
-      }
-
-      // ===== Bridge: Page info custom (#pageInfo) =====
-      const $pageInfo = $("#pageInfo");
-      function updatePageInfoBridge() {
-        if (!$pageInfo.length) return;
-        const info = dt.page.info();
-        if (!info) return;
-        const start = info.recordsDisplay ? info.start + 1 : 0;
-        const end   = info.end;
-        const total = info.recordsDisplay;
-        $pageInfo.text(`Menampilkan ${start}–${end} dari ${total} data`);
-      }
-      updatePageInfoBridge();
-
-      // ===== Bridge: Pagination helper (opsional, untuk kompatibilitas fungsi lama) =====
-      window.changePage = function(pageNum){
-        // DataTables index page mulai dari 0
-        const idx = Math.max(0, Math.min(pageNum - 1, dt.page.info().pages - 1));
-        dt.page(idx).draw('page');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      };
-
-      // ===== Export body formatter (Excel/PDF/Print) =====
-      function exportBody(data, row, col, node) {
-        if (!node) return data;
-        const time = node.querySelector && node.querySelector("time[datetime]");
-        if (time) return time.getAttribute("datetime") || "";
-        // Jika kolom telepon, kembalikan angka bersih
-        if (col === phoneIdx) return normalizePhone(node.textContent || data || "");
-        return (node.textContent || data || "").trim();
-      }
-
-      // ===== Wrapper fungsi agar kompatibel dengan skrip lama =====
-      window.exportToExcel = () => { dt.button('.buttons-excel').trigger(); };
-      window.exportToPDF   = () => { dt.button('.buttons-pdf').trigger();   };
-      window.printTable    = () => { dt.button('.buttons-print').trigger(); };
-
-      window.changeItemsPerPage = function(){
-        const el = document.getElementById('itemsPerPage');
-        if (!el) return;
-        const n = parseInt(el.value, 10) || 10;
-        dt.page.len(n).draw();
-      };
-
-      // Edit/Delete sederhana berbasis data-id pada <tr> atau tombol aksi
-      window.editItem = function(id){
-        alert(`Edit item: ${id}\nFitur edit dapat dihubungkan ke modal/form sesuai kebutuhan.`);
-      };
-
-      window.deleteItem = function(id){
-        if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
-        // Cari baris dengan atribut data-id
-        const $row = $table.find(`tr[data-id="${id}"]`);
-        if ($row.length) {
-          dt.row($row).remove().draw();
-          alert('Data berhasil dihapus!');
-          return;
-        }
-        // Alternatif: jika tombol aksi punya data-id dan dipanggil via onclick
-        const $btn = $table.find(`button[data-id="${id}"]`).closest('tr');
-        if ($btn.length) {
-          dt.row($btn).remove().draw();
-          alert('Data berhasil dihapus!');
-          return;
-        }
-        alert('Baris dengan ID tersebut tidak ditemukan di tabel.');
-      };
-    });
-  });
-})();
-</script>
+      <!-- Page specific script -->
+      <script>
+         $(function () {
+         $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+         $('#example2').DataTable({
+            "info": false,
+            "autoWidth": false,
+            "responsive": false,
+            "searching": true,
+            "ordering": true,
+            "paging": true,
+            "scrollX": true,
+            "lengthChange": true,
+            "lengthMenu": [ [10, 20, 30, 40, 50, "All"], [10, 20, 30, 40, 50, "All"]]
+         });
+         });
+      </script>
+   </body>
+</html>

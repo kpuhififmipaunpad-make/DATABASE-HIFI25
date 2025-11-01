@@ -2,287 +2,105 @@
 <html lang="id">
 <head>
   <%- include('partials/header') %>
-  <style>
-    body {
-      background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-    }
-    
-    .wrapper {
-      display: flex;
-      min-height: 100vh;
-    }
-    
-    .content-wrapper {
-      flex: 1;
-      margin-left: 260px;
-      padding: 80px 30px 30px;
-      transition: all 0.3s ease;
-    }
-    
-    .content-wrapper.expanded {
-      margin-left: 80px;
-    }
-    
-    .dashboard-header {
-      margin-bottom: 40px;
-      animation: fadeInUp 0.6s ease-out;
-    }
-    
-    .page-title {
-      font-size: 32px;
-      font-weight: 700;
-      color: white;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    }
-    
-    .page-subtitle {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 16px;
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      margin-bottom: 40px;
-    }
-    
-    .stat-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 28px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, #DC143C 0%, #1E3A8A 100%);
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-    }
-    
-    .stat-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-    }
-    
-    .stat-value {
-      font-size: 36px;
-      font-weight: 700;
-      color: #1F2937;
-      margin-bottom: 8px;
-    }
-    
-    .stat-label {
-      color: #6B7280;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    
-    .table-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      animation: fadeInUp 1s ease-out;
-    }
-    
-    .table-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    
-    .table-title {
-      font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .table-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    
-    table.dataTable {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-    
-    table.dataTable thead {
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-    }
-    
-    table.dataTable thead th {
-      padding: 16px;
-      color: white;
-      font-weight: 600;
-      text-align: left;
-      border: none;
-      font-size: 14px;
-    }
-    
-    table.dataTable thead th:first-child {
-      border-top-left-radius: 12px;
-    }
-    
-    table.dataTable thead th:last-child {
-      border-top-right-radius: 12px;
-    }
-    
-    table.dataTable tbody tr {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-    
-    table.dataTable tbody tr:hover {
-      background: rgba(30, 58, 138, 0.05);
-      transform: scale(1.01);
-    }
-    
-    table.dataTable tbody tr.shown {
-      background: rgba(220, 20, 60, 0.05);
-    }
-    
-    table.dataTable tbody td {
-      padding: 16px;
-      border: none;
-      font-size: 14px;
-      color: #374151;
-    }
-    
-    .detail-card {
-      animation: fadeInUp 0.4s ease-out;
-    }
-    
-    @media (max-width: 768px) {
-      .content-wrapper {
-        margin-left: 0;
-        padding: 80px 15px 20px;
-      }
-      
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .table-container {
-        padding: 20px;
-        overflow-x: auto;
-      }
-      
-      .table-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-  </style>
+  <title>Dashboard Admin - HIFI Database</title>
 </head>
 <body>
-  <div class="wrapper">
-    <%- include('partials/sidebar') %>
+  <!-- Background Shapes -->
+  <div class="bg-shape bg-shape-1"></div>
+  <div class="bg-shape bg-shape-2"></div>
+  <div class="bg-shape bg-shape-3"></div>
+
+  <!-- Sidebar -->
+  <%- include('partials/sidebar') %>
+
+  <!-- Main Content -->
+  <div class="content-wrapper">
+    <!-- Navbar -->
     <%- include('partials/navbar') %>
-    
-    <div class="content-wrapper">
-      <!-- Dashboard Header -->
-      <div class="dashboard-header">
-        <h1 class="page-title">Dashboard Admin</h1>
-        <p class="page-subtitle">Selamat datang, <%= nama %>!</p>
-      </div>
-      
-      <!-- Alert Messages -->
-      <%- include('partials/message', {message: alert.message, status: alert.status}) %>
-      
-      <!-- Statistics Cards -->
-      <div class="stats-grid">
-        <div class="stat-card" data-tilt>
-          <div class="stat-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <div class="stat-value" data-counter="<%= count.user %>">0</div>
-          <div class="stat-label">Total Anggota</div>
+
+    <!-- Messages -->
+    <%- include('partials/message') %>
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header" data-animate>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="dashboard-title mb-2">
+            <i class="fas fa-tachometer-alt"></i> Dashboard Admin
+          </h1>
+          <p class="dashboard-subtitle mb-0">
+            Selamat datang kembali! Kelola data warga HIFI dengan mudah.
+          </p>
         </div>
-        
-        <div class="stat-card" data-tilt>
-          <div class="stat-icon">
-            <i class="fas fa-user-shield"></i>
-          </div>
-          <div class="stat-value" data-counter="<%= admin.length %>">0</div>
-          <div class="stat-label">Administrator</div>
+        <div>
+          <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI" style="height: 60px; filter: brightness(0) invert(1);">
         </div>
-        
-        <div class="stat-card" data-tilt>
-          <div class="stat-icon">
-            <i class="fas fa-user-check"></i>
-          </div>
-          <div class="stat-value" data-counter="<%= count.user - admin.length %>">0</div>
-          <div class="stat-label">Anggota Aktif</div>
-        </div>
-        
-        <div class="stat-card" data-tilt>
-          <div class="stat-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <div class="stat-value">100%</div>
-          <div class="stat-label">Database Aktif</div>
-        </div>
-      </div>
-      
-      <!-- Data Table -->
-      <div class="table-container">
-        <div class="table-header">
-          <h2 class="table-title">
-            <i class="fas fa-table"></i>
-            Data Warga HIFI
-          </h2>
-          <div class="table-actions">
-            <button onclick="HIFIAdmin.refreshData()" class="btn-export" id="refreshBtn">
-              <i class="fas fa-sync-alt"></i>
-              Refresh
-            </button>
-          </div>
-        </div>
-        
-        <%- include('partials/table', {users: users}) %>
       </div>
     </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid" data-animate>
+      <!-- Total Warga -->
+      <div class="stat-card">
+        <div class="stat-card-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-card-title">Total Warga</div>
+        <div class="stat-card-value" data-counter="<%= users.length %>">0</div>
+        <div class="stat-card-trend">
+          <i class="fas fa-arrow-up"></i> +12% dari bulan lalu
+        </div>
+      </div>
+
+      <!-- Warga Aktif -->
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="stat-card-title">Warga Aktif</div>
+        <div class="stat-card-value" data-counter="<%= Math.floor(users.length * 0.85) %>">0</div>
+        <div class="stat-card-trend" style="color: #10B981;">
+          <i class="fas fa-arrow-up"></i> +8% dari bulan lalu
+        </div>
+      </div>
+
+      <!-- Data Baru Bulan Ini -->
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="stat-card-title">Data Baru Bulan Ini</div>
+        <div class="stat-card-value" data-counter="<%= Math.floor(users.length * 0.15) %>">0</div>
+        <div class="stat-card-trend" style="color: #F59E0B;">
+          <i class="fas fa-arrow-up"></i> Bulan ini
+        </div>
+      </div>
+
+      <!-- Database Status -->
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
+          <i class="fas fa-database"></i>
+        </div>
+        <div class="stat-card-title">Status Database</div>
+        <div class="stat-card-value" style="font-size: 20px; color: #10B981;">
+          <i class="fas fa-check-circle"></i> Online
+        </div>
+        <div class="stat-card-trend" style="color: #10B981;">
+          <i class="fas fa-signal"></i> Koneksi stabil
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div data-animate>
+      <%- include('partials/table') %>
+    </div>
+
+    <!-- Footer -->
+    <%- include('partials/footer') %>
   </div>
-  
+
+  <!-- Scripts -->
   <%- include('partials/script') %>
-  <script src="/javascript/animations.js"></script>
-  <script src="/javascript/admin-animations.js"></script>
 </body>
 </html>

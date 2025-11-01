@@ -1,303 +1,739 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Table - Responsive & Searchable</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<!-- =========================
+     TABLE.EJS (Dashboard - FIXED: Search, Update, Sort, Stable Layout, Responsive)
+     ========================= -->
+<style>
+  /* ===== GLOBAL RESET & VARIABLES ===== */
+  :root {
+    --primary-color: #1E3A8A;
+    --primary-light: rgba(30, 58, 138, 0.1);
+    --accent-color: #DC143C;
+    --accent-light: rgba(220, 20, 60, 0.05);
+    --success-color: #10B981;
+    --success-dark: #059669;
+    --text-primary: #1F2937;
+    --text-secondary: #6B7280;
+    --text-tertiary: #9CA3AF;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F9FAFB;
+    --bg-glass: rgba(255, 255, 255, 0.95);
+    --border-color: #E5E7EB;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.12);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.3s ease;
+  }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
+  /* ===== TOOLBAR (STABLE & RESPONSIVE) ===== */
+  .table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--primary-light);
+    box-shadow: var(--shadow-sm);
+  }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 30px;
-            color: white;
-        }
+  .toolbar-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+    white-space: nowrap;
+  }
 
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+  .toolbar-select {
+    background: var(--bg-glass);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 600;
+    min-width: 140px;
+    transition: var(--transition-base);
+    cursor: pointer;
+    /* ✅ FORCE DISPLAY (override any global CSS) */
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 
-        .search-box {
-            position: relative;
-            max-width: 500px;
-        }
+  .toolbar-select:hover {
+    border-color: var(--primary-color);
+  }
 
-        .search-box input {
-            width: 100%;
-            padding: 12px 40px 12px 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+  .toolbar-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
 
-        .search-box::after {
-            content: "🔍";
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 18px;
-        }
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
 
-        .table-info {
-            padding: 20px 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+  .toolbar-search {
+    background: var(--bg-glass);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--text-primary);
+    min-width: 250px;
+    transition: var(--transition-base);
+    /* ✅ FORCE DISPLAY (override any global CSS) */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 
-        .table-info span {
-            font-size: 14px;
-            color: #495057;
-            font-weight: 500;
-        }
+  .toolbar-search:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
 
-        .last-update {
-            color: #667eea;
-            font-weight: 600;
-        }
+  .toolbar-search::placeholder {
+    color: var(--text-tertiary);
+  }
 
-        .table-wrapper {
-            overflow-x: auto;
-            padding: 30px;
-        }
+  .btn-glass {
+    background: var(--bg-glass);
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: var(--radius-md);
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
 
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            table-layout: fixed;
-        }
+  .btn-glass:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
 
-        thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+  .btn-glass:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 
-        thead th {
-            padding: 15px 12px;
-            color: white;
-            font-weight: 600;
-            text-align: left;
-            font-size: 14px;
-            white-space: nowrap;
-            border-bottom: 3px solid #764ba2;
-        }
+  .btn-glass i.fa-spin {
+    animation: spin 1s linear infinite;
+  }
 
-        tbody tr {
-            border-bottom: 1px solid #e9ecef;
-            transition: all 0.3s ease;
-        }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
-        tbody tr:hover {
-            background: #f8f9ff;
-            transform: scale(1.01);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-        }
+  #exportButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-        tbody td {
-            padding: 15px 12px;
-            color: #495057;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+  .dt-btn-green {
+    background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%) !important;
+    color: var(--bg-primary) !important;
+    border: none !important;
+    border-radius: var(--radius-md) !important;
+    padding: 10px 16px !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    gap: 8px !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    transition: var(--transition-base) !important;
+  }
 
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
+  .dt-btn-green:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+  }
 
-        .status-active {
-            background: #d4edda;
-            color: #155724;
-        }
+  /* ===== TABLE CONTAINER (STABLE LAYOUT) ===== */
+  .table-responsive {
+    overflow-x: auto;
+    overflow-y: visible;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    background: var(--bg-primary);
+  }
 
-        .status-inactive {
-            background: #f8d7da;
-            color: #721c24;
-        }
+  /* ✅ CRITICAL: STABLE TABLE LAYOUT */
+  #usersTable {
+    width: 100%;
+    table-layout: fixed; /* ✅ PREVENT COLUMN WIDTH CHANGES */
+    border-collapse: separate;
+    border-spacing: 0;
+  }
 
-        .no-data {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6c757d;
-            font-size: 16px;
-        }
+  #usersTable th,
+  #usersTable td {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    vertical-align: middle;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
 
-        .new-badge {
-            background: #ff6b6b;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            margin-left: 8px;
-            font-weight: 700;
-            animation: pulse 2s infinite;
-        }
+  /* ✅ FIXED COLUMN WIDTHS TO PREVENT LAYOUT SHIFT */
+  #usersTable th:nth-child(1),
+  #usersTable td:nth-child(1) { 
+    width: 60px; 
+    text-align: center; 
+    white-space: nowrap; 
+  }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
+  #usersTable th:nth-child(2),
+  #usersTable td:nth-child(2) { 
+    width: 140px; 
+  }
 
-        /* Responsive Design */
-        @media screen and (max-width: 1024px) {
-            .header h1 {
-                font-size: 24px;
-            }
-            
-            thead th, tbody td {
-                padding: 12px 8px;
-                font-size: 13px;
-            }
-        }
+  #usersTable th:nth-child(3),
+  #usersTable td:nth-child(3) { 
+    width: 180px; 
+  }
 
-        @media screen and (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
+  #usersTable th:nth-child(4),
+  #usersTable td:nth-child(4) { 
+    width: 120px; 
+  }
 
-            .header {
-                padding: 20px;
-            }
+  #usersTable th:nth-child(5),
+  #usersTable td:nth-child(5) { 
+    width: 200px; 
+  }
 
-            .header h1 {
-                font-size: 20px;
-                margin-bottom: 15px;
-            }
+  #usersTable th:nth-child(6),
+  #usersTable td:nth-child(6) { 
+    width: 130px; 
+  }
 
-            .table-info {
-                padding: 15px 20px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
+  #usersTable th:nth-child(7),
+  #usersTable td:nth-child(7) { 
+    width: 100px; 
+    text-align: center; 
+  }
 
-            .table-wrapper {
-                padding: 15px;
-            }
+  #usersTable th:nth-child(8),
+  #usersTable td:nth-child(8) { 
+    width: 150px; 
+    text-align: center; 
+  }
 
-            table {
-                table-layout: auto;
-                min-width: 800px;
-            }
+  #usersTable th:nth-child(9),
+  #usersTable td:nth-child(9) { 
+    width: 120px; 
+    text-align: center; 
+  }
 
-            thead th, tbody td {
-                padding: 10px 6px;
-                font-size: 12px;
-            }
+  #usersTable thead th {
+    background: var(--bg-secondary);
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
 
-            .status-badge {
-                padding: 4px 8px;
-                font-size: 10px;
-            }
-        }
+  /* ✅ STABLE ROW HOVER (NO TRANSFORM) */
+  #usersTable tbody tr.clickable-row {
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+  }
 
-        @media screen and (max-width: 480px) {
-            .header h1 {
-                font-size: 18px;
-            }
+  #usersTable tbody tr.clickable-row:hover {
+    background: var(--primary-light);
+    transform: none; /* ✅ NO SCALE/TRANSFORM TO PREVENT LAYOUT SHIFT */
+  }
 
-            .search-box input {
-                font-size: 14px;
-                padding: 10px 35px 10px 12px;
-            }
+  #usersTable tbody tr.shown {
+    background: var(--accent-light) !important;
+  }
 
-            table {
-                min-width: 700px;
-            }
+  #usersTable tbody tr:last-child td {
+    border-bottom: none;
+  }
 
-            thead th, tbody td {
-                padding: 8px 4px;
-                font-size: 11px;
-            }
-        }
+  /* ===== BADGES ===== */
+  .badge-glass {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #667eea;
-            font-size: 18px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>📊 Data Management System</h1>
-            <div class="search-box">
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    placeholder="Cari berdasarkan nama, kode, atau status..."
-                    autocomplete="off"
-                >
-            </div>
-        </div>
+  .badge-red {
+    background: rgba(220, 20, 60, 0.1);
+    color: var(--accent-color);
+    border: 1px solid rgba(220, 20, 60, 0.2);
+  }
 
-        <div class="table-info">
-            <span>Total Data: <strong id="totalData">0</strong></span>
-            <span class="last-update">Update Terakhir: <strong id="lastUpdate">-</strong></span>
-        </div>
+  .badge-blue {
+    background: rgba(30, 58, 138, 0.1);
+    color: var(--primary-color);
+    border: 1px solid rgba(30, 58, 138, 0.2);
+  }
 
-        <div class="table-wrapper">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th style="width: 5%;">No</th>
-                        <th style="width: 10%;">Kode</th>
-                        <th style="width: 25%;">Nama</th>
-                        <th style="width: 15%;">Kategori</th>
-                        <th style="width: 12%;">Status</th>
-                        <th style="width: 18%;">Tanggal Update</th>
-                        <th style="width: 15%;">Keterangan</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td colspan="7" class="loading">⏳ Memuat data...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+  /* ===== ACTION BUTTONS ===== */
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    margin: 0 4px;
+  }
 
-    <!-- Script akan di-include dari script.ejs -->
-    <script src="/script.js"></script>
-</body>
-</html>
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-edit {
+    color: var(--primary-color);
+  }
+
+  .btn-edit:hover {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border-color: var(--primary-color);
+  }
+
+  .btn-delete {
+    color: var(--accent-color);
+  }
+
+  .btn-delete:hover {
+    background: var(--accent-color);
+    color: var(--bg-primary);
+    border-color: var(--accent-color);
+  }
+
+  /* ===== DETAIL ROW ===== */
+  .dt-detail {
+    padding: 24px;
+    background: var(--bg-secondary);
+    animation: fadeInUp 0.4s ease-out;
+  }
+
+  .detail-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+
+  .detail-item {
+    background: var(--bg-secondary);
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--accent-color);
+  }
+
+  .detail-item b {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .detail-item span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    word-wrap: break-word;
+  }
+
+  .detail-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-color);
+    grid-column: 1 / -1;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ===== RESPONSIVE DESIGN ===== */
+  @media (max-width: 1024px) {
+    #usersTable {
+      table-layout: auto; /* Allow flexible layout on tablet */
+    }
+
+    #usersTable th,
+    #usersTable td {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .table-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 16px;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .toolbar-search {
+      min-width: 100%;
+    }
+
+    .table-responsive {
+      border-radius: var(--radius-md);
+    }
+
+    /* Maintain horizontal scroll for table */
+    #usersTable {
+      min-width: 900px; /* Minimum width to trigger horizontal scroll */
+    }
+
+    #usersTable th,
+    #usersTable td {
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
+    .detail-card {
+      grid-template-columns: 1fr;
+    }
+
+    .btn-action {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .table-toolbar {
+      padding: 12px;
+    }
+
+    .toolbar-label {
+      font-size: 13px;
+    }
+
+    .toolbar-select {
+      min-width: 120px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .toolbar-search {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .btn-glass {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+
+    #exportButtons {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .dt-btn-green {
+      width: 100%;
+      justify-content: center;
+    }
+
+    #usersTable th,
+    #usersTable td {
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+
+    .badge-glass {
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+
+    .btn-action {
+      width: 28px;
+      height: 28px;
+      margin: 0 2px;
+    }
+
+    .btn-action i {
+      font-size: 12px;
+    }
+  }
+
+  /* ===== ACCESSIBILITY ===== */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .badge-glass {
+      border-width: 2px;
+    }
+
+    .btn-action {
+      border-width: 2px;
+    }
+  }
+
+  /* Focus visible for keyboard navigation */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  /* ===== DATATABLE OVERRIDES (PREVENT LAYOUT SHIFT) ===== */
+  .dataTables_wrapper {
+    width: 100%;
+  }
+
+  .dataTables_length,
+  .dataTables_filter {
+    display: none !important; /* Use custom controls */
+  }
+
+  .dataTables_info {
+    padding: 16px 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .dataTables_paginate {
+    padding: 16px 0;
+  }
+
+  .dataTables_paginate .paginate_button {
+    padding: 8px 12px;
+    margin: 0 4px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+
+  .dataTables_paginate .paginate_button:hover {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border-color: var(--primary-color);
+  }
+
+  .dataTables_paginate .paginate_button.current {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+    border-color: var(--primary-color);
+  }
+
+  .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* ===== PRINT STYLES ===== */
+  @media print {
+    .table-toolbar,
+    .btn-action,
+    .dataTables_paginate,
+    .dataTables_info {
+      display: none !important;
+    }
+
+    .table-responsive {
+      overflow: visible;
+      box-shadow: none;
+    }
+
+    #usersTable {
+      border: 1px solid #000;
+    }
+
+    #usersTable tbody tr:hover {
+      background: transparent !important;
+    }
+  }
+</style>
+
+<!-- ===== TOOLBAR ===== -->
+<div class="table-toolbar">
+  <div class="toolbar-left">
+    <span class="toolbar-label">Tampilkan</span>
+    <select id="itemsPerPage" class="toolbar-select" aria-label="Items per page">
+      <option value="10" selected>10 / page</option>
+      <option value="25">25 / page</option>
+      <option value="50">50 / page</option>
+      <option value="100">100 / page</option>
+      <option value="-1">Show All</option>
+    </select>
+  </div>
+
+  <div class="toolbar-right">
+    <input 
+      id="searchNama" 
+      class="toolbar-search" 
+      type="search" 
+      placeholder="🔍 Cari nama, email, npm..." 
+      aria-label="Cari data"
+      autocomplete="off"
+    >
+    <button id="btnRefresh" type="button" class="btn-glass" aria-label="Refresh data">
+      <i class="fas fa-sync-alt" aria-hidden="true"></i>
+      Refresh
+    </button>
+    <div id="exportButtons" aria-label="Export Buttons"></div>
+  </div>
+</div>
+
+<!-- ===== TABLE ===== -->
+<div class="table-responsive">
+  <table id="usersTable" class="display table-glass" style="width:100%">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Username</th>
+        <th>Nama</th>
+        <th>NPM</th>
+        <th>Email</th>
+        <th>Telepon</th>
+        <th>Role</th>
+        <th>Terakhir Update</th>
+        <th class="no-sort">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(function(u, i){ %>
+        <% 
+          const __lastUpdate = u.updatedAt || u.time || u.updated_at || u.lastUpdate || u.updated || u.createdAt;
+          const __ts = __lastUpdate ? new Date(__lastUpdate).getTime() : 0;
+        %>
+        <tr
+          class="clickable-row"
+          data-id="<%= u._id %>"
+          data-username="<%= u.username || '' %>"
+          data-nama="<%= u.nama || '' %>"
+          data-npm="<%= u.npm || '' %>"
+          data-email="<%= u.email || '' %>"
+          data-hp="<%= u.hp || '' %>"
+          data-ttl="<%= u.ttl || '' %>"
+          data-tgl="<%= u.tgl || '' %>"
+          data-agama="<%= u.agama || '' %>"
+          data-goldar="<%= u.goldar || '' %>"
+          data-rumah="<%= u.rumah || '' %>"
+          data-kos="<%= u.kos || '' %>"
+          data-pendidikan="<%= u.pendidikan || '' %>"
+          data-panitia="<%= u.panitia || '' %>"
+          data-organisasi="<%= u.organisasi || '' %>"
+          data-pelatihan="<%= u.pelatihan || '' %>"
+          data-prestasi="<%= u.prestasi || '' %>"
+          data-time="<%= __lastUpdate || '' %>"
+        >
+          <td><%= i + 1 %></td>
+          <td><strong><%= u.username %></strong></td>
+          <td><%= u.nama || '-' %></td>
+          <td><%= u.npm || '-' %></td>
+          <td><%= u.email || '-' %></td>
+          <td><%= u.hp || '-' %></td>
+          <td>
+            <span class="badge-glass <%= (u.role === 'Admin') ? 'badge-red' : 'badge-blue' %>">
+              <i class="fas fa-<%= (u.role === 'Admin') ? 'user-shield' : 'user' %>"></i>
+              <%= (u.role || 'User') %>
+            </span>
+          </td>
+          <td data-time="<%= __lastUpdate || '' %>" data-order="<%= __ts %>">
+            <%= __lastUpdate
+                  ? new Date(__lastUpdate).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' })
+                  : '-' %>
+          </td>
+          <td class="no-detail" onclick="event.stopPropagation()">
+            <a class="btn-action btn-edit" title="Edit" href="/dashboard/edit/<%= u._id %>" aria-label="Edit <%= u.nama || u.username %>">
+              <i class="fas fa-pen" aria-hidden="true"></i>
+            </a>
+            <form action="/dashboard/delete/<%= u._id %>?_method=DELETE" method="POST" style="display:inline">
+              <button 
+                type="submit" 
+                class="btn-action btn-delete" 
+                title="Hapus"
+                aria-label="Hapus <%= u.nama || u.username %>"
+                onclick="return confirm('Hapus data <%= u.nama || u.username %>?')"
+              >
+                <i class="fas fa-trash" aria-hidden="true"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

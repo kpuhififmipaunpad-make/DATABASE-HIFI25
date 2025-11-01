@@ -1,106 +1,323 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up | Database HIFI</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar - HIFI Database</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .signup-container {
+      width: 100%;
+      max-width: 500px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .signup-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .logo-section {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .logo-section img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .signup-title {
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .signup-subtitle {
+      text-align: center;
+      color: #6B7280;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #6B7280;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      color: #1E3A8A;
+      transform: translateX(-5px);
+    }
+    
+    .password-strength {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 8px;
+      background: #E5E7EB;
+      overflow: hidden;
+    }
+    
+    .password-strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+    
+    .password-strength-bar.weak { width: 33%; background: #EF4444; }
+    .password-strength-bar.medium { width: 66%; background: #F59E0B; }
+    .password-strength-bar.strong { width: 100%; background: #10B981; }
+    
+    .form-footer {
+      margin-top: 24px;
+      text-align: center;
+    }
+    
+    .form-footer a {
+      color: #1E3A8A;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .form-footer a:hover {
+      color: #DC143C;
+    }
+    
+    @media (max-width: 480px) {
+      .signup-card {
+        padding: 30px 24px;
+      }
+      
+      .signup-title {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Alert Messages -->
-    <% if(message && message.length > 0 || unameBlank || emailBlank || passBlank || password2) { %>
-    <div id="alert-border-3" class="fixed top-4 right-4 z-50 glass-card p-4 max-w-md" role="alert">
-        <div class="flex items-center">
-            <i class="fas fa-exclamation-circle text-2xl mr-3 text-red-400"></i>
-            <div class="text-sm font-medium text-white">
-                <%= message || unameBlank || emailBlank || passBlank || password2 %>
-            </div>
-            <button onclick="dismiss()" class="ml-auto text-white hover:text-gray-200 transition-smooth">
-                <i class="fas fa-times"></i>
+  <!-- Background Shapes -->
+  <div class="bg-shape bg-shape-1"></div>
+  <div class="bg-shape bg-shape-2"></div>
+  
+  <!-- Alert Messages -->
+  <% if (message != '' || unameBlank != '' || emailBlank != '' || passBlank != '' || password2 != '') { %>
+    <div id="alert-border-3" class="alert-glass alert-error" style="position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>
+        <%= message || unameBlank || emailBlank || passBlank || password2 %>
+      </span>
+      <button onclick="dismiss()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  <% } %>
+  
+  <div class="signup-container">
+    <div class="signup-card">
+      <a href="/" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Kembali ke Home
+      </a>
+      
+      <div class="logo-section">
+        <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI" style="width: 80px;">
+      </div>
+      
+      <h1 class="signup-title">Daftar Akun Baru</h1>
+      <p class="signup-subtitle">Lengkapi form di bawah untuk bergabung</p>
+      
+      <form action="/auth/signup" method="POST" name="validasi_form" onSubmit="return validasi_input(this)" data-validate>
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-user"></i> Username
+          </label>
+          <div class="input-group-glass">
+            <i class="fas fa-user input-icon"></i>
+            <input 
+              type="text" 
+              name="username" 
+              class="form-control-glass" 
+              placeholder="Minimal 8 karakter"
+              minlength="8"
+              required
+              autocomplete="username"
+            >
+          </div>
+          <small style="color: #6B7280; font-size: 12px; margin-top: 4px; display: block;">
+            Username harus minimal 8 karakter
+          </small>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-envelope"></i> Email
+          </label>
+          <div class="input-group-glass">
+            <i class="fas fa-envelope input-icon"></i>
+            <input 
+              type="email" 
+              name="email" 
+              class="form-control-glass" 
+              placeholder="nama@example.com"
+              required
+              autocomplete="email"
+            >
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-lock"></i> Password
+          </label>
+          <div class="input-group-glass" style="position: relative;">
+            <i class="fas fa-lock input-icon"></i>
+            <input 
+              type="password" 
+              id="password_1" 
+              name="password" 
+              class="form-control-glass" 
+              placeholder="Minimal 8 karakter"
+              minlength="8"
+              required
+              autocomplete="new-password"
+              oninput="checkPasswordStrength()"
+            >
+            <button type="button" class="password-toggle" onclick="togglePassword('password_1', 'icon_1')">
+              <i class="fas fa-eye" id="icon_1"></i>
             </button>
+          </div>
+          <div class="password-strength">
+            <div class="password-strength-bar" id="strengthBar"></div>
+          </div>
+          <small id="strengthText" style="color: #6B7280; font-size: 12px; margin-top: 4px; display: block;"></small>
         </div>
-    </div>
-    <% } %>
-
-    <div class="min-h-screen flex items-center justify-center px-4 py-12">
-        <div class="glass-card p-10 md:p-14 w-full max-w-lg">
-            <!-- Logo -->
-            <div class="text-center mb-10 animate-scaleIn">
-                <img src="/img/LogoHIFI-2.png" alt="HIFI Logo for signup registration page with welcoming blue red design theme" class="h-28 w-auto mx-auto mb-6">
-                <h1 class="text-4xl font-bold text-white mb-3">Daftar Akun</h1>
-                <p class="text-white/80 text-lg">Buat akun Database HIFI baru</p>
-            </div>
-
-            <!-- Signup Form -->
-            <form action="/auth/signup" method="POST" name="validasi_form" onsubmit="return validasi_input(this)" class="space-y-6 animate-fadeInUp">
-                <div>
-                    <label for="username" class="block text-sm font-semibold text-white mb-2">
-                        <i class="fas fa-user mr-2 text-blue-400"></i>Username
-                    </label>
-                    <input type="text" id="username" name="username" required 
-                           class="glass-input" placeholder="Minimal 8 karakter">
-                    <p class="text-white/60 text-xs mt-2">Username harus lebih dari 8 karakter</p>
-                </div>
-
-                <div>
-                    <label for="email" class="block text-sm font-semibold text-white mb-2">
-                        <i class="fas fa-envelope mr-2 text-blue-400"></i>Email
-                    </label>
-                    <input type="email" id="email" name="email" required 
-                           class="glass-input" placeholder="contoh@email.com">
-                </div>
-
-                <div>
-                    <label for="password_1" class="block text-sm font-semibold text-white mb-2">
-                        <i class="fas fa-lock mr-2 text-red-400"></i>Password
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="password_1" name="password" required 
-                               class="glass-input pr-14" placeholder="Buat password yang kuat">
-                        <button type="button" id="seePassButton" 
-                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-smooth">
-                            <i class="fas fa-eye text-xl" id="seePassIcon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="password_2" class="block text-sm font-semibold text-white mb-2">
-                        <i class="fas fa-lock mr-2 text-red-400"></i>Konfirmasi Password
-                    </label>
-                    <input type="password" id="password_2" name="password2" required 
-                           onkeyup="checkPass()" class="glass-input" placeholder="Ulangi password Anda">
-                    <span id="pesan" class="text-sm font-semibold"></span>
-                </div>
-
-                <button type="submit" name="daftar_process" class="glass-button w-full text-lg py-4 ripple bg-gradient-to-r from-blue-600/30 to-red-600/30 hover:from-blue-600/40 hover:to-red-600/40" disabled>
-                    <i class="fas fa-user-plus mr-2"></i>Daftar Sekarang
-                </button>
-
-                <div class="relative my-8">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-white/20"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-4 bg-transparent text-white/70 font-medium">atau</span>
-                    </div>
-                </div>
-
-                <p class="text-center text-white/80 text-base">
-                    Sudah punya akun? 
-                    <a href="/auth/login" class="text-white font-bold hover:text-blue-300 transition-smooth">
-                        Login di sini
-                    </a>
-                </p>
-            </form>
+        
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-lock"></i> Konfirmasi Password
+          </label>
+          <div class="input-group-glass" style="position: relative;">
+            <i class="fas fa-lock input-icon"></i>
+            <input 
+              type="password" 
+              id="password_2" 
+              name="password2" 
+              class="form-control-glass" 
+              placeholder="Ulangi password Anda"
+              minlength="8"
+              required
+              autocomplete="new-password"
+              oninput="checkPass()"
+            >
+            <button type="button" class="password-toggle" onclick="togglePassword('password_2', 'icon_2')">
+              <i class="fas fa-eye" id="icon_2"></i>
+            </button>
+          </div>
+          <small id="pesan" style="font-size: 12px; margin-top: 4px; display: block;"></small>
         </div>
+        
+        <button 
+          type="submit" 
+          name="daftar_process" 
+          class="btn-primary-gradient ripple-container" 
+          style="width: 100%; margin-top: 24px;"
+          disabled
+        >
+          <i class="fas fa-user-plus"></i>
+          Daftar Sekarang
+        </button>
+      </form>
+      
+      <div class="form-footer">
+        <p style="color: #6B7280;">
+          Sudah punya akun? <a href="/auth/login">Masuk di sini</a>
+        </p>
+      </div>
     </div>
-
-    <script src="/javascript/validasi.js"></script>
-    <script src="/javascript/dom.js"></script>
-    <script src="/javascript/animations.js"></script>
+  </div>
+  
+  <script src="/javascript/animations.js"></script>
+  <script src="/javascript/validasi.js"></script>
+  <script>
+    function dismiss() {
+      document.getElementById("alert-border-3").classList.add("hide");
+    }
+    
+    setTimeout(() => {
+      const alert = document.getElementById("alert-border-3");
+      if (alert) dismiss();
+    }, 5000);
+    
+    function togglePassword(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+    
+    function checkPasswordStrength() {
+      const password = document.getElementById('password_1').value;
+      const strengthBar = document.getElementById('strengthBar');
+      const strengthText = document.getElementById('strengthText');
+      
+      let strength = 0;
+      if (password.length >= 8) strength++;
+      if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+      if (password.match(/[0-9]/)) strength++;
+      if (password.match(/[^a-zA-Z0-9]/)) strength++;
+      
+      strengthBar.className = 'password-strength-bar';
+      
+      if (strength <= 1) {
+        strengthBar.classList.add('weak');
+        strengthText.textContent = 'Password lemah';
+        strengthText.style.color = '#EF4444';
+      } else if (strength <= 3) {
+        strengthBar.classList.add('medium');
+        strengthText.textContent = 'Password sedang';
+        strengthText.style.color = '#F59E0B';
+      } else {
+        strengthBar.classList.add('strong');
+        strengthText.textContent = 'Password kuat';
+        strengthText.style.color = '#10B981';
+      }
+    }
+  </script>
 </body>
 </html>

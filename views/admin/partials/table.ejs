@@ -7,6 +7,7 @@
         <th>Nama</th>
         <th>NPM</th>
         <th>Email</th>
+        <th>Telepon</th> <!-- NEW -->
         <th>Role</th>
         <th>Terakhir Update</th>
         <th class="no-export">Aksi</th>
@@ -20,6 +21,7 @@
           <td><%= user.nama || '-' %></td>
           <td><%= user.npm || '-' %></td>
           <td><%= user.email || '-' %></td>
+          <td><%= user.telp || user.telepon || user.nohp || '-' %></td> <!-- NEW -->
           <td>
             <span class="badge-glass <%= user.role === 'admin' ? 'badge-red' : 'badge-blue' %>">
               <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>

@@ -1,739 +1,725 @@
-<!-- =========================
-     TABLE.EJS (Dashboard - FIXED: Search, Update, Sort, Stable Layout, Responsive)
-     ========================= -->
+<!-- Data Table Section -->
+<div class="table-section">
+  <div class="table-header">
+    <div class="table-title">
+      <i class="fas fa-table"></i>
+      <h5>Data Warga HIFI</h5>
+    </div>
+    <div class="table-actions">
+      <button class="btn-refresh" onclick="window.location.reload()">
+        <i class="fas fa-sync-alt"></i>
+        <span>Refresh Data</span>
+      </button>
+    </div>
+  </div>
+  
+  <div class="table-responsive">
+    <table id="usersTable" class="table table-hover" style="width:100%">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>NPM</th>
+          <th>Tempat Lahir</th>
+          <th>Tanggal Lahir</th>
+          <th>Agama</th>
+          <th>Gol. Darah</th>
+          <th>No. HP</th>
+          <th>Email</th>
+          <th>Alamat Rumah</th>
+          <th>Alamat Kos</th>
+          <th>Pendidikan</th>
+          <th>Organisasi</th>
+          <th class="no-export">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach((user, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><strong><%= user.nama %></strong></td>
+            <td><%= user.npm %></td>
+            <td><%= user.tempat_lahir %></td>
+            <td><%= user.tanggal_lahir %></td>
+            <td><%= user.agama %></td>
+            <td><span class="badge badge-red"><%= user.golongan_darah %></span></td>
+            <td><%= user.no_hp %></td>
+            <td><%= user.email %></td>
+            <td><%= user.alamat_rumah %></td>
+            <td><%= user.alamat_kos %></td>
+            <td><%= user.pendidikan %></td>
+            <td><%= user.organisasi %></td>
+            <td class="no-export">
+              <div class="action-buttons">
+                <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user.id %>'" title="Edit Data">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action btn-delete" onclick="deleteUser('<%= user.id %>')" title="Hapus Data">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <style>
-  /* ===== GLOBAL RESET & VARIABLES ===== */
-  :root {
-    --primary-color: #1E3A8A;
-    --primary-light: rgba(30, 58, 138, 0.1);
-    --accent-color: #DC143C;
-    --accent-light: rgba(220, 20, 60, 0.05);
-    --success-color: #10B981;
-    --success-dark: #059669;
-    --text-primary: #1F2937;
-    --text-secondary: #6B7280;
-    --text-tertiary: #9CA3AF;
-    --bg-primary: #FFFFFF;
-    --bg-secondary: #F9FAFB;
-    --bg-glass: rgba(255, 255, 255, 0.95);
-    --border-color: #E5E7EB;
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.12);
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --transition-fast: 0.15s ease;
-    --transition-base: 0.3s ease;
-  }
+/* ============================================
+   TABLE SECTION STYLING
+   ============================================ */
+.table-section {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 30px;
+}
 
-  /* ===== TOOLBAR (STABLE & RESPONSIVE) ===== */
-  .table-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    padding: 20px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(10px);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--primary-light);
-    box-shadow: var(--shadow-sm);
-  }
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+  flex-wrap: wrap;
+  gap: 16px;
+}
 
-  .toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
+.table-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-  .toolbar-label {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: 14px;
-    white-space: nowrap;
-  }
+.table-title i {
+  font-size: 24px;
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  .toolbar-select {
-    background: var(--bg-glass);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 10px 16px;
-    font-size: 14px;
-    color: var(--text-primary);
-    font-weight: 600;
-    min-width: 140px;
-    transition: var(--transition-base);
-    cursor: pointer;
-    /* ✅ FORCE DISPLAY (override any global CSS) */
-    display: inline-block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
+.table-title h5 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  .toolbar-select:hover {
-    border-color: var(--primary-color);
-  }
+.table-actions {
+  display: flex;
+  gap: 12px;
+}
 
-  .toolbar-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--primary-light);
-  }
+.btn-refresh {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  font-size: 14px;
+}
 
-  .toolbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
+.btn-refresh:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
 
-  .toolbar-search {
-    background: var(--bg-glass);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 10px 16px;
-    font-size: 14px;
-    color: var(--text-primary);
-    min-width: 250px;
-    transition: var(--transition-base);
-    /* ✅ FORCE DISPLAY (override any global CSS) */
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
+.btn-refresh:active {
+  transform: translateY(0);
+}
 
-  .toolbar-search:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--primary-light);
-  }
+.btn-refresh i {
+  font-size: 16px;
+  transition: transform 0.6s ease;
+}
 
-  .toolbar-search::placeholder {
-    color: var(--text-tertiary);
-  }
+.btn-refresh:hover i {
+  transform: rotate(360deg);
+}
 
-  .btn-glass {
-    background: var(--bg-glass);
-    border: 2px solid var(--primary-color);
-    color: var(--primary-color);
-    border-radius: var(--radius-md);
-    padding: 10px 20px;
-    font-weight: 600;
-    transition: var(--transition-base);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-  .btn-glass:hover:not(:disabled) {
-    background: var(--primary-color);
-    color: var(--bg-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-  }
+/* DataTables Wrapper */
+.dataTables_wrapper {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
 
-  .btn-glass:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+.dataTables_filter,
+.dataTables_length {
+  margin-bottom: 20px;
+}
 
-  .btn-glass i.fa-spin {
-    animation: spin 1s linear infinite;
-  }
+.dataTables_filter label,
+.dataTables_length label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+.dataTables_filter input,
+.dataTables_length select {
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 10px 16px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1F2937;
+  min-width: 200px;
+}
 
-  #exportButtons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+.dataTables_filter input:focus,
+.dataTables_length select:focus {
+  outline: none;
+  border-color: #1E3A8A;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
 
-  .dt-btn-green {
-    background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%) !important;
-    color: var(--bg-primary) !important;
-    border: none !important;
-    border-radius: var(--radius-md) !important;
-    padding: 10px 16px !important;
-    font-weight: 600 !important;
-    display: inline-flex !important;
-    gap: 8px !important;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
-    transition: var(--transition-base) !important;
-  }
+.dataTables_filter input::placeholder {
+  color: #9CA3AF;
+  font-weight: 500;
+}
 
-  .dt-btn-green:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
-  }
+/* Table Styling */
+table.dataTable {
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+}
 
-  /* ===== TABLE CONTAINER (STABLE LAYOUT) ===== */
-  .table-responsive {
-    overflow-x: auto;
-    overflow-y: visible;
-    max-width: 100%;
-    -webkit-overflow-scrolling: touch;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    background: var(--bg-primary);
-  }
+table.dataTable thead th {
+  background: linear-gradient(135deg, #1F2937 0%, #374151 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px !important;
+  padding: 18px 16px !important;
+  border: none !important;
+  white-space: nowrap;
+}
 
-  /* ✅ CRITICAL: STABLE TABLE LAYOUT */
-  #usersTable {
+table.dataTable thead th:first-child {
+  border-radius: 12px 0 0 12px !important;
+}
+
+table.dataTable thead th:last-child {
+  border-radius: 0 12px 12px 0 !important;
+}
+
+table.dataTable tbody tr {
+  background: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.3s ease !important;
+}
+
+table.dataTable tbody tr:hover {
+  background: rgba(30, 58, 138, 0.04) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px) !important;
+}
+
+table.dataTable tbody td {
+  padding: 16px !important;
+  border: none !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  vertical-align: middle !important;
+}
+
+table.dataTable tbody tr td:first-child {
+  border-radius: 12px 0 0 12px !important;
+  font-weight: 700 !important;
+  color: #1F2937 !important;
+}
+
+table.dataTable tbody tr td:last-child {
+  border-radius: 0 12px 12px 0 !important;
+}
+
+table.dataTable tbody td strong {
+  color: #1F2937;
+  font-weight: 700;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 14px;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-edit:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+}
+
+/* Badge Styling */
+.badge-red {
+  background: rgba(220, 20, 60, 0.15);
+  color: #DC143C;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Pagination */
+.dataTables_paginate {
+  margin-top: 24px !important;
+  display: flex;
+  justify-content: center;
+}
+
+.dataTables_paginate .pagination {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dataTables_paginate .page-item {
+  list-style: none;
+}
+
+.dataTables_paginate .page-item .page-link {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 10px 16px;
+  color: #374151;
+  background: #F9FAFB;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dataTables_paginate .page-item.active .page-link {
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+}
+
+.dataTables_paginate .page-item .page-link:hover:not(.active) {
+  background: rgba(30, 58, 138, 0.1);
+  border-color: #1E3A8A;
+  transform: translateY(-2px);
+}
+
+.dataTables_paginate .page-item.disabled .page-link {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(249, 250, 251, 0.5);
+}
+
+/* DataTables Info */
+.dataTables_info {
+  color: #6B7280;
+  font-weight: 600;
+  font-size: 14px;
+  padding-top: 16px;
+}
+
+/* Export Buttons */
+.dt-buttons {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dt-button {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  font-size: 14px !important;
+}
+
+.dt-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+.dt-button i {
+  font-size: 14px;
+}
+
+/* Responsive Child Rows */
+table.dataTable tbody tr.child {
+  background: rgba(249, 250, 251, 0.95) !important;
+}
+
+table.dataTable tbody tr.child > td {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+table.dataTable tbody tr.child ul.dtr-details {
+  list-style: none;
+  margin: 0;
+  padding: 16px 20px;
+  width: 100%;
+}
+
+table.dataTable tbody tr.child ul.dtr-details li {
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+  padding: 10px 0;
+  display: flex;
+  gap: 12px;
+}
+
+table.dataTable tbody tr.child ul.dtr-details li:last-child {
+  border-bottom: 0;
+}
+
+table.dataTable tbody tr.child span.dtr-title {
+  display: inline-block;
+  min-width: 160px;
+  font-weight: 700;
+  color: #374151;
+}
+
+table.dataTable tbody tr.child span.dtr-data {
+  color: #1F2937;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .table-section {
+    padding: 24px 16px;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .table-actions {
     width: 100%;
-    table-layout: fixed; /* ✅ PREVENT COLUMN WIDTH CHANGES */
-    border-collapse: separate;
-    border-spacing: 0;
   }
-
-  #usersTable th,
-  #usersTable td {
-    word-break: break-word;
-    overflow-wrap: anywhere;
-    vertical-align: middle;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  /* ✅ FIXED COLUMN WIDTHS TO PREVENT LAYOUT SHIFT */
-  #usersTable th:nth-child(1),
-  #usersTable td:nth-child(1) { 
-    width: 60px; 
-    text-align: center; 
-    white-space: nowrap; 
-  }
-
-  #usersTable th:nth-child(2),
-  #usersTable td:nth-child(2) { 
-    width: 140px; 
-  }
-
-  #usersTable th:nth-child(3),
-  #usersTable td:nth-child(3) { 
-    width: 180px; 
-  }
-
-  #usersTable th:nth-child(4),
-  #usersTable td:nth-child(4) { 
-    width: 120px; 
-  }
-
-  #usersTable th:nth-child(5),
-  #usersTable td:nth-child(5) { 
-    width: 200px; 
-  }
-
-  #usersTable th:nth-child(6),
-  #usersTable td:nth-child(6) { 
-    width: 130px; 
-  }
-
-  #usersTable th:nth-child(7),
-  #usersTable td:nth-child(7) { 
-    width: 100px; 
-    text-align: center; 
-  }
-
-  #usersTable th:nth-child(8),
-  #usersTable td:nth-child(8) { 
-    width: 150px; 
-    text-align: center; 
-  }
-
-  #usersTable th:nth-child(9),
-  #usersTable td:nth-child(9) { 
-    width: 120px; 
-    text-align: center; 
-  }
-
-  #usersTable thead th {
-    background: var(--bg-secondary);
-    font-weight: 700;
-    color: var(--text-primary);
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  /* ✅ STABLE ROW HOVER (NO TRANSFORM) */
-  #usersTable tbody tr.clickable-row {
-    cursor: pointer;
-    transition: background-color var(--transition-fast);
-  }
-
-  #usersTable tbody tr.clickable-row:hover {
-    background: var(--primary-light);
-    transform: none; /* ✅ NO SCALE/TRANSFORM TO PREVENT LAYOUT SHIFT */
-  }
-
-  #usersTable tbody tr.shown {
-    background: var(--accent-light) !important;
-  }
-
-  #usersTable tbody tr:last-child td {
-    border-bottom: none;
-  }
-
-  /* ===== BADGES ===== */
-  .badge-glass {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-  }
-
-  .badge-red {
-    background: rgba(220, 20, 60, 0.1);
-    color: var(--accent-color);
-    border: 1px solid rgba(220, 20, 60, 0.2);
-  }
-
-  .badge-blue {
-    background: rgba(30, 58, 138, 0.1);
-    color: var(--primary-color);
-    border: 1px solid rgba(30, 58, 138, 0.2);
-  }
-
-  /* ===== ACTION BUTTONS ===== */
-  .btn-action {
-    display: inline-flex;
-    align-items: center;
+  
+  .btn-refresh {
+    width: 100%;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--border-color);
-    background: var(--bg-primary);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    margin: 0 4px;
   }
+}
 
-  .btn-action:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+@media screen and (max-width: 768px) {
+  .table-section {
+    padding: 20px 12px;
+    border-radius: 16px;
   }
-
-  .btn-edit {
-    color: var(--primary-color);
+  
+  .table-title h5 {
+    font-size: 18px;
   }
-
-  .btn-edit:hover {
-    background: var(--primary-color);
-    color: var(--bg-primary);
-    border-color: var(--primary-color);
+  
+  .table-title i {
+    font-size: 20px;
   }
-
-  .btn-delete {
-    color: var(--accent-color);
+  
+  .btn-refresh {
+    padding: 10px 20px;
+    font-size: 13px;
   }
-
-  .btn-delete:hover {
-    background: var(--accent-color);
-    color: var(--bg-primary);
-    border-color: var(--accent-color);
-  }
-
-  /* ===== DETAIL ROW ===== */
-  .dt-detail {
-    padding: 24px;
-    background: var(--bg-secondary);
-    animation: fadeInUp 0.4s ease-out;
-  }
-
-  .detail-card {
-    background: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    box-shadow: var(--shadow-md);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-  }
-
-  .detail-item {
-    background: var(--bg-secondary);
-    padding: 16px;
-    border-radius: var(--radius-md);
-    border-left: 4px solid var(--accent-color);
-  }
-
-  .detail-item b {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-  }
-
-  .detail-item span {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-    word-wrap: break-word;
-  }
-
-  .detail-actions {
-    display: flex;
-    gap: 12px;
-    padding-top: 20px;
-    border-top: 2px solid var(--border-color);
-    grid-column: 1 / -1;
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* ===== RESPONSIVE DESIGN ===== */
-  @media (max-width: 1024px) {
-    #usersTable {
-      table-layout: auto; /* Allow flexible layout on tablet */
-    }
-
-    #usersTable th,
-    #usersTable td {
-      padding: 10px 12px;
-      font-size: 13px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .table-toolbar {
-      flex-direction: column;
-      align-items: stretch;
-      padding: 16px;
-    }
-
-    .toolbar-left,
-    .toolbar-right {
-      width: 100%;
-      justify-content: space-between;
-    }
-
-    .toolbar-search {
-      min-width: 100%;
-    }
-
-    .table-responsive {
-      border-radius: var(--radius-md);
-    }
-
-    /* Maintain horizontal scroll for table */
-    #usersTable {
-      min-width: 900px; /* Minimum width to trigger horizontal scroll */
-    }
-
-    #usersTable th,
-    #usersTable td {
-      padding: 8px 10px;
-      font-size: 12px;
-    }
-
-    .detail-card {
-      grid-template-columns: 1fr;
-    }
-
-    .btn-action {
-      width: 32px;
-      height: 32px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .table-toolbar {
-      padding: 12px;
-    }
-
-    .toolbar-label {
-      font-size: 13px;
-    }
-
-    .toolbar-select {
-      min-width: 120px;
-      padding: 8px 12px;
-      font-size: 13px;
-    }
-
-    .toolbar-search {
-      padding: 8px 12px;
-      font-size: 13px;
-    }
-
-    .btn-glass {
-      padding: 8px 16px;
-      font-size: 13px;
-    }
-
-    #exportButtons {
-      width: 100%;
-      flex-direction: column;
-    }
-
-    .dt-btn-green {
-      width: 100%;
-      justify-content: center;
-    }
-
-    #usersTable th,
-    #usersTable td {
-      padding: 6px 8px;
-      font-size: 11px;
-    }
-
-    .badge-glass {
-      padding: 4px 8px;
-      font-size: 10px;
-    }
-
-    .btn-action {
-      width: 28px;
-      height: 28px;
-      margin: 0 2px;
-    }
-
-    .btn-action i {
-      font-size: 12px;
-    }
-  }
-
-  /* ===== ACCESSIBILITY ===== */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-
-  /* High contrast mode */
-  @media (prefers-contrast: high) {
-    .badge-glass {
-      border-width: 2px;
-    }
-
-    .btn-action {
-      border-width: 2px;
-    }
-  }
-
-  /* Focus visible for keyboard navigation */
-  button:focus-visible,
-  input:focus-visible,
-  select:focus-visible,
-  a:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-  }
-
-  /* ===== DATATABLE OVERRIDES (PREVENT LAYOUT SHIFT) ===== */
-  .dataTables_wrapper {
-    width: 100%;
-  }
-
-  .dataTables_length,
-  .dataTables_filter {
-    display: none !important; /* Use custom controls */
-  }
-
-  .dataTables_info {
-    padding: 16px 0;
-    color: var(--text-secondary);
-    font-size: 14px;
-  }
-
-  .dataTables_paginate {
-    padding: 16px 0;
-  }
-
-  .dataTables_paginate .paginate_button {
+  
+  .dataTables_filter input,
+  .dataTables_length select {
+    min-width: 150px;
+    font-size: 13px;
     padding: 8px 12px;
-    margin: 0 4px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: var(--transition-fast);
   }
-
-  .dataTables_paginate .paginate_button:hover {
-    background: var(--primary-color);
-    color: var(--bg-primary);
-    border-color: var(--primary-color);
+  
+  table.dataTable thead th {
+    font-size: 11px !important;
+    padding: 14px 10px !important;
   }
-
-  .dataTables_paginate .paginate_button.current {
-    background: var(--primary-color);
-    color: var(--bg-primary);
-    border-color: var(--primary-color);
+  
+  table.dataTable tbody td {
+    font-size: 13px !important;
+    padding: 12px 10px !important;
   }
-
-  .dataTables_paginate .paginate_button.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
-
-  /* ===== PRINT STYLES ===== */
-  @media print {
-    .table-toolbar,
-    .btn-action,
-    .dataTables_paginate,
-    .dataTables_info {
-      display: none !important;
-    }
-
-    .table-responsive {
-      overflow: visible;
-      box-shadow: none;
-    }
-
-    #usersTable {
-      border: 1px solid #000;
-    }
-
-    #usersTable tbody tr:hover {
-      background: transparent !important;
-    }
+  
+  .action-buttons {
+    gap: 6px;
   }
+  
+  .badge-red {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .dataTables_paginate .page-item .page-link {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-width: 38px;
+  }
+  
+  .dt-button {
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .table-section {
+    padding: 16px 10px;
+  }
+  
+  .table-title h5 {
+    font-size: 16px;
+  }
+  
+  .btn-refresh span {
+    display: none;
+  }
+  
+  .btn-refresh {
+    padding: 10px 16px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .table-section {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .table-title h5,
+  .table-title i {
+    color: #F9FAFB;
+    -webkit-text-fill-color: #F9FAFB;
+  }
+  
+  .dataTables_filter label,
+  .dataTables_length label {
+    color: #F9FAFB;
+  }
+  
+  .dataTables_filter input,
+  .dataTables_length select {
+    background: rgba(51, 65, 85, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #F9FAFB;
+  }
+  
+  .dataTables_filter input:focus,
+  .dataTables_length select:focus {
+    background: rgba(51, 65, 85, 0.95);
+    border-color: #3B82F6;
+  }
+  
+  table.dataTable tbody tr {
+    background: rgba(51, 65, 85, 0.8) !important;
+  }
+  
+  table.dataTable tbody tr:hover {
+    background: rgba(59, 130, 246, 0.15) !important;
+  }
+  
+  table.dataTable tbody td,
+  table.dataTable tbody td strong {
+    color: #F9FAFB !important;
+  }
+  
+  table.dataTable tbody tr.child {
+    background: rgba(51, 65, 85, 0.9) !important;
+  }
+  
+  table.dataTable tbody tr.child span.dtr-title,
+  table.dataTable tbody tr.child span.dtr-data {
+    color: #F9FAFB;
+  }
+  
+  .dataTables_info {
+    color: #D1D5DB;
+  }
+  
+  .dataTables_paginate .page-item .page-link {
+    background: rgba(51, 65, 85, 0.8);
+    color: #F9FAFB;
+  }
+  
+  .dataTables_paginate .page-item .page-link:hover:not(.active) {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3B82F6;
+  }
+}
+
+/* Loading State */
+.table-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  color: #6B7280;
+}
+
+.table-loading i {
+  font-size: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.dataTables_empty {
+  text-align: center;
+  padding: 40px 20px !important;
+  color: #6B7280 !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+/* Scrollbar Styling */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #FF1744 0%, #2563EB 100%);
+}
 </style>
 
-<!-- ===== TOOLBAR ===== -->
-<div class="table-toolbar">
-  <div class="toolbar-left">
-    <span class="toolbar-label">Tampilkan</span>
-    <select id="itemsPerPage" class="toolbar-select" aria-label="Items per page">
-      <option value="10" selected>10 / page</option>
-      <option value="25">25 / page</option>
-      <option value="50">50 / page</option>
-      <option value="100">100 / page</option>
-      <option value="-1">Show All</option>
-    </select>
-  </div>
-
-  <div class="toolbar-right">
-    <input 
-      id="searchNama" 
-      class="toolbar-search" 
-      type="search" 
-      placeholder="🔍 Cari nama, email, npm..." 
-      aria-label="Cari data"
-      autocomplete="off"
-    >
-    <button id="btnRefresh" type="button" class="btn-glass" aria-label="Refresh data">
-      <i class="fas fa-sync-alt" aria-hidden="true"></i>
-      Refresh
-    </button>
-    <div id="exportButtons" aria-label="Export Buttons"></div>
-  </div>
-</div>
-
-<!-- ===== TABLE ===== -->
-<div class="table-responsive">
-  <table id="usersTable" class="display table-glass" style="width:100%">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Username</th>
-        <th>Nama</th>
-        <th>NPM</th>
-        <th>Email</th>
-        <th>Telepon</th>
-        <th>Role</th>
-        <th>Terakhir Update</th>
-        <th class="no-sort">Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% users.forEach(function(u, i){ %>
-        <% 
-          const __lastUpdate = u.updatedAt || u.time || u.updated_at || u.lastUpdate || u.updated || u.createdAt;
-          const __ts = __lastUpdate ? new Date(__lastUpdate).getTime() : 0;
-        %>
-        <tr
-          class="clickable-row"
-          data-id="<%= u._id %>"
-          data-username="<%= u.username || '' %>"
-          data-nama="<%= u.nama || '' %>"
-          data-npm="<%= u.npm || '' %>"
-          data-email="<%= u.email || '' %>"
-          data-hp="<%= u.hp || '' %>"
-          data-ttl="<%= u.ttl || '' %>"
-          data-tgl="<%= u.tgl || '' %>"
-          data-agama="<%= u.agama || '' %>"
-          data-goldar="<%= u.goldar || '' %>"
-          data-rumah="<%= u.rumah || '' %>"
-          data-kos="<%= u.kos || '' %>"
-          data-pendidikan="<%= u.pendidikan || '' %>"
-          data-panitia="<%= u.panitia || '' %>"
-          data-organisasi="<%= u.organisasi || '' %>"
-          data-pelatihan="<%= u.pelatihan || '' %>"
-          data-prestasi="<%= u.prestasi || '' %>"
-          data-time="<%= __lastUpdate || '' %>"
-        >
-          <td><%= i + 1 %></td>
-          <td><strong><%= u.username %></strong></td>
-          <td><%= u.nama || '-' %></td>
-          <td><%= u.npm || '-' %></td>
-          <td><%= u.email || '-' %></td>
-          <td><%= u.hp || '-' %></td>
-          <td>
-            <span class="badge-glass <%= (u.role === 'Admin') ? 'badge-red' : 'badge-blue' %>">
-              <i class="fas fa-<%= (u.role === 'Admin') ? 'user-shield' : 'user' %>"></i>
-              <%= (u.role || 'User') %>
-            </span>
-          </td>
-          <td data-time="<%= __lastUpdate || '' %>" data-order="<%= __ts %>">
-            <%= __lastUpdate
-                  ? new Date(__lastUpdate).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' })
-                  : '-' %>
-          </td>
-          <td class="no-detail" onclick="event.stopPropagation()">
-            <a class="btn-action btn-edit" title="Edit" href="/dashboard/edit/<%= u._id %>" aria-label="Edit <%= u.nama || u.username %>">
-              <i class="fas fa-pen" aria-hidden="true"></i>
-            </a>
-            <form action="/dashboard/delete/<%= u._id %>?_method=DELETE" method="POST" style="display:inline">
-              <button 
-                type="submit" 
-                class="btn-action btn-delete" 
-                title="Hapus"
-                aria-label="Hapus <%= u.nama || u.username %>"
-                onclick="return confirm('Hapus data <%= u.nama || u.username %>?')"
-              >
-                <i class="fas fa-trash" aria-hidden="true"></i>
-              </button>
-            </form>
-          </td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
-</div>
+<script>
+// Delete User Function
+function deleteUser(id) {
+  if (confirm('⚠️ Apakah Anda yakin ingin menghapus data ini?\n\nTindakan ini tidak dapat dibatalkan!')) {
+    const button = event.target.closest('.btn-delete');
+    const originalHTML = button.innerHTML;
+    
+    // Show loading state
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    button.disabled = true;
+    button.style.opacity = '0.7';
+    
+    fetch(`/dashboard/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        // Animate row removal
+        const row = button.closest('tr');
+        row.style.transition = 'all 0.5s ease';
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        throw new Error('Gagal menghapus data');
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      alert('❌ Terjadi kesalahan saat menghapus data!\n\nSilakan coba lagi.');
+      button.innerHTML = originalHTML;
+      button.disabled = false;
+      button.style.opacity = '1';
+    });
+  }
+}
+</script>

@@ -48,14 +48,16 @@ function initDataTable() {
           last: "Terakhir",
           next: "Selanjutnya",
           previous: "Sebelumnya"
-        }
+        },
+        emptyTable: "Tidak ada data yang tersedia",
+        zeroRecords: "Tidak ditemukan data yang sesuai"
       },
-      dom: '<"top-controls"lfB>rt<"bottom-controls"ip>',
+      dom: '<"top-controls"<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>B>rt<"bottom-controls"<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>>',
       buttons: [
         {
           extend: 'excel',
           text: '<i class="fas fa-file-excel"></i> Export Excel',
-          className: 'btn-export',
+          className: 'btn-export dt-button',
           title: 'Data Warga HIFI',
           exportOptions: {
             columns: ':not(.no-export)'
@@ -64,8 +66,9 @@ function initDataTable() {
         {
           extend: 'pdf',
           text: '<i class="fas fa-file-pdf"></i> Export PDF',
-          className: 'btn-export',
+          className: 'btn-export dt-button',
           title: 'Data Warga HIFI',
+          orientation: 'landscape',
           exportOptions: {
             columns: ':not(.no-export)'
           }
@@ -73,15 +76,21 @@ function initDataTable() {
         {
           extend: 'print',
           text: '<i class="fas fa-print"></i> Print',
-          className: 'btn-export',
-          title: 'Data Warga HIFI'
+          className: 'btn-export dt-button',
+          title: 'Data Warga HIFI',
+          exportOptions: {
+            columns: ':not(.no-export)'
+          }
         }
       ],
       initComplete: function() {
         // Add custom styling after initialization
         $('.dataTables_wrapper').addClass('glass-card');
-        $('.dataTables_filter input').addClass('form-control-glass');
+        $('.dataTables_filter input').addClass('form-control-glass').attr('placeholder', 'Cari nama, NPM, email...');
         $('.dataTables_length select').addClass('form-control-glass');
+        
+        // Smooth fade-in animation
+        $('#usersTable').css('opacity', '0').animate({ opacity: 1 }, 600);
       }
     });
     

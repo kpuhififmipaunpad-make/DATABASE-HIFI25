@@ -1,7 +1,10 @@
 <script>
 (function () {
   // Pastikan jQuery + DataTables ada
-  if (!window.jQuery || !$.fn.DataTable) return;
+  if (!window.jQuery || !$.fn.DataTable) {
+    console.error('jQuery atau DataTables tidak ditemukan!');
+    return;
+  }
 
   // Escape HTML sederhana
   const esc = (v) =>
@@ -10,31 +13,91 @@
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
       }[m])));
 
+  // Format tanggal
+  const formatDate = (dateStr) => {
+    if (!dateStr || dateStr === '-') return '-';
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('id-ID', { 
+        day: '2-digit', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
   // Template child row — sesuai dengan field di edit.ejs
   function buildDetail(ds) {
     return `
       <div class="dt-detail">
         <div class="detail-card">
-          <div class="detail-item"><b><i class="fas fa-user"></i> Nama Lengkap</b><span>${esc(ds.nama)}</span></div>
-          <div class="detail-item"><b><i class="fas fa-id-card"></i> NPM</b><span>${esc(ds.npm)}</span></div>
-          <div class="detail-item"><b><i class="fas fa-envelope"></i> Email</b><span>${esc(ds.email)}</span></div>
-          <div class="detail-item"><b><i class="fas fa-phone"></i> No. HP</b><span>${esc(ds.hp)}</span></div>
+          <div class="detail-item">
+            <b><i class="fas fa-user"></i> Nama Lengkap</b>
+            <span>${esc(ds.nama)}</span>
+          </div>
+          <div class="detail-item">
+            <b><i class="fas fa-id-card"></i> NPM</b>
+            <span>${esc(ds.npm)}</span>
+          </div>
+          <div class="detail-item">
+            <b><i class="fas fa-envelope"></i> Email</b>
+            <span>${esc(ds.email)}</span>
+          </div>
+          <div class="detail-item">
+            <b><i class="fas fa-phone"></i> No. HP</b>
+            <span>${esc(ds.hp)}</span>
+          </div>
           
-          <div class="detail-item"><b><i class="fas fa-map-marker-alt"></i> Tempat Lahir</b><span>${esc(ds.ttl)}</span></div>
-          <div class="detail-item"><b><i class="fas fa-calendar"></i> Tanggal Lahir</b><span>${esc(ds.tgl)}</span></div>
-          <div class="detail-item"><b><i class="fas fa-pray"></i> Agama</b><span>${esc(ds.agama)}</span></div>
-          <div class="detail-item"><b><i class="fas fa-tint"></i> Golongan Darah</b><span>${esc(ds.goldar)}</span></div>
+          <div class="detail-item">
+            <b><i class="fas fa-map-marker-alt"></i> Tempat Lahir</b>
+            <span>${esc(ds.ttl)}</span>
+          </div>
+          <div class="detail-item">
+            <b><i class="fas fa-calendar"></i> Tanggal Lahir</b>
+            <span>${formatDate(ds.tgl)}</span>
+          </div>
+          <div class="detail-item">
+            <b><i class="fas fa-pray"></i> Agama</b>
+            <span>${esc(ds.agama)}</span>
+          </div>
+          <div class="detail-item">
+            <b><i class="fas fa-tint"></i> Golongan Darah</b>
+            <span>${esc(ds.goldar)}</span>
+          </div>
 
-          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-home"></i> Alamat Rumah</b><span>${esc(ds.rumah)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-building"></i> Alamat Kos</b><span>${esc(ds.kos)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1">
+            <b><i class="fas fa-home"></i> Alamat Rumah</b>
+            <span>${esc(ds.rumah)}</span>
+          </div>
+          <div class="detail-item" style="grid-column:1/-1">
+            <b><i class="fas fa-building"></i> Alamat Kos</b>
+            <span>${esc(ds.kos)}</span>
+          </div>
 
-          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-graduation-cap"></i> Pendidikan</b><span>${esc(ds.pendidikan)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-users"></i> Kepanitiaan</b><span>${esc(ds.panitia)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-sitemap"></i> Organisasi</b><span>${esc(ds.organisasi)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-certificate"></i> Pelatihan</b><span>${esc(ds.pelatihan)}</span></div>
-          <div class="detail-item" style="grid-column:1/-1"><b><i class="fas fa-trophy"></i> Prestasi</b><span>${esc(ds.prestasi)}</span></div>
+          <div class="detail-item" style="grid-column:1/-1">
+            <b><i class="fas fa-graduation-cap"></i> Pendidikan</b>
+            <span>${esc(ds.pendidikan)}</span>
+          </div>
+          <div class="detail-item" style="grid-column:1/-1">
+            <b><i class="fas fa-users"></i> Kepanitiaan</b>
+            <span>${esc(ds.panitia)}</span>
+          </div>
+          <div class="detail-item" style="grid-column:1/-1">
+            <b><i class="fas fa-sitemap"></i> Organisasi</b>
+            <span>${esc(ds.organisasi)}</span>
+          </div>
+          <div class="detail-item" style="grid-column:1/-1">
+            <b><i class="fas fa-certificate"></i> Pelatihan</b>
+            <span>${esc(ds.pelatihan)}</span>
+          </div>
+          <div class="detail-item" style="grid-column:1/-1">
+            <b><i class="fas fa-trophy"></i> Prestasi</b>
+            <span>${esc(ds.prestasi)}</span>
+          </div>
 
-          <div class="detail-actions" style="grid-column:1/-1">
+          <div class="detail-actions">
             <a class="btn-primary-gradient" href="/dashboard/edit/${esc(ds.id)}">
               <i class="fas fa-pen"></i> Edit Data Lengkap
             </a>
@@ -46,18 +109,22 @@
   // Cek apakah sudah ter-inisialisasi sebelumnya
   const alreadyInit = $.fn.DataTable.isDataTable('#usersTable');
 
-  // Inisialisasi DataTable (retrieve:true agar reuse instance lama jika ada)
+  // Destroy existing instance jika ada
+  if (alreadyInit) {
+    $('#usersTable').DataTable().destroy();
+  }
+
+  // Inisialisasi DataTable
   const dt = $('#usersTable').DataTable({
-    responsive: false,              // pakai child row kustom
-    retrieve: true,                 // kunci anti re-initialize
+    responsive: false,
     lengthChange: false,
     pagingType: 'simple_numbers',
     pageLength: 10,
-    dom: "t<'dt-bottom'ip>",        // info & paginate di bawah
-    order: [[2, 'asc']],            // sort Nama
+    dom: "Bt<'dt-bottom'ip>",
+    order: [[2, 'asc']],
     columnDefs: [
-      { targets: [0], width: 48 },
-      { targets: [8], orderable: false } // kolom Aksi
+      { targets: [0], width: '48px' },
+      { targets: [8], orderable: false, className: 'no-detail' }
     ],
     language: {
       paginate: {
@@ -72,83 +139,82 @@
       zeroRecords: 'Data tidak ditemukan',
       emptyTable: 'Tidak ada data tersedia'
     },
-    // Hanya buat tombol saat pertama kali init
-    buttons: alreadyInit ? [] : [
+    buttons: [
       { 
         extend: 'excel', 
         text: '<i class="fas fa-file-excel"></i> Excel', 
         className: 'dt-btn-green',
+        title: 'Data Warga HIFI',
         exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] }
       },
       { 
         extend: 'pdf', 
         text: '<i class="fas fa-file-pdf"></i> PDF', 
         className: 'dt-btn-green',
+        title: 'Data Warga HIFI',
         exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] }
       },
       { 
         extend: 'print', 
         text: '<i class="fas fa-print"></i> Print', 
         className: 'dt-btn-green',
+        title: 'Data Warga HIFI',
         exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7] }
       }
     ]
   });
 
-  // Hanya jalankan blok ini sekali (supaya tidak dobel event/toolbar)
-  if (!alreadyInit) {
-    // Pasang tombol export ke holder
-    $('#exportButtons').empty();
-    if (dt.buttons && dt.buttons().container) {
-      dt.buttons().container().appendTo('#exportButtons');
-    }
+  // Pasang tombol export ke holder
+  $('#exportButtons').empty();
+  dt.buttons().container().appendTo('#exportButtons');
 
-    // Search khusus kolom Nama (index 2)
-    $('#searchNama').off('input.tbl').on('input.tbl', function(){
-      dt.column(2).search(this.value).draw();
-    });
+  // Search khusus kolom Nama (index 2)
+  $('#searchNama').off('input.tbl').on('input.tbl', function(){
+    dt.column(2).search(this.value).draw();
+  });
 
-    // Items per page
-    $('#itemsPerPage').off('change.tbl').on('change.tbl', function(){
-      dt.page.len(parseInt(this.value, 10)).draw(false);
-    });
+  // Items per page
+  $('#itemsPerPage').off('change.tbl').on('change.tbl', function(){
+    dt.page.len(parseInt(this.value, 10)).draw();
+  });
 
-    // Refresh button
-    $('#btnRefresh').off('click.tbl').on('click.tbl', function(){
-      var btn = $(this);
-      btn.find('i').addClass('fa-spin');
-      setTimeout(function() {
-        location.reload();
-      }, 300);
-    });
+  // Refresh button
+  $('#btnRefresh').off('click.tbl').on('click.tbl', function(){
+    var btn = $(this);
+    btn.find('i').addClass('fa-spin');
+    setTimeout(function() {
+      location.reload();
+    }, 300);
+  });
 
-    // Toggle child row (klik baris selain tombol Aksi)
-    $('#usersTable')
-      .off('click.tbl', 'tbody td:not(.no-detail)')
-      .on('click.tbl', 'tbody td:not(.no-detail)', function (e) {
-        // Jangan toggle jika klik button/link
-        if ($(e.target).closest('.btn-action, button, a').length) return;
+  // Toggle child row (klik baris selain tombol Aksi)
+  $('#usersTable tbody')
+    .off('click.tbl', 'tr.clickable-row td:not(.no-detail)')
+    .on('click.tbl', 'tr.clickable-row td:not(.no-detail)', function (e) {
+      // Jangan toggle jika klik button/link
+      if ($(e.target).closest('.btn-action, button, a, form').length) return;
+      
+      const $tr = $(this).closest('tr.clickable-row');
+      const row = dt.row($tr);
+      const ds = $tr.get(0).dataset;
+      
+      if (row.child.isShown()) {
+        row.child.hide(); 
+        $tr.removeClass('shown');
+      } else {
+        // Tutup semua row lain yang terbuka
+        dt.rows().every(function() {
+          if (this.child.isShown()) {
+            this.child.hide();
+            $(this.node()).removeClass('shown');
+          }
+        });
         
-        const $tr = $(this).closest('tr');
-        const row = dt.row($tr);
-        const ds  = $tr.get(0).dataset;       // data-* yang kita set di table.ejs
-        
-        if (row.child.isShown()) {
-          row.child.hide(); 
-          $tr.removeClass('shown');
-        } else {
-          // Tutup row lain yang terbuka
-          dt.rows().every(function() {
-            if (this.child.isShown()) {
-              this.child.hide();
-              $(this.node()).removeClass('shown');
-            }
-          });
-          
-          row.child(buildDetail(ds)).show(); 
-          $tr.addClass('shown');
-        }
-      });
-  }
+        row.child(buildDetail(ds)).show(); 
+        $tr.addClass('shown');
+      }
+    });
+
+  console.log('DataTable initialized successfully!');
 })();
 </script>

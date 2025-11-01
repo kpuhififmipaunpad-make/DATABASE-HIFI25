@@ -23,41 +23,27 @@
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
 <script>
-  // Namespace umum
-  window.HIFIAdmin = {
-    refreshData: () => window.location.reload()
-  };
+  // tombol Refresh
+  window.HIFIAdmin = { refreshData: () => window.location.reload() };
 
-  // Animasi angka untuk stat (aman kalau elemen tidak ada)
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[data-counter]').forEach(el => {
-      const target = Number(el.getAttribute('data-counter') || 0);
-      let cur = 0;
-      const step = Math.max(1, Math.round(target / 50));
-      const tick = () => {
-        cur = Math.min(target, cur + step);
-        el.textContent = cur.toLocaleString('id-ID');
-        if (cur < target) requestAnimationFrame(tick);
-      };
-      tick();
-    });
-  });
-
-  // Inisialisasi DataTable (DASHBOARD)
   $(function(){
     const $tbl = $('#usersTable');
     if (!$tbl.length) return;
 
+    // Hapus/hidden kontrol TOP khusus (search & page select) bila masih ada di DOM
+    $('#searchNama, #itemsPerPage, #pageSelect')
+      .closest('.form-group, .input-group, .toolbar-item, .table-toolbar')
+      .remove();
+    $('#searchNama, #itemsPerPage, #pageSelect').remove();
+
+    // Init DataTable – hanya bottom: info + paginate
     const table = $tbl.DataTable({
       responsive: true,
       autoWidth: false,
-
-      // HIDE default search & buttons; kita taruh manual di toolbar
       dom: 't<"dt-bottom"ip>',
-      searching: true,        // tetap aktif untuk API, tapi UI default tidak ditampilkan
-      lengthChange: false,
+      searching: true,      // aktif untuk API, tapi UI default kita sembunyikan via CSS
+      lengthChange: false,  // hilangkan dropdown length bawaan
       pageLength: 10,
-      lengthMenu: [[10,20,30,50,100,-1],[10,20,30,50,100,'All']],
       pagingType: 'full_numbers',
       columnDefs: [
         { targets: 'no-export', orderable: false, searchable: false }
@@ -71,7 +57,7 @@
       }
     });
 
-    // ===== Export buttons (Excel, PDF, Print) di toolbar custom =====
+    // Export buttons (hijau)
     const btns = new $.fn.dataTable.Buttons(table, {
       buttons: [
         { extend: 'excelHtml5', text: '<i class="fas fa-file-excel"></i> Export Excel', className: 'dt-btn-green' },
@@ -79,67 +65,9 @@
         { extend: 'print',      text: '<i class="fas fa-print"></i> Print',           className: 'dt-btn-green' }
       ]
     });
-    table.buttons().container().appendTo($('.table-toolbar')[0]);
+    table.buttons().container().appendTo($('.table-toolbar')[0] || $('#usersTable_wrapper')[0]);
 
-    // ===== Search khusus kolom "Nama" (kolom index 2) =====
-    $('#searchNama').on('input', function(){
-      table.column(2).search(this.value).draw();
-    });
-
-    // ===== Items per page =====
-    $('#itemsPerPage').on('change', function(){
-      table.page.len(parseInt(this.value, 10) || 10).draw();
-    });
-
-    // ===== Row detail (klik baris) =====
-    $('#usersTable tbody').on('click', 'tr', function(e){
-      if ($(e.target).closest('.btn-action, button, a, i').length) return; // abaikan klik tombol
-
-      const tr  = $(this);
-      const row = table.row(tr);
-
-      if (row.child.isShown()) {
-        row.child.hide();
-        tr.removeClass('shown');
-        return;
-      }
-
-      const tds = tr.children('td');
-      const data = {
-        no: tds.eq(0).text().trim(),
-        username: tds.eq(1).text().trim(),
-        nama: tds.eq(2).text().trim(),
-        npm: tds.eq(3).text().trim(),
-        email: tds.eq(4).text().trim(),
-        telp: tds.eq(5).text().trim(),
-        roleText: tds.eq(6).text().trim(),
-        update: tds.eq(7).text().trim(),
-        id: tr.data('id')
-      };
-
-      const badgeClass = data.roleText.toLowerCase() === 'admin' ? 'badge-red' : 'badge-blue';
-      const detailHTML = `
-        <div class="dt-detail">
-          <div class="detail-card">
-            <div class="detail-item"><b>Username</b><span>${data.username || '-'}</span></div>
-            <div class="detail-item"><b>Nama</b><span>${data.nama || '-'}</span></div>
-            <div class="detail-item"><b>NPM</b><span>${data.npm || '-'}</span></div>
-            <div class="detail-item"><b>Email</b><span>${data.email || '-'}</span></div>
-            <div class="detail-item"><b>Telepon</b><span>${data.telp || '-'}</span></div>
-            <div class="detail-item"><b>Role</b>
-              <span class="badge-glass ${badgeClass}">${data.roleText || '-'}</span>
-            </div>
-            <div class="detail-item"><b>Update</b><span>${data.update || '-'}</span></div>
-            <div class="detail-actions">
-              <a class="btn-primary-gradient" href="/dashboard/edit/${data.id}" title="Edit data">
-                <i class="fas fa-edit"></i> Edit Data
-              </a>
-            </div>
-          </div>
-        </div>
-      `;
-      row.child(detailHTML).show();
-      tr.addClass('shown');
-    });
+    // ——— TIDAK ADA row-detail pada klik (permintaan kamu) ———
+    // jadi tidak ada handler klik baris di sini.
   });
 </script>

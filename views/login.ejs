@@ -178,6 +178,12 @@
       </form>
       
       <div class="form-footer">
+        <!-- Tambahan pesan formal untuk bantuan ADMD -->
+        <p style="color:#6B7280; margin-bottom:12px;">
+          Apabila Anda mengalami kendala saat masuk (misalnya lupa kata sandi, akun terkunci, atau kesalahan data),
+          silakan menghubungi <strong>ADMD HIFI</strong> melalui kanal resmi himpunan untuk verifikasi dan bantuan lebih lanjut.
+        </p>
+
         <p style="color: #6B7280; margin-bottom: 12px;">
           <a href="/forgot">Lupa Password?</a>
         </p>
@@ -192,13 +198,27 @@
   <script src="/javascript/dom.js"></script>
   <script>
     function dismiss() {
-      document.getElementById("alert-border-3").classList.add("hide");
+      const el = document.getElementById("alert-border-3");
+      if (el) el.classList.add("hide");
     }
-    
     setTimeout(() => {
       const alert = document.getElementById("alert-border-3");
       if (alert) dismiss();
     }, 5000);
+
+    // toggle see password
+    (function(){
+      const btn = document.getElementById('seePassButton');
+      const icon = document.getElementById('seePassIcon');
+      const input = document.getElementById('password');
+      if(!btn || !icon || !input) return;
+      btn.addEventListener('click', () => {
+        const isPwd = input.getAttribute('type') === 'password';
+        input.setAttribute('type', isPwd ? 'text' : 'password');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+      });
+    })();
   </script>
 </body>
 </html>

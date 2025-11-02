@@ -816,9 +816,13 @@ input::-ms-clear {
   box-shadow: var(--shadow-lg);
 }
 
-.dataTables_wrapper .dataTables_filter { 
-  display: none !important; 
+/* PENGGANTI (tampilkan & rapikan) */
+.dataTables_wrapper .dataTables_filter {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
 }
+
 
 .dataTables_filter input {
   border: 2px solid rgba(30, 58, 138, 0.2);

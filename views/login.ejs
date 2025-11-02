@@ -1,132 +1,254 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - HIFI Database</title>
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="/stylesheets/style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
-
-  <!-- Favicon -->
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="icon" type="image/png" href="/img/LogoHIFI-2.png?v=2">
   <link rel="apple-touch-icon" href="/img/LogoHIFI-2.png?v=2">
-
-  <style>
-    body {
-      background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; padding: 20px;
-    }
-    .bg-shape { pointer-events: none; }
-
-    .login-container { width: 100%; max-width: 450px; animation: fadeInUp .6s ease-out; }
-    .login-card {
-      position: relative; z-index: 1;
-      background: rgba(255,255,255,.95); backdrop-filter: blur(20px);
-      border-radius: 24px; padding: 40px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.3);
-      border: 1px solid rgba(255,255,255,.3);
-    }
-
-    .logo-section { text-align: center; margin-bottom: 32px; }
-    .logo-section img { width: 100px; height: auto; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
-
-    .login-title {
-      font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 8px;
-      background: linear-gradient(135deg,#DC143C 0%,#1E3A8A 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .login-subtitle { text-align: center; color:#6B7280; margin-bottom: 32px; font-size: 14px; }
-
-    .back-link { display:inline-flex; align-items:center; gap:8px; color:#6B7280; text-decoration:none; margin-bottom:20px; font-size:14px; transition:.3s; }
-    .back-link:hover { color:#1E3A8A; transform: translateX(-5px); }
-
-    .form-footer { margin-top:24px; text-align:center; }
-    .form-footer a { color:#1E3A8A; text-decoration:none; font-weight:600; transition:.3s; }
-    .form-footer a:hover { color:#DC143C; }
-
-    /* tombol mata (fallback kalau CSS global belum ada) */
-    .input-group-glass { position: relative; }
-    .password-toggle{
-      position:absolute; right:12px; top:50%; transform:translateY(-50%);
-      background:transparent; border:0; cursor:pointer; padding:8px;
-      min-width:44px; min-height:44px; display:inline-flex; align-items:center; justify-content:center;
-    }
-
-    @media (max-width:480px){ .login-card{ padding:30px 24px; } .login-title{ font-size:24px; } }
-  </style>
 </head>
 <body>
-  <!-- Background Shapes -->
+  <!-- Enhanced Background Shapes -->
   <div class="bg-shape bg-shape-1"></div>
   <div class="bg-shape bg-shape-2"></div>
-
+  <div class="bg-shape bg-shape-3"></div>
+  
   <!-- Alert Messages -->
   <% if (message != '') { %>
-  <div id="alert-border-3" class="alert-glass alert-<%= status === 'green' ? 'success' : 'error' %>" style="position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;">
-    <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %>"></i>
-    <span><%= message %></span>
-    <button onclick="dismiss()" style="background:none; border:0; color:inherit; cursor:pointer; margin-left:auto;">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
+    <div id="alert-border-3" class="alert-glass alert-<%= status === 'green' ? 'success' : 'error' %>">
+      <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %>"></i>
+      <span><%= message %></span>
+      <button onclick="dismiss()" aria-label="Tutup notifikasi">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
   <% } %>
-
+  
   <div class="login-container">
     <div class="login-card">
-      <a href="/" class="back-link"><i class="fas fa-arrow-left"></i>Kembali ke Home</a>
-
+      <a href="/" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Kembali ke Home</span>
+      </a>
+      
       <div class="logo-section">
-        <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI" />
+        <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI Database" loading="eager">
         <h1 class="login-title">Selamat Datang</h1>
         <p class="login-subtitle">Masuk ke akun HIFI Anda</p>
       </div>
-
-      <form action="/auth/login" method="POST" data-validate>
+      
+      <form action="/auth/login" method="POST" data-validate id="loginForm">
         <div class="form-group">
-          <label class="form-label"><i class="fas fa-user"></i> Username (Gunakan NPM anda)</label>
+          <label class="form-label" for="username">
+            <i class="fas fa-user"></i>
+            <span>Username (Gunakan NPM Anda)</span>
+          </label>
           <div class="input-group-glass">
             <i class="fas fa-user input-icon"></i>
-            <input type="text" name="username" class="form-control-glass" placeholder="Masukkan username Anda" required autocomplete="username" autofocus />
+            <input 
+              type="text" 
+              id="username"
+              name="username" 
+              class="form-control-glass" 
+              placeholder="Masukkan username Anda"
+              required
+              autocomplete="username"
+              autocapitalize="off"
+              spellcheck="false"
+            >
           </div>
         </div>
-
+        
         <div class="form-group">
-          <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+          <label class="form-label" for="password">
+            <i class="fas fa-lock"></i>
+            <span>Password</span>
+          </label>
           <div class="input-group-glass">
             <i class="fas fa-lock input-icon"></i>
-            <input type="password" id="password" name="password" class="form-control-glass" placeholder="Masukkan password Anda" required autocomplete="current-password" />
-            <button type="button" class="password-toggle" id="seePassButton" aria-label="Tampilkan/Sembunyikan password" aria-pressed="false" title="Tampilkan/Sembunyikan password">
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-control-glass" 
+              placeholder="Masukkan password Anda"
+              required
+              autocomplete="current-password"
+            >
+            <button type="button" class="password-toggle" id="seePassButton" aria-label="Tampilkan atau sembunyikan password">
               <i class="fas fa-eye" id="seePassIcon" aria-hidden="true"></i>
             </button>
           </div>
         </div>
-
-        <button type="submit" class="btn-primary-gradient ripple-container" style="width:100%; margin-top:24px;">
-          <i class="fas fa-sign-in-alt"></i> Masuk
+        
+        <button type="submit" class="btn-primary-gradient" id="loginButton">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Masuk</span>
         </button>
       </form>
-
+      
       <div class="form-footer">
-        <p style="color:#6B7280; margin-bottom:12px;">
-          Apabila Anda mengalami kendala saat masuk,
-          silakan menghubungi <strong>ADMD HIFI</strong>.
+        <div class="help-text">
+          Apabila Anda mengalami kendala saat masuk (misalnya lupa kata sandi, akun terkunci, atau kesalahan data),
+          silakan menghubungi <strong>ADMD HIFI</strong>
+
+          MEDFO HIFI
+        </div>
+
+        <p>
+          <a href="/forgot">
+            <i class="fas fa-key"></i> Lupa Password?
+          </a>
         </p>
-        <p style="color:#6B7280; margin-bottom:12px;"><a href="/forgot">Lupa Password?</a></p>
-        <p style="color:#6B7280;">Belum punya akun? <a href="/auth/signup">Daftar Sekarang</a></p>
+        <p>
+          Belum punya akun? <a href="/auth/signup">
+            <i class="fas fa-user-plus"></i> Daftar Sekarang
+          </a>
+        </p>
       </div>
     </div>
   </div>
-
-  <!-- JS -->
+  
   <script src="/javascript/animations.js"></script>
-  <!-- WAJIB: pakai dom.js sebagai satu-satunya handler toggle -->
   <script src="/javascript/dom.js"></script>
   <script>
-    function dismiss(){ const el = document.getElementById("alert-border-3"); if (el) el.classList.add("hide"); }
-    setTimeout(() => { const el = document.getElementById("alert-border-3"); if (el) dismiss(); }, 5000);
+    // Enhanced dismiss function with smooth animation
+    function dismiss() {
+      const el = document.getElementById("alert-border-3");
+      if (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(100px)';
+        setTimeout(() => {
+          el.classList.add("hide");
+        }, 400);
+      }
+    }
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      const alert = document.getElementById("alert-border-3");
+      if (alert && !alert.classList.contains('hide')) {
+        dismiss();
+      }
+    }, 5000);
+    
+    // Form submission handling with loading state
+    const loginForm = document.getElementById('loginForm');
+    const loginButton = document.getElementById('loginButton');
+    
+    if (loginForm && loginButton) {
+      loginForm.addEventListener('submit', function(e) {
+        // Add loading state
+        loginButton.classList.add('loading');
+        loginButton.disabled = true;
+        
+        const buttonText = loginButton.querySelector('span');
+        const buttonIcon = loginButton.querySelector('i');
+        
+        if (buttonText) buttonText.textContent = 'Memproses...';
+        if (buttonIcon) {
+          buttonIcon.classList.remove('fa-sign-in-alt');
+          buttonIcon.classList.add('fa-spinner', 'fa-spin');
+        }
+        
+        // Form will submit normally, no e.preventDefault()
+      });
+    }
+    
+    // Add ripple effect to button
+    if (loginButton) {
+      loginButton.addEventListener('mousedown', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+          position: absolute;
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}px;
+          top: ${y}px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.5);
+          transform: scale(0);
+          animation: ripple 0.6s ease-out;
+          pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    }
+    
+    // Add ripple animation
+    if (!document.getElementById('ripple-animation')) {
+      const style = document.createElement('style');
+      style.id = 'ripple-animation';
+      style.textContent = `
+        @keyframes ripple {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    
+    // Enhanced input focus effects
+    const inputs = document.querySelectorAll('.form-control-glass');
+    inputs.forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'translateY(-2px)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'translateY(0)';
+      });
+    });
+    
+    // Accessibility: Announce form errors to screen readers
+    const formInputs = document.querySelectorAll('input[required]');
+    formInputs.forEach(input => {
+      input.addEventListener('invalid', function(e) {
+        e.preventDefault();
+        this.setAttribute('aria-invalid', 'true');
+        
+        // Visual feedback
+        this.style.borderColor = '#EF4444';
+        this.style.animation = 'shake 0.4s ease';
+        
+        setTimeout(() => {
+          this.style.animation = '';
+        }, 400);
+      });
+      
+      input.addEventListener('input', function() {
+        this.removeAttribute('aria-invalid');
+        this.style.borderColor = '';
+      });
+    });
+    
+    // Add shake animation
+    if (!document.getElementById('shake-animation')) {
+      const style = document.createElement('style');
+      style.id = 'shake-animation';
+      style.textContent = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-10px); }
+          75% { transform: translateX(10px); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
   </script>
 </body>
 </html>

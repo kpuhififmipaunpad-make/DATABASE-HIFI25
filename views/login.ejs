@@ -83,8 +83,8 @@
         <p class="login-subtitle">Masuk ke akun HIFI Anda</p>
       </div>
 
-      <!-- Penting untuk autofill/save password: autocomplete="on" + name standar -->
-      <form action="/auth/login" method="POST" data-validate autocomplete="on" name="login">
+      <!-- Penting untuk autofill/save password: POST klasik + autocomplete="on" + name standar -->
+      <form action="/auth/login" method="POST" data-validate autocomplete="on" name="login" id="loginForm">
         <div class="form-group">
           <label class="form-label"><i class="fas fa-user"></i> Username (Gunakan NPM anda)</label>
           <div class="input-group-glass">
@@ -97,6 +97,7 @@
               placeholder="Masukkan username Anda"
               required
               autocomplete="username"
+              inputmode="text"
               autocapitalize="none"
               spellcheck="false"
               autofocus
@@ -141,12 +142,12 @@
 
   <!-- JS -->
   <script src="/javascript/animations.js"></script>
-  <!-- Catatan: TIDAK memuat /javascript/dom.js agar tidak bentrok dengan toggle inline seperti signup -->
+  <!-- Tidak memuat /javascript/dom.js agar tidak bentrok dengan toggle inline -->
   <script>
     function dismiss(){ const el = document.getElementById("alert-border-3"); if (el) el.classList.add("hide"); }
     setTimeout(() => { const el = document.getElementById("alert-border-3"); if (el) dismiss(); }, 5000);
 
-    // Sama seperti signup: toggle inline
+    // Toggle show/hide password (inline; sinkron dengan CSS baru)
     function togglePassword(inputId, iconId) {
       const input = document.getElementById(inputId);
       const icon  = document.getElementById(iconId);

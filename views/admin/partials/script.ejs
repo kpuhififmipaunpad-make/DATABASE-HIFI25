@@ -1,322 +1,192 @@
+<!-- Font Awesome Icon -->
+<script src="https://kit.fontawesome.com/7cc967098c.js" crossorigin="anonymous"></script>
+<!-- Iconify -->
+<script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@2.2.1/dist/iconify.min.js"></script>
+<!-- jQuery -->
+<script src="/adminlte/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="/adminlte/plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-(() => {
-  // ===== Utility Functions =====
-  const libsReady = () =>
-    !!window.jQuery && !!$.fn.DataTable && !!$.fn.dataTable && !!$.fn.dataTable.Buttons;
-
-  const whenDOMReady = (cb) => {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", cb, { once: true });
-    } else {
-      cb();
-    }
-  };
-
-  function bootWhenReady(fn, interval = 50, maxRetries = 100) {
-    let retries = 0;
-    const tryInit = () => {
-      if (libsReady()) {
-        fn();
-      } else if (retries < maxRetries) {
-        retries++;
-        setTimeout(tryInit, interval);
-      } else {
-        console.error("DataTables libraries tidak berhasil dimuat setelah", maxRetries * interval, "ms");
-      }
-    };
-    tryInit();
-  }
-
-  const debounce = (fn, wait = 160) => {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn(...args), wait);
-    };
-  };
-
-  // Format waktu relatif untuk display
-  function formatRelativeTime(dateString) {
-    if (!dateString) return 'Tidak pernah';
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return '—';
-    
-    const now = new Date();
-    const diffSec = Math.floor((now - d) / 1000);
-    const abs = Math.abs(diffSec);
-
-    const units = [
-      ["tahun", 365 * 24 * 3600],
-      ["bulan", 30 * 24 * 3600],
-      ["hari", 24 * 3600],
-      ["jam", 3600],
-      ["menit", 60],
-      ["detik", 1],
-    ];
-
-    for (const [name, sec] of units) {
-      const v = Math.floor(abs / sec);
-      if (v >= 1) {
-        return diffSec >= 0 
-          ? `${v} ${name} yang lalu` 
-          : `dalam ${v} ${name}`;
-      }
-    }
-    return "baru saja";
-  }
-
-  // Normalisasi tanggal ke ISO untuk sort/export
-  function normalizeToISO(s) {
-    if (!s) return null;
-    
-    // Try parsing as ISO first
-    const d1 = new Date(s);
-    if (!isNaN(d1.getTime())) return d1.toISOString();
-
-    // Fallback: dd/mm/yyyy hh:mm(:ss)
-    const m = String(s).match(
-      /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
-    );
-    
-    if (m) {
-      const [_, dd, mm, yyyy, HH = "00", MM = "00", SS = "00"] = m;
-      const year = yyyy.length === 2 ? Number("20" + yyyy) : Number(yyyy);
-      const iso = new Date(year, Number(mm) - 1, Number(dd), Number(HH), Number(MM), Number(SS));
-      if (!isNaN(iso.getTime())) return iso.toISOString();
-    }
-    
-    return null;
-  }
-
-  // Bersihkan nomor HP untuk sort/export
-  function normalizePhone(text) {
-    if (!text) return "";
-    const only = String(text).replace(/[^0-9+]/g, "");
-    // Pastikan '+' tetap di depan bila ada
-    return only.replace(/(.*)\+/g, "+$1");
-  }
-
-  // Show biodata modal
-  function showBiodataModal(userData) {
-    try {
-      const data = typeof userData === 'string' ? JSON.parse(userData) : userData;
-      
-      document.getElementById('modal-username').textContent = data.username || '-';
-      document.getElementById('modal-nama').textContent = data.nama || '-';
-      document.getElementById('modal-npm').textContent = data.npm || '-';
-      document.getElementById('modal-email').textContent = data.email || '-';
-      document.getElementById('modal-phone').textContent = data.phone || '-';
-      
-      const roleText = data.role === 'admin' ? 'Admin' : 'User';
-      const roleIcon = data.role === 'admin' ? '👑' : '👤';
-      document.getElementById('modal-role').textContent = `${roleIcon} ${roleText}`;
-      
-      const updateTime = data.updatedAt ? formatRelativeTime(data.updatedAt) : '-';
-      document.getElementById('modal-update').textContent = updateTime;
-      
-      document.getElementById('biodataModal').style.display = 'flex';
-    } catch (error) {
-      console.error('Error showing biodata modal:', error);
-    }
-  }
-
-  // ===== Main Initialization =====
-  whenDOMReady(() => {
-    bootWhenReady(() => {
-      const $table = $("#usersTable");
-      if (!$table.length) {
-        console.warn("Table #usersTable tidak ditemukan");
-        return;
-      }
-
-      // Initialize DataTable
-      const dt = $table.DataTable({
-        responsive: true,
-        autoWidth: false,
-        lengthChange: true,
-        paging: true,
-        ordering: true,
-        searching: false, // Custom search bar
-        info: true,
-        pageLength: 10,
-        lengthMenu: [
-          [10, 20, 30, 40, 50, -1],
-          [10, 20, 30, 40, 50, "All"]
-        ],
-
-        // DOM layout: B=Buttons, l=length, r=processing, t=table, i=info, p=pagination
-        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'>>" +
-             "<'row'<'col-sm-12'tr>>" +
-             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-
-        buttons: [
-          {
-            extend: "excelHtml5",
-            text: '<i class="fas fa-file-excel"></i> Excel',
-            title: "Users Data",
-            className: "btn-export-excel",
-            exportOptions: {
-              columns: ":not(.no-export)",
-              format: {
-                body: exportBodyFormatter
-              }
-            }
-          },
-          {
-            extend: "pdfHtml5",
-            text: '<i class="fas fa-file-pdf"></i> PDF',
-            title: "Users Data",
-            orientation: "landscape",
-            pageSize: "A4",
-            className: "btn-export-pdf",
-            exportOptions: {
-              columns: ":not(.no-export)",
-              format: {
-                body: exportBodyFormatter
-              }
-            }
-          },
-          {
-            extend: "print",
-            text: '<i class="fas fa-print"></i> Print',
-            title: "Users Data",
-            className: "btn-export-print",
-            exportOptions: {
-              columns: ":not(.no-export)",
-              format: {
-                body: exportBodyFormatter
-              }
-            }
-          }
-        ],
-
-        order: [[0, "asc"]], // Sort by No column
-
-        columnDefs: [
-          {
-            targets: 0, // No column
-            width: 56,
-            type: "num",
-            className: "dt-center"
-          },
-          {
-            targets: 6, // Role column
-            className: "dt-center"
-          },
-          {
-            targets: 5, // Phone Number column
-            render: function (data, type) {
-              const text = (data || "").toString();
-              if (type === "sort" || type === "type" || type === "export") {
-                return normalizePhone(text);
-              }
-              return text;
-            }
-          },
-          {
-            targets: 7, // Terakhir Update column
-            render: function (data, type, row, meta) {
-              const cell = dt.cell(meta.row, meta.col).node();
-              const rawAttr = cell && cell.getAttribute 
-                ? cell.getAttribute("data-rawtime") 
-                : null;
-              const raw = (rawAttr || data || "").toString().trim();
-              const iso = normalizeToISO(raw) || raw || "";
-
-              if (type === "display") {
-                const title = iso ? new Date(iso).toLocaleString('id-ID') : "";
-                const rel = iso ? formatRelativeTime(iso) : "—";
-                return `<time datetime="${iso}" title="${title}">${rel}</time>`;
-              }
-              
-              // For sorting and export
-              return iso;
-            }
-          }
-        ],
-
-        drawCallback: function () {
-          // Refresh relative time on every redraw
-          $table.find("time[datetime]").each(function () {
-            const iso = this.getAttribute("datetime");
-            if (iso) {
-              this.textContent = formatRelativeTime(iso);
-            }
-          });
-        },
-
-        language: {
-          lengthMenu: "Tampilkan _MENU_ data per halaman",
-          zeroRecords: "Data tidak ditemukan",
-          info: "Menampilkan halaman _PAGE_ dari _PAGES_",
-          infoEmpty: "Tidak ada data tersedia",
-          infoFiltered: "(difilter dari _MAX_ total data)",
-          paginate: {
-            first: "Pertama",
-            last: "Terakhir",
-            next: "Selanjutnya",
-            previous: "Sebelumnya"
-          }
-        }
-      });
-
-      // Move export buttons to toolbar
-      dt.buttons().container().appendTo('#exportButtonsContainer');
-
-      // Custom search functionality
-      const $search = $("#tableSearch");
-      if ($search.length) {
-        $search.on("input", debounce(function () {
-          dt.search(this.value).draw();
-        }, 200));
-      }
-
-      // Row click handler untuk modal preview
-      $table.on('click', 'tbody tr', function (e) {
-        // Jangan buka modal jika klik tombol aksi
-        if ($(e.target).closest('.btn-action').length) {
-          return;
-        }
-
-        const $row = $(this);
-        const userData = $row.attr('data-user-data');
-        
-        if (userData) {
-          showBiodataModal(userData);
-        }
-      });
-
-      // Export body formatter
-      function exportBodyFormatter(data, row, col, node) {
-        if (!node) return data;
-
-        // Ambil ISO dari <time> untuk kolom tanggal
-        const time = node.querySelector && node.querySelector("time[datetime]");
-        if (time) {
-          const iso = time.getAttribute("datetime");
-          return iso ? new Date(iso).toLocaleString('id-ID') : "";
-        }
-
-        // Phone number: angka bersih
-        if (col === 5) {
-          return normalizePhone(node.textContent || data || "");
-        }
-
-        // Badge role: ekstrak text saja
-        const badge = node.querySelector && node.querySelector(".badge-glass");
-        if (badge) {
-          return badge.textContent.trim();
-        }
-
-        // Default: gunakan text content
-        return (node.textContent || data || "").trim();
-      }
-
-      // Make showBiodataModal available globally
-      window.showBiodataModal = showBiodataModal;
-
-      console.log("✅ DataTable initialized successfully");
-    });
-  });
-})();
+$.widget.bridge('uibutton', $.ui.button)
 </script>
+<!-- Bootstrap 4 -->
+<script src="/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- ChartJS -->
+<script src="/adminlte/plugins/chart.js/Chart.min.js"></script>
+<!-- Sparkline -->
+<script src="/adminlte/plugins/sparklines/sparkline.js"></script>
+<!-- JQVMap -->
+<script src="/adminlte/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="/adminlte/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<!-- jQuery Knob Chart -->
+<script src="/adminlte/plugins/jquery-knob/jquery.knob.min.js"></script>
+<!-- daterangepicker -->
+<script src="/adminlte/plugins/moment/moment.min.js"></script>
+<script src="/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="/adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Summernote -->
+<script src="/adminlte/plugins/summernote/summernote-bs4.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/adminlte/dist/js/adminlte.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="/adminlte/dist/js/demo.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="/adminlte/dist/js/pages/dashboard.js"></script>
+<!-- bs-custom-file-input -->
+<script src="/adminlte/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+
+<!-- DataTables  & Plugins -->
+<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/adminlte/plugins/jszip/jszip.min.js"></script>
+<script src="/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+<!-- DataTables Initialization Script -->
+<script>
+$(function () {
+  // Initialize DataTable untuk usersTable dengan fitur lengkap
+  var table = $("#usersTable").DataTable({
+    "responsive": true,
+    "lengthChange": true,
+    "autoWidth": false,
+    "searching": true,
+    "ordering": true,
+    "info": true,
+    "paging": true,
+    "pageLength": 10,
+    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+    "language": {
+      "lengthMenu": "Tampilkan _MENU_ data per halaman",
+      "zeroRecords": "Data tidak ditemukan",
+      "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+      "infoEmpty": "Tidak ada data yang tersedia",
+      "infoFiltered": "(difilter dari _MAX_ total data)",
+      "search": "Cari:",
+      "paginate": {
+        "first": "Pertama",
+        "last": "Terakhir",
+        "next": "Selanjutnya",
+        "previous": "Sebelumnya"
+      }
+    },
+    "buttons": [
+      {
+        extend: 'copy',
+        text: '<i class="fas fa-copy"></i> Copy',
+        className: 'btn btn-secondary btn-sm',
+        exportOptions: {
+          columns: ':not(.no-export)'
+        }
+      },
+      {
+        extend: 'csv',
+        text: '<i class="fas fa-file-csv"></i> CSV',
+        className: 'btn btn-success btn-sm',
+        exportOptions: {
+          columns: ':not(.no-export)'
+        }
+      },
+      {
+        extend: 'excel',
+        text: '<i class="fas fa-file-excel"></i> Excel',
+        className: 'btn btn-success btn-sm',
+        exportOptions: {
+          columns: ':not(.no-export)'
+        }
+      },
+      {
+        extend: 'pdf',
+        text: '<i class="fas fa-file-pdf"></i> PDF',
+        className: 'btn btn-danger btn-sm',
+        exportOptions: {
+          columns: ':not(.no-export)'
+        },
+        customize: function(doc) {
+          doc.defaultStyle.fontSize = 9;
+          doc.styles.tableHeader.fontSize = 10;
+          doc.styles.tableHeader.fillColor = '#007bff';
+        }
+      },
+      {
+        extend: 'print',
+        text: '<i class="fas fa-print"></i> Print',
+        className: 'btn btn-info btn-sm',
+        exportOptions: {
+          columns: ':not(.no-export)'
+        }
+      }
+    ],
+    "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>Brtip',
+    "columnDefs": [
+      { "orderable": false, "targets": -1 }
+    ]
+  });
+
+  // Tambahkan tombol export ke container
+  table.buttons().container().appendTo('#usersTable_wrapper .col-md-6:eq(0)');
+
+  // Event handler untuk klik baris (preview biodata)
+  $('#usersTable tbody').on('click', 'tr.clickable-row', function() {
+    var data = $(this).data();
+    
+    // Isi data ke modal
+    $('#preview-username').text(data.username || '-');
+    $('#preview-nama').text(data.nama || '-');
+    $('#preview-npm').text(data.npm || '-');
+    $('#preview-email').text(data.email || '-');
+    $('#preview-phone').text(data.phone || '-');
+    $('#preview-role').html('<span class="badge badge-' + (data.role === 'admin' ? 'danger' : 'primary') + '">' + 
+                            (data.role === 'admin' ? 'Admin' : 'User') + '</span>');
+    $('#preview-time').text(data.time || '-');
+    
+    // Simpan ID user untuk tombol edit
+    $('#btn-edit-from-modal').data('user-id', data.userId);
+    
+    // Tampilkan modal
+    $('#biodataModal').modal('show');
+  });
+
+  // Event handler untuk tombol edit di modal
+  $('#btn-edit-from-modal').on('click', function() {
+    var userId = $(this).data('user-id');
+    if (userId) {
+      window.location.href = '/dashboard/edit/' + userId;
+    }
+  });
+
+  // Initialize DataTable untuk example1 (jika ada)
+  $("#example1").DataTable({
+    "responsive": true,
+    "lengthChange": false,
+    "autoWidth": false,
+    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+  }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+  // Initialize DataTable untuk example2 (jika ada)
+  $('#example2').DataTable({
+    "info": false,
+    "autoWidth": false,
+    "responsive": false,
+    "searching": true,
+    "ordering": true,
+    "paging": true,
+    "scrollX": true,
+    "lengthChange": true,
+    "lengthMenu": [[10, 20, 30, 40, 50, -1], [10, 20, 30, 40, 50, "Semua"]]
+  });
+});
+</script>
+</body>
+</html>

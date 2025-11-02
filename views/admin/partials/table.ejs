@@ -1,20 +1,3 @@
-<!-- Toolbar: Search & Export Buttons -->
-<div class="table-toolbar">
-  <div class="toolbar-left">
-    <label for="tableSearch" class="toolbar-label">Search</label>
-    <input
-      id="tableSearch"
-      type="search"
-      placeholder="Cari username, nama, NPM, email, phone…"
-      class="toolbar-input"
-      autocomplete="off"
-    />
-  </div>
-  <div class="toolbar-right" id="exportButtonsContainer">
-    <!-- Buttons will be injected here by DataTables -->
-  </div>
-</div>
-
 <div class="table-responsive">
   <table id="usersTable" class="display" style="width:100%">
     <thead>
@@ -24,7 +7,7 @@
         <th>Nama</th>
         <th>NPM</th>
         <th>Email</th>
-        <th>Phone Number</th>
+        <th>Phone</th>
         <th>Role</th>
         <th>Terakhir Update</th>
         <th class="no-export">Aksi</th>
@@ -32,39 +15,33 @@
     </thead>
     <tbody>
       <% users.forEach((user, index) => { %>
-        <tr data-user-id="<%= user._id %>" data-user-data='<%= JSON.stringify({
-          username: user.username || "-",
-          nama: user.nama || "-",
-          npm: user.npm || "-",
-          email: user.email || "-",
-          phone: user.phone || user.phoneNumber || user.hp || "-",
-          role: user.role || "user",
-          updatedAt: user.updatedAt || user.time || user.lastUpdate || ""
-        }) %>'>
+        <tr data-user-id="<%= user._id %>" 
+            data-username="<%= user.username %>"
+            data-nama="<%= user.nama || '-' %>"
+            data-npm="<%= user.npm || '-' %>"
+            data-email="<%= user.email || '-' %>"
+            data-phone="<%= user.phone || '-' %>"
+            data-role="<%= user.role || 'user' %>"
+            data-time="<%= user.time || '-' %>"
+            class="clickable-row">
           <td><%= index + 1 %></td>
           <td><strong><%= user.username %></strong></td>
           <td><%= user.nama || '-' %></td>
           <td><%= user.npm || '-' %></td>
           <td><%= user.email || '-' %></td>
-          <td><%= user.phone || user.phoneNumber || user.hp || '-' %></td>
+          <td><%= user.phone || '-' %></td>
           <td>
             <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>">
               <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
               <%= user.role === 'admin' ? 'Admin' : 'User' %>
             </span>
           </td>
-          <td data-rawtime="<%= user.updatedAt || user.time || user.lastUpdate || '' %>">
-            <%= user.updatedAt || user.time || user.lastUpdate || '-' %>
-          </td>
+          <td><%= user.time || '-' %></td>
           <td class="no-export">
-            <button class="btn-action btn-edit"
-                    onclick="window.location.href='/dashboard/edit/<%= user._id %>'"
-                    title="Edit">
+            <button class="btn-action btn-edit" onclick="event.stopPropagation(); window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn-action btn-delete"
-                    onclick="confirmDelete('<%= user._id %>')"
-                    title="Hapus">
+            <button class="btn-action btn-delete" onclick="event.stopPropagation(); confirmDelete('<%= user._id %>')" title="Hapus">
               <i class="fas fa-trash"></i>
             </button>
           </td>
@@ -75,44 +52,131 @@
 </div>
 
 <!-- Modal Preview Biodata -->
-<div id="biodataModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Detail Biodata</h3>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="biodata-item">
-        <span class="biodata-label"><i class="fas fa-user"></i> Username:</span>
-        <span class="biodata-value" id="modal-username">-</span>
+<div class="modal fade" id="biodataModal" tabindex="-1" role="dialog" aria-labelledby="biodataModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="biodataModalLabel">
+          <i class="fas fa-user-circle"></i> Preview Biodata
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      <div class="biodata-item">
-        <span class="biodata-label"><i class="fas fa-id-card"></i> Nama:</span>
-        <span class="biodata-value" id="modal-nama">-</span>
+      <div class="modal-body">
+        <div class="biodata-preview">
+          <div class="biodata-item">
+            <strong><i class="fas fa-user"></i> Username:</strong>
+            <span id="preview-username">-</span>
+          </div>
+          <div class="biodata-item">
+            <strong><i class="fas fa-id-card"></i> Nama:</strong>
+            <span id="preview-nama">-</span>
+          </div>
+          <div class="biodata-item">
+            <strong><i class="fas fa-graduation-cap"></i> NPM:</strong>
+            <span id="preview-npm">-</span>
+          </div>
+          <div class="biodata-item">
+            <strong><i class="fas fa-envelope"></i> Email:</strong>
+            <span id="preview-email">-</span>
+          </div>
+          <div class="biodata-item">
+            <strong><i class="fas fa-phone"></i> Phone:</strong>
+            <span id="preview-phone">-</span>
+          </div>
+          <div class="biodata-item">
+            <strong><i class="fas fa-user-shield"></i> Role:</strong>
+            <span id="preview-role">-</span>
+          </div>
+          <div class="biodata-item">
+            <strong><i class="fas fa-clock"></i> Terakhir Update:</strong>
+            <span id="preview-time">-</span>
+          </div>
+        </div>
       </div>
-      <div class="biodata-item">
-        <span class="biodata-label"><i class="fas fa-graduation-cap"></i> NPM:</span>
-        <span class="biodata-value" id="modal-npm">-</span>
-      </div>
-      <div class="biodata-item">
-        <span class="biodata-label"><i class="fas fa-envelope"></i> Email:</span>
-        <span class="biodata-value" id="modal-email">-</span>
-      </div>
-      <div class="biodata-item">
-        <span class="biodata-label"><i class="fas fa-phone"></i> Phone:</span>
-        <span class="biodata-value" id="modal-phone">-</span>
-      </div>
-      <div class="biodata-item">
-        <span class="biodata-label"><i class="fas fa-shield-alt"></i> Role:</span>
-        <span class="biodata-value" id="modal-role">-</span>
-      </div>
-      <div class="biodata-item">
-        <span class="biodata-label"><i class="fas fa-clock"></i> Terakhir Update:</span>
-        <span class="biodata-value" id="modal-update">-</span>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class="fas fa-times"></i> Tutup
+        </button>
+        <button type="button" class="btn btn-primary" id="btn-edit-from-modal">
+          <i class="fas fa-edit"></i> Edit
+        </button>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.clickable-row:hover {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.biodata-preview {
+  padding: 10px;
+}
+
+.biodata-item {
+  padding: 12px;
+  margin-bottom: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  border-left: 4px solid #007bff;
+}
+
+.biodata-item strong {
+  display: inline-block;
+  width: 150px;
+  color: #495057;
+}
+
+.biodata-item span {
+  color: #212529;
+  font-weight: 500;
+}
+
+.biodata-item i {
+  margin-right: 8px;
+  color: #007bff;
+}
+
+.modal-header.bg-primary {
+  background-color: #007bff !important;
+}
+
+.dataTables_wrapper .dataTables_length select {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  margin-left: 5px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 5px 10px;
+  margin: 0 2px;
+  border-radius: 4px;
+}
+
+.dt-buttons {
+  margin-bottom: 15px;
+}
+
+.dt-buttons .btn {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+</style>
 
 <script>
   function confirmDelete(id) {
@@ -124,301 +188,4 @@
       form.submit();
     }
   }
-
-  function closeModal() {
-    document.getElementById('biodataModal').style.display = 'none';
-  }
-
-  // Close modal when clicking outside
-  document.addEventListener('click', function(e) {
-    const modal = document.getElementById('biodataModal');
-    if (e.target === modal) {
-      closeModal();
-    }
-  });
-
-  // Close modal with ESC key
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeModal();
-    }
-  });
 </script>
-
-<style>
-  /* Toolbar Styling */
-  .table-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin: 0 0 16px;
-    padding: 12px 14px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 12px;
-    flex-wrap: wrap;
-  }
-
-  .toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .toolbar-label {
-    font-weight: 600;
-    color: #1f2937;
-    font-size: 14px;
-  }
-
-  .toolbar-input {
-    min-width: clamp(200px, 32vw, 480px);
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .toolbar-input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-
-  .toolbar-right {
-    display: flex;
-    gap: 8px;
-  }
-
-  /* DataTables Custom Styling */
-  #usersTable tbody tr {
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  #usersTable tbody tr:hover {
-    background-color: rgba(59, 130, 246, 0.05);
-  }
-
-  /* Badge Styling */
-  .badge-glass {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    backdrop-filter: blur(8px);
-  }
-
-  .badge-red {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-    border: 1px solid rgba(239, 68, 68, 0.2);
-  }
-
-  .badge-blue {
-    background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
-    border: 1px solid rgba(59, 130, 246, 0.2);
-  }
-
-  /* Action Buttons */
-  .btn-action {
-    padding: 6px 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-  }
-
-  .btn-edit {
-    background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
-  }
-
-  .btn-edit:hover {
-    background: #3b82f6;
-    color: white;
-  }
-
-  .btn-delete {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-  }
-
-  .btn-delete:hover {
-    background: #ef4444;
-    color: white;
-  }
-
-  /* Modal Styling */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.2s ease-in-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .modal-content {
-    background: white;
-    border-radius: 16px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  }
-
-  .modal-header h3 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #1f2937;
-  }
-
-  .modal-close {
-    background: none;
-    border: none;
-    font-size: 28px;
-    color: #6b7280;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    transition: all 0.2s;
-  }
-
-  .modal-close:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: #1f2937;
-  }
-
-  .modal-body {
-    padding: 24px;
-  }
-
-  .biodata-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  }
-
-  .biodata-item:last-child {
-    border-bottom: none;
-  }
-
-  .biodata-label {
-    font-weight: 600;
-    color: #6b7280;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .biodata-label i {
-    width: 16px;
-    text-align: center;
-  }
-
-  .biodata-value {
-    font-weight: 500;
-    color: #1f2937;
-    font-size: 14px;
-    text-align: right;
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .table-toolbar {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .toolbar-left {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .toolbar-input {
-      min-width: 100%;
-    }
-
-    .toolbar-right {
-      justify-content: center;
-    }
-  }
-
-  /* DataTables Export Buttons Styling */
-  .dt-buttons {
-    display: flex;
-    gap: 8px;
-  }
-
-  .dt-button {
-    background: rgba(59, 130, 246, 0.1) !important;
-    color: #2563eb !important;
-    border: 1px solid rgba(59, 130, 246, 0.2) !important;
-    padding: 8px 16px !important;
-    border-radius: 8px !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    transition: all 0.2s !important;
-  }
-
-  .dt-button:hover {
-    background: #3b82f6 !important;
-    color: white !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-
-  .dt-button:active {
-    transform: translateY(0);
-  }
-</style>

@@ -8,7 +8,6 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
       position: relative;
       overflow-x: hidden;
-      min-height: 100vh;
     }
     
     /* Background Morphing Shapes */
@@ -40,8 +39,8 @@
     }
     
     @keyframes morph { 
-      0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 
-      50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 
+      0%,100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%;} 
+      50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%;} 
     }
     
     /* Particle Canvas */
@@ -98,7 +97,6 @@
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 24px;
       margin-bottom: 40px;
-      animation: fadeInUp 0.8s ease-out;
     }
     
     .stat-card {
@@ -111,7 +109,6 @@
       transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       position: relative;
       overflow: hidden;
-      cursor: pointer;
     }
     
     .stat-card::before {
@@ -141,12 +138,6 @@
       background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
       color: white;
       box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-      animation: iconPulse 2s ease-in-out infinite;
-    }
-    
-    @keyframes iconPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
     }
     
     .stat-value {
@@ -154,19 +145,12 @@
       font-weight: 700;
       color: #1F2937;
       margin-bottom: 8px;
-      transition: all 0.3s ease;
-    }
-    
-    .stat-card:hover .stat-value {
-      color: #DC143C;
     }
     
     .stat-label {
       color: #6B7280;
       font-size: 14px;
       font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
     
     .table-container {
@@ -177,7 +161,6 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.3);
       animation: fadeInUp 1s ease-out;
-      overflow-x: auto;
     }
     
     .table-header {
@@ -195,220 +178,12 @@
       background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
+    }
+    
+    .table-actions {
       display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .table-title i {
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    /* DataTables Custom Styling */
-    .dataTables_wrapper {
-      width: 100%;
-    }
-    
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter {
-      margin-bottom: 20px;
-    }
-    
-    .dataTables_wrapper .dataTables_length label,
-    .dataTables_wrapper .dataTables_filter label {
-      font-weight: 500;
-      color: #374151;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .dataTables_wrapper .dataTables_length select,
-    .dataTables_wrapper .dataTables_filter input {
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 2px solid #E5E7EB;
-      transition: all 0.3s ease;
-      background: white;
-      font-size: 14px;
-    }
-    
-    .dataTables_wrapper .dataTables_length select:focus,
-    .dataTables_wrapper .dataTables_filter input:focus {
-      border-color: #DC143C;
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
-    }
-    
-    .dataTables_wrapper .dataTables_info {
-      color: #6B7280;
-      font-size: 14px;
-      padding-top: 15px;
-    }
-    
-    .dataTables_wrapper .dataTables_paginate {
-      padding-top: 15px;
-    }
-    
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-      padding: 6px 12px;
-      margin: 0 3px;
-      border-radius: 6px;
-      border: 1px solid #E5E7EB;
-      background: white;
-      color: #374151 !important;
-      transition: all 0.3s ease;
-    }
-    
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      color: white !important;
-      border-color: transparent;
-    }
-    
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      color: white !important;
-      border-color: transparent;
-    }
-    
-    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
-    .dt-buttons {
-      display: flex;
+      gap: 12px;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-    
-    .dt-buttons .btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: none;
-    }
-    
-    .dt-buttons .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    /* Table Styling */
-    #usersTable {
-      width: 100% !important;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-    
-    #usersTable thead th {
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      color: white;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-      padding: 16px 12px;
-      border: none;
-      white-space: nowrap;
-    }
-    
-    #usersTable thead th:first-child {
-      border-top-left-radius: 12px;
-    }
-    
-    #usersTable thead th:last-child {
-      border-top-right-radius: 12px;
-    }
-    
-    #usersTable tbody td {
-      padding: 14px 12px;
-      border-bottom: 1px solid #F3F4F6;
-      color: #374151;
-      font-size: 14px;
-      vertical-align: middle;
-    }
-    
-    #usersTable tbody tr {
-      transition: all 0.3s ease;
-    }
-    
-    #usersTable tbody tr:hover {
-      background-color: rgba(220, 20, 60, 0.05);
-    }
-    
-    #usersTable tbody tr:last-child td {
-      border-bottom: none;
-    }
-    
-    /* Badge Styling */
-    .badge-glass {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    .badge-red {
-      background: linear-gradient(135deg, #DC143C 0%, #B91C1C 100%);
-      color: white;
-      box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
-    }
-    
-    .badge-blue {
-      background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
-      color: white;
-      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-    }
-    
-    /* Button Actions */
-    .btn-action {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin: 0 4px;
-    }
-    
-    .btn-edit {
-      background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
-      color: white;
-    }
-    
-    .btn-edit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-    }
-    
-    .btn-delete {
-      background: linear-gradient(135deg, #DC143C 0%, #B91C1C 100%);
-      color: white;
-    }
-    
-    .btn-delete:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
     }
     
     @keyframes fadeInUp {
@@ -422,19 +197,6 @@
       }
     }
     
-    /* Counter Animation */
-    @keyframes countUp {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    /* Responsive Design */
     @media (max-width: 768px) {
       .content-wrapper {
         margin-left: 0;
@@ -443,82 +205,17 @@
       
       .stats-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      
-      .stat-card {
-        padding: 20px;
-      }
-      
-      .stat-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 24px;
-      }
-      
-      .stat-value {
-        font-size: 28px;
       }
       
       .table-container {
         padding: 20px;
-        border-radius: 16px;
+        overflow-x: auto;
       }
       
       .table-header {
         flex-direction: column;
         align-items: flex-start;
       }
-      
-      .table-title {
-        font-size: 20px;
-      }
-      
-      .page-title {
-        font-size: 24px;
-      }
-      
-      .dt-buttons {
-        width: 100%;
-      }
-      
-      .dt-buttons .btn {
-        flex: 1;
-        justify-content: center;
-      }
-    }
-    
-    @media (max-width: 576px) {
-      .dataTables_wrapper .dataTables_length,
-      .dataTables_wrapper .dataTables_filter {
-        text-align: center;
-      }
-      
-      .dataTables_wrapper .dataTables_length label,
-      .dataTables_wrapper .dataTables_filter label {
-        flex-direction: column;
-        width: 100%;
-      }
-      
-      .dataTables_wrapper .dataTables_length select,
-      .dataTables_wrapper .dataTables_filter input {
-        width: 100%;
-      }
-    }
-    
-    /* Loading Animation */
-    .loading-spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -538,11 +235,8 @@
     <div class="content-wrapper">
       <!-- Dashboard Header -->
       <div class="dashboard-header">
-        <h1 class="page-title">
-          <i class="fas fa-tachometer-alt"></i>
-          Dashboard Admin
-        </h1>
-        <p class="page-subtitle">Selamat datang, <strong><%= nama %></strong>! 👋</p>
+        <h1 class="page-title">Dashboard Admin</h1>
+        <p class="page-subtitle">Selamat datang, <%= nama %>!</p>
       </div>
       
       <!-- Alert Messages -->
@@ -604,40 +298,6 @@
   <script src="/javascript/admin-animations.js"></script>
   
   <script>
-    // Counter Animation for Statistics
-    document.addEventListener('DOMContentLoaded', function() {
-      const counters = document.querySelectorAll('[data-counter]');
-      
-      counters.forEach(counter => {
-        const target = parseInt(counter.getAttribute('data-counter'));
-        const duration = 2000;
-        const step = target / (duration / 16);
-        let current = 0;
-        
-        const updateCounter = () => {
-          current += step;
-          if (current < target) {
-            counter.textContent = Math.floor(current);
-            requestAnimationFrame(updateCounter);
-          } else {
-            counter.textContent = target;
-          }
-        };
-        
-        // Intersection Observer for animation trigger
-        const observer = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              updateCounter();
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.5 });
-        
-        observer.observe(counter.parentElement);
-      });
-    });
-    
     // Particle Animation
     (function() {
       const canvas = document.getElementById('particles-canvas');
@@ -721,20 +381,6 @@
         canvas.height = window.innerHeight;
       });
     })();
-    
-    // Smooth Scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
   </script>
 </body>
 </html>

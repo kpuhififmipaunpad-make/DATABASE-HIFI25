@@ -89,7 +89,7 @@
           previous: "Sebelumnya"
         }
       },
-      dom: '<"datatable-top"<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>>rt<"datatable-bottom"<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>><"datatable-buttons"B>',
+      dom: '<"datatable-header"<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>>rt<"datatable-footer"<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>>B',
       buttons: [
         {
           extend: 'excel',
@@ -142,6 +142,12 @@
         $('.dataTables_filter input').addClass('form-control-glass').attr('placeholder', 'Cari data...');
         $('.dataTables_length select').addClass('form-control-glass');
         
+        // Move buttons to header
+        $('.dt-buttons').appendTo('.datatable-header .row .col-md-6:first');
+        
+        // Add custom styles to buttons
+        $('.dt-buttons').addClass('mb-3');
+        
         console.log('DataTable initialized successfully');
       },
       drawCallback: function() {
@@ -191,14 +197,14 @@
 
     // Format function for row details
     function formatUserDetails(data) {
-      // Extract data from table row - Updated indexes to match new column order
-      const username = data[1] ? data[1].replace(/<[^>]*>/g, '').trim() : '-';
-      const nama = data[2] || '-';
-      const npm = data[3] || '-';
-      const email = data[4] || '-';
-      const no_hp = data[5] || '-'; // Updated index from 5 to match new position
-      const role = data[6] && data[6].includes('Admin') ? 'Administrator' : 'User'; // Updated from 6 to 7
-      const lastUpdate = data[7] || '-'; // Updated from 7 to 8
+      // Extract data from table row
+      const username = data[1].replace(/<[^>]*>/g, '').trim();
+      const nama = data[2];
+      const npm = data[3];
+      const email = data[4];
+      const no_hp = data[5];
+      const role = data[6].includes('Admin') ? 'Administrator' : 'User';
+      const lastUpdate = data[7];
       
       return `
         <div class="detail-card">
@@ -221,6 +227,9 @@
             <button class="btn-action btn-view" onclick="viewFullProfile('${username}')" title="Lihat Detail">
               <i class="fas fa-eye"></i>
             </button>
+            <button class="btn-action btn-edit" onclick="editUser('${username}')" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
           </div>
         </div>
       `;
@@ -229,15 +238,11 @@
     // Add custom styles for DataTables
     const style = document.createElement('style');
     style.textContent = `
-      .dataTables_wrapper {
-        position: relative;
-      }
-
-      .datatable-top {
+      .datatable-header {
         margin-bottom: 20px;
       }
 
-      .datatable-top .row {
+      .datatable-header .row {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -246,12 +251,7 @@
       }
 
       .dataTables_length {
-        flex: 0 0 auto;
-      }
-
-      .dataTables_filter {
-        flex: 1 1 auto;
-        text-align: right;
+        margin-right: 20px;
       }
 
       .dataTables_length label,
@@ -262,10 +262,6 @@
         margin: 0;
         font-weight: 600;
         color: #374151;
-      }
-
-      .dataTables_filter label {
-        justify-content: flex-end;
       }
 
       .dataTables_length select {
@@ -327,12 +323,6 @@
         cursor: not-allowed;
       }
 
-      .datatable-buttons {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 2px solid rgba(0, 0, 0, 0.05);
-      }
-
       .dt-buttons {
         display: flex;
         gap: 12px;
@@ -373,27 +363,13 @@
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
       }
 
-      .datatable-bottom {
+      .datatable-footer {
         margin-top: 20px;
         padding-top: 20px;
         border-top: 1px solid rgba(0, 0, 0, 0.05);
       }
 
       @media (max-width: 768px) {
-        .datatable-top .row {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .dataTables_length {
-          width: 100%;
-        }
-
-        .dataTables_filter {
-          width: 100%;
-          text-align: left;
-        }
-
         .dataTables_filter input {
           width: 100%;
         }
@@ -406,19 +382,9 @@
           flex: 1;
           justify-content: center;
         }
-      }
 
-      @media (max-width: 576px) {
-        .dataTables_length label,
-        .dataTables_filter label {
+        .datatable-header .row {
           flex-direction: column;
-          align-items: flex-start;
-          gap: 8px;
-        }
-
-        .dataTables_length select,
-        .dataTables_filter input {
-          width: 100%;
         }
       }
     `;
@@ -428,6 +394,21 @@
   // Helper functions
   function viewFullProfile(username) {
     window.location.href = `/profile/${username}`;
+  }
+
+  function editUser(username) {
+    // Find user ID from table and redirect
+    $('#usersTable tbody tr').each(function() {
+      const rowData = $('#usersTable').DataTable().row(this).data();
+      const rowUsername = rowData[1].replace(/<[^>]*>/g, '').trim();
+      if (rowUsername === username) {
+        const editBtn = $(this).find('.btn-edit')[0];
+        if (editBtn) {
+          editBtn.click();
+        }
+        return false;
+      }
+    });
   }
 </script>
 </body>

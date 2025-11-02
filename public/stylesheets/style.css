@@ -787,7 +787,7 @@ input[type=number] {
 }
 
 /* ============================================
-   PASSWORD REVEAL
+   PASSWORD REVEAL - NO ANIMATIONS
    ============================================ */
 input::-ms-reveal, 
 input::-ms-clear { 
@@ -803,7 +803,6 @@ input::-ms-clear {
   cursor: pointer;
   padding: 10px;
   border-radius: 10px;
-  transition: all 0.3s ease;
   z-index: 3;
   display: flex;
   align-items: center;
@@ -812,19 +811,8 @@ input::-ms-clear {
   min-height: 40px;
 }
 
-.password-toggle:hover {
-  color: #DC143C;
-  background: rgba(220, 20, 60, 0.08);
-  transform: scale(1.05);
-}
-
-.password-toggle:active {
-  transform: scale(0.95);
-}
-
 .password-toggle i {
   font-size: 18px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ============================================

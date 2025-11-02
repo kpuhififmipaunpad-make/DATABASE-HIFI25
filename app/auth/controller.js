@@ -98,10 +98,14 @@ module.exports = {
       }
    },
 
-   actionLogOut: async (req, res) => {
-      req.logout();
-		req.flash("alertMessage", "Logout berhasil!");
-		req.flash("alertStatus", "green");
-		res.redirect("/auth/login");
+   actionLogOut: async (req, res, next) => {
+      req.logout(function (err) {
+         if (err) {
+            return next(err);
+         }
+         req.flash("alertMessage", "Logout berhasil!");
+         req.flash("alertStatus", "green");
+         res.redirect("/auth/login");
+      });
    },
 }

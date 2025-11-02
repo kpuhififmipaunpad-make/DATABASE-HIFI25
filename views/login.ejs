@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="icon" type="image/png" href="/img/LogoHIFI-2.png?v=2">
   <link rel="apple-touch-icon" href="/img/LogoHIFI-2.png?v=2">
-
   <style>
     body {
       background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
@@ -168,8 +167,8 @@
               required
               autocomplete="current-password"
             >
-            <button type="button" class="password-toggle" id="seePassButton">
-              <i class="fas fa-eye" id="seePassIcon"></i>
+            <button type="button" class="password-toggle" id="seePassButton" aria-label="Tampilkan/Sembunyikan password">
+              <i class="fas fa-eye" id="seePassIcon" aria-hidden="true"></i>
             </button>
           </div>
         </div>
@@ -198,6 +197,7 @@
   </div>
   
   <script src="/javascript/animations.js"></script>
+  <!-- Toggle show/hide password ditangani oleh dom.js -->
   <script src="/javascript/dom.js"></script>
   <script>
     function dismiss() {
@@ -209,19 +209,10 @@
       if (alert) dismiss();
     }, 5000);
 
-    // toggle see password
-    (function(){
-      const btn = document.getElementById('seePassButton');
-      const icon = document.getElementById('seePassIcon');
-      const input = document.getElementById('password');
-      if(!btn || !icon || !input) return;
-      btn.addEventListener('click', () => {
-        const isPwd = input.getAttribute('type') === 'password';
-        input.setAttribute('type', isPwd ? 'text' : 'password');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-      });
-    })();
+    /* Catatan:
+       - IIFE toggle password yang dulu ada di sini dihapus agar tidak dobel-bind
+         dengan handler di /javascript/dom.js.
+    */
   </script>
 </body>
 </html>

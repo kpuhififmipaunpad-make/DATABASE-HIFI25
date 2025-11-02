@@ -8,7 +8,7 @@
 <script src="/adminlte/plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-$.widget.bridge('uibutton', $.ui.button)
+  $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
 <script src="/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -39,7 +39,7 @@ $.widget.bridge('uibutton', $.ui.button)
 <!-- bs-custom-file-input -->
 <script src="/adminlte/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 
-<!-- DataTables  & Plugins -->
+<!-- DataTables & Plugins -->
 <script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
@@ -53,143 +53,363 @@ $.widget.bridge('uibutton', $.ui.button)
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
-<!-- DataTables Initialization Script -->
+<!-- Enhanced DataTable Initialization -->
 <script>
-$(function () {
-  // Initialize DataTable untuk usersTable dengan fitur lengkap
-  var table = $("#usersTable").DataTable({
-    "responsive": true,
-    "lengthChange": true,
-    "autoWidth": false,
-    "searching": true,
-    "ordering": true,
-    "info": true,
-    "paging": true,
-    "pageLength": 10,
-    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
-    "language": {
-      "lengthMenu": "Tampilkan _MENU_ data per halaman",
-      "zeroRecords": "Data tidak ditemukan",
-      "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
-      "infoEmpty": "Tidak ada data yang tersedia",
-      "infoFiltered": "(difilter dari _MAX_ total data)",
-      "search": "Cari:",
-      "paginate": {
-        "first": "Pertama",
-        "last": "Terakhir",
-        "next": "Selanjutnya",
-        "previous": "Sebelumnya"
-      }
-    },
-    "buttons": [
-      {
-        extend: 'copy',
-        text: '<i class="fas fa-copy"></i> Copy',
-        className: 'btn btn-secondary btn-sm',
-        exportOptions: {
-          columns: ':not(.no-export)'
-        }
-      },
-      {
-        extend: 'csv',
-        text: '<i class="fas fa-file-csv"></i> CSV',
-        className: 'btn btn-success btn-sm',
-        exportOptions: {
-          columns: ':not(.no-export)'
-        }
-      },
-      {
-        extend: 'excel',
-        text: '<i class="fas fa-file-excel"></i> Excel',
-        className: 'btn btn-success btn-sm',
-        exportOptions: {
-          columns: ':not(.no-export)'
-        }
-      },
-      {
-        extend: 'pdf',
-        text: '<i class="fas fa-file-pdf"></i> PDF',
-        className: 'btn btn-danger btn-sm',
-        exportOptions: {
-          columns: ':not(.no-export)'
-        },
-        customize: function(doc) {
-          doc.defaultStyle.fontSize = 9;
-          doc.styles.tableHeader.fontSize = 10;
-          doc.styles.tableHeader.fillColor = '#007bff';
-        }
-      },
-      {
-        extend: 'print',
-        text: '<i class="fas fa-print"></i> Print',
-        className: 'btn btn-info btn-sm',
-        exportOptions: {
-          columns: ':not(.no-export)'
-        }
-      }
-    ],
-    "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>Brtip',
-    "columnDefs": [
-      { "orderable": false, "targets": -1 }
-    ]
-  });
-
-  // Tambahkan tombol export ke container
-  table.buttons().container().appendTo('#usersTable_wrapper .col-md-6:eq(0)');
-
-  // Event handler untuk klik baris (preview biodata)
-  $('#usersTable tbody').on('click', 'tr.clickable-row', function() {
-    var data = $(this).data();
-    
-    // Isi data ke modal (sesuai dengan field dari edit.ejs)
-    $('#preview-username').text(data.username || '-');
-    $('#preview-nama').text(data.nama || '-');
-    $('#preview-npm').text(data.npm || '-');
-    $('#preview-email').text(data.email || '-');
-    
-    // Phone mapping: gunakan 'hp' sesuai edit.ejs, bukan 'phone'
-    $('#preview-phone').text(data.hp || '-');
-    
-    $('#preview-role').html('<span class="badge badge-' + (data.role === 'admin' ? 'danger' : 'primary') + '">' + 
-                            (data.role === 'admin' ? 'Admin' : 'User') + '</span>');
-    $('#preview-time').text(data.time || '-');
-    
-    // Simpan ID user untuk tombol edit
-    $('#btn-edit-from-modal').data('user-id', data.userId);
-    
-    // Tampilkan modal
-    $('#biodataModal').modal('show');
-  });
-
-  // Event handler untuk tombol edit di modal
-  $('#btn-edit-from-modal').on('click', function() {
-    var userId = $(this).data('user-id');
-    if (userId) {
-      window.location.href = '/dashboard/edit/' + userId;
+  $(function () {
+    // Destroy existing DataTable if exists
+    if ($.fn.DataTable.isDataTable('#usersTable')) {
+      $('#usersTable').DataTable().destroy();
     }
+
+    // Initialize DataTable with all features
+    const table = $('#usersTable').DataTable({
+      responsive: false,
+      autoWidth: false,
+      lengthChange: true,
+      searching: true,
+      ordering: true,
+      info: true,
+      paging: true,
+      scrollX: true,
+      pageLength: 10,
+      lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+      language: {
+        search: "Cari:",
+        searchPlaceholder: "Ketik untuk mencari...",
+        lengthMenu: "Tampilkan _MENU_ data per halaman",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Tidak ada data",
+        infoFiltered: "(difilter dari _MAX_ total data)",
+        zeroRecords: "Tidak ada data yang cocok",
+        emptyTable: "Tidak ada data tersedia",
+        paginate: {
+          first: "Pertama",
+          last: "Terakhir",
+          next: "Selanjutnya",
+          previous: "Sebelumnya"
+        }
+      },
+      dom: '<"datatable-header"<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>>rt<"datatable-footer"<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>>B',
+      buttons: [
+        {
+          extend: 'excel',
+          text: '<i class="fas fa-file-excel"></i> Export Excel',
+          className: 'btn-export btn-excel',
+          title: 'Data Warga HIFI - ' + new Date().toLocaleDateString('id-ID'),
+          exportOptions: {
+            columns: ':not(.no-export)'
+          },
+          customize: function(xlsx) {
+            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+            $('row c[r^="A"]', sheet).attr('s', '2');
+          }
+        },
+        {
+          extend: 'pdf',
+          text: '<i class="fas fa-file-pdf"></i> Export PDF',
+          className: 'btn-export btn-pdf',
+          title: 'Data Warga HIFI',
+          orientation: 'landscape',
+          pageSize: 'A4',
+          exportOptions: {
+            columns: ':not(.no-export)'
+          },
+          customize: function(doc) {
+            doc.defaultStyle.fontSize = 10;
+            doc.styles.tableHeader.fontSize = 11;
+            doc.styles.tableHeader.fillColor = '#1E3A8A';
+            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+          }
+        },
+        {
+          extend: 'print',
+          text: '<i class="fas fa-print"></i> Print',
+          className: 'btn-export btn-print',
+          title: 'Data Warga HIFI',
+          messageTop: '<h3 style="text-align:center; color:#DC143C;">Data Warga HIFI</h3><p style="text-align:center;">Dicetak pada: ' + new Date().toLocaleString('id-ID') + '</p>',
+          exportOptions: {
+            columns: ':not(.no-export)'
+          },
+          customize: function(win) {
+            $(win.document.body).css('font-size', '10pt');
+            $(win.document.body).find('table').addClass('compact').css('font-size', '9pt');
+          }
+        }
+      ],
+      initComplete: function() {
+        // Custom styling after initialization
+        $('.dataTables_wrapper').addClass('glass-card');
+        $('.dataTables_filter input').addClass('form-control-glass').attr('placeholder', 'Cari data...');
+        $('.dataTables_length select').addClass('form-control-glass');
+        
+        // Move buttons to header
+        $('.dt-buttons').appendTo('.datatable-header .row .col-md-6:first');
+        
+        // Add custom styles to buttons
+        $('.dt-buttons').addClass('mb-3');
+        
+        console.log('DataTable initialized successfully');
+      },
+      drawCallback: function() {
+        // Add animation to rows on redraw
+        $('#usersTable tbody tr').each(function(index) {
+          $(this).css({
+            'animation': 'fadeInUp 0.3s ease-out',
+            'animation-delay': (index * 0.05) + 's'
+          });
+        });
+      }
+    });
+
+    // Row click to expand/collapse details
+    $('#usersTable tbody').on('click', 'tr', function(e) {
+      // Don't expand when clicking action buttons
+      if ($(e.target).closest('.btn-action').length > 0) {
+        return;
+      }
+
+      const row = table.row(this);
+      
+      if (row.child.isShown()) {
+        // Close the row
+        row.child.hide();
+        $(this).removeClass('shown');
+      } else {
+        // Close other open rows
+        table.rows().every(function() {
+          if (this.child.isShown()) {
+            this.child.hide();
+            $(this.node()).removeClass('shown');
+          }
+        });
+
+        // Open this row
+        const data = row.data();
+        row.child(formatUserDetails(data)).show();
+        $(this).addClass('shown');
+        
+        // Animate child row
+        $(row.child()).find('.detail-card').css({
+          'animation': 'fadeInUp 0.4s ease-out'
+        });
+      }
+    });
+
+    // Format function for row details
+    function formatUserDetails(data) {
+      // Extract data from table row
+      const username = data[1].replace(/<[^>]*>/g, '').trim();
+      const nama = data[2];
+      const npm = data[3];
+      const email = data[4];
+      const no_hp = data[5];
+      const role = data[6].includes('Admin') ? 'Administrator' : 'User';
+      const lastUpdate = data[7];
+      
+      return `
+        <div class="detail-card">
+          <div class="row">
+            <div class="col-md-6">
+              <h6><i class="fas fa-user-circle"></i> Informasi Personal</h6>
+              <p><strong>Username:</strong> ${username}</p>
+              <p><strong>Nama Lengkap:</strong> ${nama}</p>
+              <p><strong>NPM:</strong> ${npm}</p>
+              <p><strong>Role:</strong> ${role}</p>
+            </div>
+            <div class="col-md-6">
+              <h6><i class="fas fa-address-card"></i> Kontak & Informasi</h6>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>No. HP:</strong> ${no_hp}</p>
+              <p><strong>Terakhir Update:</strong> ${lastUpdate}</p>
+            </div>
+          </div>
+          <div class="mt-3 d-flex gap-2">
+            <button class="btn-action btn-view" onclick="viewFullProfile('${username}')" title="Lihat Detail">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn-action btn-edit" onclick="editUser('${username}')" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Add custom styles for DataTables
+    const style = document.createElement('style');
+    style.textContent = `
+      .datatable-header {
+        margin-bottom: 20px;
+      }
+
+      .datatable-header .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .dataTables_length {
+        margin-right: 20px;
+      }
+
+      .dataTables_length label,
+      .dataTables_filter label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .dataTables_length select {
+        width: auto;
+        padding: 8px 32px 8px 12px;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 16px 12px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+
+      .dataTables_filter input {
+        margin-left: 0 !important;
+        width: 300px;
+        padding: 10px 16px;
+      }
+
+      .dataTables_info {
+        padding-top: 12px;
+        font-weight: 500;
+        color: #6B7280;
+      }
+
+      .dataTables_paginate {
+        padding-top: 12px;
+      }
+
+      .dataTables_paginate .paginate_button {
+        padding: 8px 16px;
+        margin: 0 2px;
+        border-radius: 8px;
+        border: 1px solid rgba(30, 58, 138, 0.2);
+        background: rgba(255, 255, 255, 0.9);
+        color: #1E3A8A !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .dataTables_paginate .paginate_button:hover {
+        background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
+        color: white !important;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+      }
+
+      .dataTables_paginate .paginate_button.current {
+        background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
+        color: white !important;
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+      }
+
+      .dataTables_paginate .paginate_button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .dt-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn-export {
+        padding: 10px 20px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+        font-size: 14px;
+      }
+
+      .btn-excel {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-pdf {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-print {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-export:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .datatable-footer {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      @media (max-width: 768px) {
+        .dataTables_filter input {
+          width: 100%;
+        }
+
+        .dt-buttons {
+          width: 100%;
+        }
+
+        .btn-export {
+          flex: 1;
+          justify-content: center;
+        }
+
+        .datatable-header .row {
+          flex-direction: column;
+        }
+      }
+    `;
+    document.head.appendChild(style);
   });
 
-  // Initialize DataTable untuk example1 (jika ada)
-  $("#example1").DataTable({
-    "responsive": true,
-    "lengthChange": false,
-    "autoWidth": false,
-    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-  }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+  // Helper functions
+  function viewFullProfile(username) {
+    window.location.href = `/profile/${username}`;
+  }
 
-  // Initialize DataTable untuk example2 (jika ada)
-  $('#example2').DataTable({
-    "info": false,
-    "autoWidth": false,
-    "responsive": false,
-    "searching": true,
-    "ordering": true,
-    "paging": true,
-    "scrollX": true,
-    "lengthChange": true,
-    "lengthMenu": [[10, 20, 30, 40, 50, -1], [10, 20, 30, 40, 50, "Semua"]]
-  });
-});
+  function editUser(username) {
+    // Find user ID from table and redirect
+    $('#usersTable tbody tr').each(function() {
+      const rowData = $('#usersTable').DataTable().row(this).data();
+      const rowUsername = rowData[1].replace(/<[^>]*>/g, '').trim();
+      if (rowUsername === username) {
+        const editBtn = $(this).find('.btn-edit')[0];
+        if (editBtn) {
+          editBtn.click();
+        }
+        return false;
+      }
+    });
+  }
 </script>
 </body>
 </html>

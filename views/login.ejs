@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - HIFI Database</title>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="/stylesheets/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/img/LogoHIFI-2.png?v=2">
@@ -19,32 +19,34 @@
       display: flex; align-items: center; justify-content: center;
       min-height: 100vh; padding: 20px;
     }
+    .bg-shape { pointer-events: none; }
+
     .login-container { width: 100%; max-width: 450px; animation: fadeInUp .6s ease-out; }
     .login-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
+      background: rgba(255,255,255,.95); backdrop-filter: blur(20px);
       border-radius: 24px; padding: 40px;
       box-shadow: 0 20px 60px rgba(0,0,0,.3);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255,255,255,.3);
     }
+
     .logo-section { text-align: center; margin-bottom: 32px; }
     .logo-section img { width: 100px; height: auto; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+
     .login-title {
       font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 8px;
       background: linear-gradient(135deg,#DC143C 0%,#1E3A8A 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .login-subtitle { text-align: center; color:#6B7280; margin-bottom: 32px; font-size: 14px; }
+
     .back-link { display:inline-flex; align-items:center; gap:8px; color:#6B7280; text-decoration:none; margin-bottom:20px; font-size:14px; transition:.3s; }
     .back-link:hover { color:#1E3A8A; transform: translateX(-5px); }
+
     .form-footer { margin-top:24px; text-align:center; }
     .form-footer a { color:#1E3A8A; text-decoration:none; font-weight:600; transition:.3s; }
     .form-footer a:hover { color:#DC143C; }
 
-    /* pastikan elemen dekorasi tidak menghalangi klik */
-    .bg-shape { pointer-events: none; }
-
-    /* hit area tombol mata (fallback jika CSS global belum ada) */
+    /* tombol mata fallback bila CSS global belum ada */
     .input-group-glass { position: relative; }
     .password-toggle{
       position:absolute; right:12px; top:50%; transform:translateY(-50%);
@@ -62,13 +64,13 @@
 
   <!-- Alert Messages -->
   <% if (message != '') { %>
-    <div id="alert-border-3" class="alert-glass alert-<%= status === 'green' ? 'success' : 'error' %>" style="position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;">
-      <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %>"></i>
-      <span><%= message %></span>
-      <button onclick="dismiss()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
+  <div id="alert-border-3" class="alert-glass alert-<%= status === 'green' ? 'success' : 'error' %>" style="position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;">
+    <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %>"></i>
+    <span><%= message %></span>
+    <button onclick="dismiss()" style="background:none; border:0; color:inherit; cursor:pointer; margin-left:auto;">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
   <% } %>
 
   <div class="login-container">
@@ -81,7 +83,7 @@
         <p class="login-subtitle">Masuk ke akun HIFI Anda</p>
       </div>
 
-      <!-- Penting untuk autofill: autocomplete="on" -->
+      <!-- Penting untuk autofill/save password: autocomplete="on" + name standar -->
       <form action="/auth/login" method="POST" data-validate autocomplete="on" name="login">
         <div class="form-group">
           <label class="form-label"><i class="fas fa-user"></i> Username (Gunakan NPM anda)</label>
@@ -98,6 +100,7 @@
               autocapitalize="none"
               spellcheck="false"
               inputmode="numeric"
+              autofocus
             >
           </div>
         </div>
@@ -108,22 +111,15 @@
             <i class="fas fa-lock input-icon"></i>
             <input
               type="password"
-              id="password"
+              id="password_1"
               name="password"
               class="form-control-glass"
               placeholder="Masukkan password Anda"
               required
               autocomplete="current-password"
             >
-            <button
-              type="button"
-              class="password-toggle"
-              id="seePassButton"
-              aria-label="Tampilkan/Sembunyikan password"
-              aria-pressed="false"
-              title="Tampilkan/Sembunyikan password"
-            >
-              <i class="fas fa-eye" id="seePassIcon" aria-hidden="true"></i>
+            <button type="button" class="password-toggle" onclick="togglePassword('password_1','icon_1')" aria-label="Tampilkan/Sembunyikan password" title="Tampilkan/Sembunyikan password">
+              <i class="fas fa-eye" id="icon_1" aria-hidden="true"></i>
             </button>
           </div>
         </div>
@@ -146,11 +142,27 @@
 
   <!-- JS -->
   <script src="/javascript/animations.js"></script>
-  <!-- Toggle password: ditangani DOM.JS (hindari skrip inline tambahan) -->
-  <script src="/javascript/dom.js"></script>
+  <!-- Catatan: TIDAK memuat /javascript/dom.js agar tidak bentrok dengan toggle inline seperti signup -->
   <script>
     function dismiss(){ const el = document.getElementById("alert-border-3"); if (el) el.classList.add("hide"); }
     setTimeout(() => { const el = document.getElementById("alert-border-3"); if (el) dismiss(); }, 5000);
+
+    // Sama seperti signup: toggle inline
+    function togglePassword(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon  = document.getElementById(iconId);
+      if (!input || !icon) return;
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
   </script>
 </body>
 </html>

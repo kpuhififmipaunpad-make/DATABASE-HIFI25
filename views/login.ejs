@@ -1,74 +1,170 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - HIFI Database</title>
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="/stylesheets/style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/img/LogoHIFI-2.png?v=2">
-  <link rel="apple-touch-icon" href="/img/LogoHIFI-2.png?v=2">
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .login-container {
+      width: 100%;
+      max-width: 450px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .login-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .logo-section {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .logo-section img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .login-title {
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .login-subtitle {
+      text-align: center;
+      color: #6B7280;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #6B7280;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      color: #1E3A8A;
+      transform: translateX(-5px);
+    }
+    
+    .form-footer {
+      margin-top: 24px;
+      text-align: center;
+    }
+    
+    .form-footer a {
+      color: #1E3A8A;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .form-footer a:hover {
+      color: #DC143C;
+    }
+    
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 30px 24px;
+      }
+      
+      .login-title {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Background Shapes -->
   <div class="bg-shape bg-shape-1"></div>
   <div class="bg-shape bg-shape-2"></div>
-
+  
   <!-- Alert Messages -->
   <% if (message != '') { %>
-  <div id="alert-border-3" class="alert-glass alert-<%= status === 'green' ? 'success' : 'error' %>">
-    <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %>"></i>
-    <span><%= message %></span>
-    <button onclick="dismiss()">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
+    <div id="alert-border-3" class="alert-glass alert-<%= status === 'green' ? 'success' : 'error' %>" style="position: fixed; top: 20px; right: 20px; z-index: 10000; max-width: 400px;">
+      <i class="fas fa-<%= status === 'green' ? 'check-circle' : 'exclamation-circle' %>"></i>
+      <span><%= message %></span>
+      <button onclick="dismiss()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
   <% } %>
-
+  
   <div class="login-container">
     <div class="login-card">
-      <a href="/" class="back-link"><i class="fas fa-arrow-left"></i>Kembali ke Home</a>
-
-      <div class="logo-section" style="text-align:center; margin-bottom: 24px;">
-        <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI" class="animate-float" style="width:100px; height:auto; margin-bottom:16px;" />
-        <h1 class="login-title text-gradient" style="text-align:center;">Selamat Datang</h1>
-        <p class="login-subtitle" style="text-align:center; color:#6B7280;">Masuk ke akun HIFI Anda</p>
+      <a href="/" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Kembali ke Home
+      </a>
+      
+      <div class="logo-section">
+        <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI">
+        <h1 class="login-title">Selamat Datang</h1>
+        <p class="login-subtitle">Masuk ke akun HIFI Anda</p>
       </div>
-
+      
       <form action="/auth/login" method="POST" data-validate>
         <div class="form-group">
-          <label class="form-label"><i class="fas fa-user"></i> Username (Gunakan NPM anda)</label>
+          <label class="form-label">
+            <i class="fas fa-user"></i> Username (Gunakan NPM anda)
+          </label>
           <div class="input-group-glass">
             <i class="fas fa-user input-icon"></i>
-            <input
-              type="text"
-              name="username"
-              class="form-control-glass"
+            <input 
+              type="text" 
+              name="username" 
+              class="form-control-glass" 
               placeholder="Masukkan username Anda"
               required
               autocomplete="username"
-              autofocus
-            />
+            >
           </div>
         </div>
-
+        
         <div class="form-group">
-          <label class="form-label"><i class="fas fa-lock"></i> Password</label>
-          <div class="input-group-glass">
+          <label class="form-label">
+            <i class="fas fa-lock"></i> Password
+          </label>
+          <div class="input-group-glass" style="position: relative;">
             <i class="fas fa-lock input-icon"></i>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              class="form-control-glass"
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-control-glass" 
               placeholder="Masukkan password Anda"
               required
               autocomplete="current-password"
-            />
+            >
             <button
               type="button"
               class="password-toggle"
@@ -81,37 +177,48 @@
             </button>
           </div>
         </div>
-
-        <button type="submit" class="btn-primary-gradient ripple-container" style="width:100%; margin-top:24px;">
-          <i class="fas fa-sign-in-alt"></i> Masuk
+        
+        <button type="submit" class="btn-primary-gradient ripple-container" style="width: 100%; margin-top: 24px;">
+          <i class="fas fa-sign-in-alt"></i>
+          Masuk
         </button>
       </form>
-
-      <div class="form-footer" style="margin-top:24px; text-align:center;">
+      
+      <div class="form-footer">
+        <!-- Tambahan pesan formal untuk bantuan ADMD -->
         <p style="color:#6B7280; margin-bottom:12px;">
-          Apabila Anda mengalami kendala saat masuk,
-          silakan menghubungi <strong>ADMD HIFI</strong>.
+          Apabila Anda mengalami kendala saat masuk (misalnya lupa kata sandi, akun terkunci, atau kesalahan data),
+          silakan menghubungi <strong>ADMD HIFI</strong> melalui kanal resmi himpunan untuk verifikasi dan bantuan lebih lanjut.
         </p>
-        <p style="color:#6B7280; margin-bottom:12px;"><a href="/forgot">Lupa Password?</a></p>
-        <p style="color:#6B7280;">Belum punya akun? <a href="/auth/signup">Daftar Sekarang</a></p>
+
+        <p style="color: #6B7280; margin-bottom: 12px;">
+          <a href="/forgot">Lupa Password?</a>
+        </p>
+        <p style="color: #6B7280;">
+          Belum punya akun? <a href="/auth/signup">Daftar Sekarang</a>
+        </p>
       </div>
     </div>
   </div>
-
-  <!-- JS -->
+  
   <script src="/javascript/animations.js"></script>
-  <!-- Toggle show/hide password dikendalikan penuh oleh dom.js -->
+  <!-- Biarkan toggle ditangani oleh /javascript/dom.js -->
   <script src="/javascript/dom.js"></script>
   <script>
-    // Auto-dismiss alert (gunakan dismiss() dari dom.js jika ada, fallback ke sederhana)
-    window.dismiss = window.dismiss || function(){
+    function dismiss() {
       const el = document.getElementById("alert-border-3");
       if (el) el.classList.add("hide");
-    };
+    }
     setTimeout(() => {
-      const el = document.getElementById("alert-border-3");
-      if (el) window.dismiss();
+      const alert = document.getElementById("alert-border-3");
+      if (alert) dismiss();
     }, 5000);
+
+    /* HAPUS skrip toggle inline yang lama untuk menghindari double-bind:
+       (function(){ ... addEventListener('click' ... )})();
+       /javascript/dom.js sudah meng-handle show/hide password berdasarkan
+       #password, #seePassButton, dan #seePassIcon.
+    */
   </script>
 </body>
 </html>

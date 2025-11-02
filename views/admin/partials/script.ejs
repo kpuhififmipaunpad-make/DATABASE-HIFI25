@@ -141,12 +141,15 @@ $(function () {
   $('#usersTable tbody').on('click', 'tr.clickable-row', function() {
     var data = $(this).data();
     
-    // Isi data ke modal
+    // Isi data ke modal (sesuai dengan field dari edit.ejs)
     $('#preview-username').text(data.username || '-');
     $('#preview-nama').text(data.nama || '-');
     $('#preview-npm').text(data.npm || '-');
     $('#preview-email').text(data.email || '-');
-    $('#preview-phone').text(data.phone || '-');
+    
+    // Phone mapping: gunakan 'hp' sesuai edit.ejs, bukan 'phone'
+    $('#preview-phone').text(data.hp || '-');
+    
     $('#preview-role').html('<span class="badge badge-' + (data.role === 'admin' ? 'danger' : 'primary') + '">' + 
                             (data.role === 'admin' ? 'Admin' : 'User') + '</span>');
     $('#preview-time').text(data.time || '-');

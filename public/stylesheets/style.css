@@ -2409,7 +2409,135 @@ input::-ms-clear {
     font-size: 24px;
   }
 }
+/* ============================================
+   DATATABLE ENHANCEMENTS - RESPONSIVE
+   ============================================ */
 
+.table-wrapper-enhanced {
+  position: relative;
+  z-index: 1;
+}
+
+.dataTables_wrapper {
+  width: 100%;
+}
+
+.dataTables_wrapper .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0 -10px;
+}
+
+.dataTables_wrapper .row > div {
+  padding: 0 10px;
+}
+
+.dataTables_length,
+.dataTables_filter {
+  margin-bottom: 15px;
+}
+
+.dataTables_length label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.dataTables_filter label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+  justify-content: flex-end;
+}
+
+.dataTables_length select,
+.dataTables_filter input {
+  display: inline-block;
+  margin: 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 15px;
+}
+
+#usersTable_wrapper .dataTables_paginate {
+  margin-top: 15px;
+}
+
+#usersTable_wrapper .dataTables_info {
+  padding-top: 0;
+  margin-top: 15px;
+}
+
+/* Buttons */
+.dt-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.dt-buttons .btn {
+  flex: 0 0 auto;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .dataTables_wrapper .row {
+    flex-direction: column;
+  }
+
+  .dataTables_wrapper .row > div {
+    width: 100% !important;
+    margin-bottom: 15px;
+  }
+
+  .dataTables_length label,
+  .dataTables_filter label {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .dataTables_filter input {
+    width: 100% !important;
+  }
+
+  .dt-buttons {
+    justify-content: center;
+  }
+
+  .dataTables_info,
+  .dataTables_paginate {
+    text-align: center;
+  }
+
+  .table-container {
+    padding: 15px;
+  }
+}
+
+/* Tablet Responsive */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .dataTables_filter input {
+    width: 200px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  .dataTables_filter input {
+    width: 250px;
+  }
+}
 /* ============================================
    END OF RESPONSIVE CSS
    ============================================ */

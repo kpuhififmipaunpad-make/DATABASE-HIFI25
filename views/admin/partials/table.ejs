@@ -44,6 +44,9 @@
 </div>
 
 <style>
+  /* ============================================
+     TABLE STYLES (FROM table.txt ONLY)
+     ============================================ */
   .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -155,6 +158,81 @@
     gap: 8px;
   }
 
+  /* Badge Styles */
+  .badge-glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .badge-red {
+    background: rgba(220, 20, 60, 0.1);
+    border-color: var(--primary-red, #DC143C);
+    color: var(--primary-red, #DC143C);
+  }
+
+  .badge-blue {
+    background: rgba(30, 58, 138, 0.1);
+    border-color: var(--primary-blue, #1E3A8A);
+    color: var(--primary-blue, #1E3A8A);
+  }
+
+  /* Action Buttons */
+  .btn-action {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+
+  .btn-edit {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-edit:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  .btn-delete {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-delete:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+
+  .btn-view {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  }
+
+  .btn-view:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  }
+
   @media (max-width: 768px) {
     .detail-card .col-md-6 {
       flex: 0 0 100%;
@@ -165,6 +243,12 @@
     #usersTable tbody td {
       padding: 12px 8px;
       font-size: 13px;
+    }
+
+    .btn-action {
+      width: 36px;
+      height: 36px;
+      margin: 0 2px;
     }
   }
 

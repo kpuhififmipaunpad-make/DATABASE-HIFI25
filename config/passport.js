@@ -1,45 +1,47 @@
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
+const { promisify } = require("util");
 const User = require("../app/users/model");
 
+const compareAsync = promisify(bcrypt.compare);
+
 module.exports = function (passport) {
-	passport.use(
-		new LocalStrategy({ usernameField: "username" }, (uname, password, done) => {
-			//match user
-			User.findOne({ username: uname })
-				.then((user) => {
-					if (!user) {
-						return done(null, false, {
-							message: "Username tidak ditemukan",
-						});
-					}
-					//match pass
-					bcrypt.compare(password, user.password, (err, isMatch) => {
-						if (err) {
-							console.log(err)
-						};
+  // Strategy login pakai username
+  passport.use(
+    new LocalStrategy(
+      { usernameField: "username" },
+      async (uname, password, done) => {
+        try {
+          const user = await User.findOne({ username: uname });
+          if (!user) {
+            return done(null, false, { message: "Username tidak ditemukan" });
+          }
 
-						if (isMatch) {
-							return done(null, user);
-						} else {
-							return done(null, false, {
-								message: "Kata sandi salah!",
-							});
-						}
-					});
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		})
-	);
-	passport.serializeUser(function (user, done) {
-		done(null, user.id);
-	});
+          const isMatch = await compareAsync(password, user.password);
+          if (!isMatch) {
+            return done(null, false, { message: "Kata sandi salah!" });
+          }
 
-	passport.deserializeUser(function (id, done) {
-		User.findById(id, function (err, user) {
-			done(err, user);
-		});
-	});
+          return done(null, user);
+        } catch (err) {
+          return done(err);
+        }
+      }
+    )
+  );
+
+  // Simpan id user ke session
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+
+  // Ambil user dari id (FIX: tanpa callback Mongoose v7)
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findById(id); // atau .exec()
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
+  });
 };

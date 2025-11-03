@@ -1,7 +1,7 @@
 /**
- * HIFI Database - Admin Panel Animations
+ * HIFI Database - Admin Panel Animations (FIXED)
  * FULL RESPONSIVE - ALL DEVICES
- * Dashboard-specific animations & interactions
+ * Compatible dengan DataTable initialization di script.txt
  */
 
 'use strict';
@@ -20,97 +20,22 @@ const HIFI = (() => {
     if (!dateStr || dateStr === '-') return '-';
     try {
       const d = new Date(dateStr);
-      return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-    } catch { return dateStr; }
+      return d.toLocaleDateString('id-ID', { 
+        day: '2-digit', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+    } catch { 
+      return dateStr; 
+    }
   };
 
   // Deteksi device type
   const isMobile = () => window.innerWidth <= 768;
   const isTablet = () => window.innerWidth > 768 && window.innerWidth <= 1024;
   const isTouch = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  
-  // Template child row — RESPONSIVE
-  const buildDetail = (ds) => {
-    const isMobileView = isMobile();
-    
-    return `
-      <div class="dt-detail">
-        <div class="detail-card" style="grid-template-columns: ${isMobileView ? '1fr' : 'repeat(auto-fit, minmax(180px, 1fr))'};">
-          <div class="detail-item">
-            <b><i class="fas fa-user"></i> Nama Lengkap</b>
-            <span>${esc(ds.nama)}</span>
-          </div>
-          <div class="detail-item">
-            <b><i class="fas fa-id-card"></i> NPM</b>
-            <span>${esc(ds.npm)}</span>
-          </div>
-          <div class="detail-item">
-            <b><i class="fas fa-envelope"></i> Email</b>
-            <span>${esc(ds.email)}</span>
-          </div>
-          <div class="detail-item">
-            <b><i class="fas fa-phone"></i> No. HP</b>
-            <span>${esc(ds.hp)}</span>
-          </div>
 
-          <div class="detail-item">
-            <b><i class="fas fa-map-marker-alt"></i> Tempat Lahir</b>
-            <span>${esc(ds.ttl)}</span>
-          </div>
-          <div class="detail-item">
-            <b><i class="fas fa-calendar"></i> Tanggal Lahir</b>
-            <span>${formatDate(ds.tgl)}</span>
-          </div>
-          <div class="detail-item">
-            <b><i class="fas fa-pray"></i> Agama</b>
-            <span>${esc(ds.agama)}</span>
-          </div>
-          <div class="detail-item">
-            <b><i class="fas fa-tint"></i> Golongan Darah</b>
-            <span>${esc(ds.goldar)}</span>
-          </div>
-
-          <div class="detail-item" style="grid-column:1/-1">
-            <b><i class="fas fa-home"></i> Alamat Rumah</b>
-            <span>${esc(ds.rumah)}</span>
-          </div>
-          <div class="detail-item" style="grid-column:1/-1">
-            <b><i class="fas fa-building"></i> Alamat Kos</b>
-            <span>${esc(ds.kos)}</span>
-          </div>
-
-          <div class="detail-item" style="grid-column:1/-1">
-            <b><i class="fas fa-graduation-cap"></i> Pendidikan</b>
-            <span>${esc(ds.pendidikan)}</span>
-          </div>
-          <div class="detail-item" style="grid-column:1/-1">
-            <b><i class="fas fa-users"></i> Kepanitiaan</b>
-            <span>${esc(ds.panitia)}</span>
-          </div>
-          <div class="detail-item" style="grid-column:1/-1">
-            <b><i class="fas fa-sitemap"></i> Organisasi</b>
-            <span>${esc(ds.organisasi)}</span>
-          </div>
-          <div class="detail-item" style="grid-column:1/-1">
-            <b><i class="fas fa-certificate"></i> Pelatihan</b>
-            <span>${esc(ds.pelatihan)}</span>
-          </div>
-          <div class="detail-item" style="grid-column:1/-1">
-            <b><i class="fas fa-trophy"></i> Prestasi</b>
-            <span>${esc(ds.prestasi)}</span>
-          </div>
-
-          <div class="detail-actions" style="grid-column:1/-1">
-            <a class="btn-primary-gradient" href="/dashboard/edit/${esc(ds.id)}">
-              <i class="fas fa-pen"></i> ${isMobileView ? 'Edit' : 'Edit Data Lengkap'}
-            </a>
-          </div>
-        </div>
-      </div>
-    `;
-  };
-
-  return { esc, formatDate, buildDetail, isMobile, isTablet, isTouch };
+  return { esc, formatDate, isMobile, isTablet, isTouch };
 })();
 
 // Helper: ambil instance DT kalau sudah ada
@@ -130,13 +55,14 @@ function initSidebarToggle() {
   const sidebar = document.querySelector('.sidebar-glass');
   const toggleBtn = document.querySelector('#sidebarToggle');
   const mainContent = document.querySelector('.content-wrapper, .main-content');
-  const overlay = document.createElement('div');
-  overlay.className = 'sidebar-overlay';
   
   if (!sidebar) return;
   
-  // Add overlay to body
-  if (!document.querySelector('.sidebar-overlay')) {
+  // Create overlay only if it doesn't exist
+  let overlay = document.querySelector('.sidebar-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
     document.body.appendChild(overlay);
   }
 
@@ -161,6 +87,7 @@ function initSidebarToggle() {
 
   // Toggle button click
   if (toggleBtn) {
+    toggleBtn.removeEventListener('click', toggleSidebar); // Remove old listeners
     toggleBtn.addEventListener('click', () => toggleSidebar());
   }
 
@@ -203,7 +130,6 @@ function initSidebarToggle() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       if (HIFI.isMobile()) {
-        // Reset to mobile mode
         sidebar.classList.remove('collapsed');
         mainContent?.classList.remove('expanded', 'sidebar-collapsed');
         if (!sidebar.classList.contains('active')) {
@@ -211,7 +137,6 @@ function initSidebarToggle() {
           document.body.style.overflow = '';
         }
       } else {
-        // Reset to desktop mode
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
         document.body.style.overflow = '';
@@ -225,88 +150,48 @@ function initSidebarToggle() {
 }
 
 // ============================================
-// RESPONSIVE DATATABLE INIT - JANGAN INIT ULANG
+// ENHANCE EXISTING DATATABLE (NO RE-INIT)
 // ============================================
-function initDataTable() {
-  // JANGAN init DataTable karena sudah di-init di script.ejs
-  // Hanya enhance saja
-  const dt = getDT();
-  if (dt) {
-    enhanceDataTable(dt);
-  }
-}
-
-// ============================================
-// ENHANCE DATATABLE - HANYA TAMBAHAN FITUR
-// ============================================
-function enhanceDataTable(dt) {
-  if (!dt) return;
-
-  // Toggle child-row - RESPONSIVE TOUCH HANDLING
-  $('#usersTable tbody')
-    .off('click.hifi touchend.hifi', 'tr.clickable-row td:not(.no-detail)')
-    .on('click.hifi touchend.hifi', 'tr.clickable-row td:not(.no-detail)', function (e) {
-      // Prevent double-firing on touch devices
-      if (e.type === 'touchend') {
-        e.preventDefault();
+function enhanceExistingDataTable() {
+  // Wait for DataTable to be initialized by script.txt
+  const checkDataTable = setInterval(() => {
+    const dt = getDT();
+    if (dt) {
+      clearInterval(checkDataTable);
+      console.log('✅ DataTable found, applying enhancements...');
+      
+      // Add responsive classes
+      const $table = $('#usersTable');
+      if (HIFI.isTouch()) {
+        $table.addClass('touch-enabled');
       }
       
-      // Ignore clicks on interactive elements
-      if ($(e.target).closest('.btn-action, button, a, form, input, select').length) {
-        return;
-      }
-
-      const $tr = $(this).closest('tr.clickable-row');
-      const row = dt.row($tr);
-      const ds = $tr.get(0).dataset;
-
-      if (row.child.isShown()) {
-        // Close with animation
-        $tr.removeClass('shown');
-        setTimeout(() => row.child.hide(), 200);
-      } else {
-        // Close other rows first
-        dt.rows().every(function () {
-          if (this.child && this.child.isShown()) {
-            $(this.node()).removeClass('shown');
-            setTimeout(() => this.child.hide(), 200);
-          }
+      // Add device-specific styling
+      $('.dataTables_wrapper').addClass('glass-card');
+      
+      // Enhance pagination for mobile
+      if (HIFI.isMobile()) {
+        $('.dataTables_paginate .paginate_button').each(function() {
+          const text = $(this).text();
+          if (text === 'Previous') $(this).html('‹');
+          if (text === 'Next') $(this).html('›');
         });
-        
-        // Open new row
-        row.child(HIFI.buildDetail(ds)).show();
-        setTimeout(() => $tr.addClass('shown'), 50);
-        
-        // Scroll into view on mobile
-        if (HIFI.isMobile()) {
-          setTimeout(() => {
-            const childRow = row.child()[0];
-            if (childRow) {
-              childRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-          }, 300);
-        }
       }
-    });
-
-  // Handle window resize - adjust page length
-  let resizeTimer;
-  $(window).on('resize.datatable', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      const isMobile = HIFI.isMobile();
-      const isTablet = HIFI.isTablet();
       
-      // Adjust page length
-      let newLength = 10;
-      if (isMobile) newLength = 5;
-      else if (isTablet) newLength = 8;
-      
-      if (dt.page.len() !== newLength) {
-        dt.page.len(newLength).draw();
+      // Add scroll behavior on mobile
+      if (HIFI.isMobile()) {
+        $('.table-responsive').css({
+          'overflow-x': 'auto',
+          '-webkit-overflow-scrolling': 'touch'
+        });
       }
-    }, 250);
-  });
+      
+      console.log('✅ DataTable enhancements applied');
+    }
+  }, 100);
+  
+  // Timeout after 5 seconds
+  setTimeout(() => clearInterval(checkDataTable), 5000);
 }
 
 // ============================================
@@ -317,7 +202,6 @@ function initCharts() {
   const ctx = document.getElementById('userChart');
   if (!ctx) return;
 
-  // Responsive chart configuration
   const isMobile = HIFI.isMobile();
   
   const chartInstance = new Chart(ctx, {
@@ -329,8 +213,8 @@ function initCharts() {
         data: [12, 19, 8, 15, 22, 18],
         borderColor: 'rgb(220, 20, 60)',
         backgroundColor: 'rgba(220, 20, 60, 0.1)',
-        borderWidth: isMobile ? 2 : 3, 
-        tension: 0.4, 
+        borderWidth: isMobile ? 2 : 3,
+        tension: 0.4,
         fill: true,
         pointRadius: isMobile ? 3 : 4,
         pointHoverRadius: isMobile ? 5 : 6
@@ -340,8 +224,8 @@ function initCharts() {
       responsive: true,
       maintainAspectRatio: true,
       aspectRatio: isMobile ? 1.5 : 2,
-      plugins: { 
-        legend: { 
+      plugins: {
+        legend: {
           display: !isMobile,
           labels: {
             font: { size: isMobile ? 10 : 12 }
@@ -355,28 +239,23 @@ function initCharts() {
         }
       },
       scales: {
-        y: { 
-          beginAtZero: true, 
+        y: {
+          beginAtZero: true,
           grid: { color: 'rgba(0,0,0,0.05)' },
           ticks: {
             font: { size: isMobile ? 10 : 12 }
           }
         },
-        x: { 
+        x: {
           grid: { display: false },
           ticks: {
             font: { size: isMobile ? 10 : 12 }
           }
         }
       },
-      animation: { 
-        duration: isMobile ? 1000 : 2000, 
-        easing: 'easeInOutQuart' 
-      },
-      interaction: {
-        mode: 'nearest',
-        axis: 'x',
-        intersect: false
+      animation: {
+        duration: isMobile ? 1000 : 2000,
+        easing: 'easeInOutQuart'
       }
     }
   });
@@ -401,7 +280,6 @@ function animateStatCards() {
   const cards = document.querySelectorAll('.stat-card');
   if (!cards.length) return;
 
-  // Reduce animation complexity on mobile
   const isMobile = HIFI.isMobile();
   const delay = isMobile ? 50 : 100;
   const duration = isMobile ? 400 : 600;
@@ -424,7 +302,19 @@ function animateStatCards() {
 // LOADING STATE (RESPONSIVE)
 // ============================================
 function showLoadingState(show = true) {
-  const overlay = document.querySelector('.loading-overlay') || createLoadingOverlay();
+  let overlay = document.querySelector('.loading-overlay');
+  
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'loading-overlay';
+    overlay.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>${HIFI.isMobile() ? 'Loading...' : 'Memuat data...'}</p>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
   
   if (show) {
     overlay.style.display = 'flex';
@@ -437,36 +327,6 @@ function showLoadingState(show = true) {
       document.body.style.overflow = '';
     }, 300);
   }
-}
-
-function createLoadingOverlay() {
-  const overlay = document.createElement('div');
-  overlay.className = 'loading-overlay';
-  overlay.innerHTML = `
-    <div class="loading-spinner">
-      <div class="spinner"></div>
-      <p>${HIFI.isMobile() ? 'Loading...' : 'Memuat data...'}</p>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  return overlay;
-}
-
-// ============================================
-// REFRESH DATA (WITH LOADING STATE)
-// ============================================
-function refreshData() {
-  const btn = document.querySelector('#btnRefresh');
-  if (btn) {
-    const icon = btn.querySelector('i');
-    if (icon) icon.classList.add('fa-spin');
-  }
-  
-  showLoadingState(true);
-  
-  setTimeout(() => {
-    location.reload();
-  }, 300);
 }
 
 // ============================================
@@ -486,27 +346,16 @@ function deleteUser(id) {
   if (confirm(message)) {
     showLoadingState(true);
     
-    fetch(`/dashboard/delete/${id}`, { 
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        if (!response.ok) throw new Error('Delete failed');
-        return response.json();
-      })
-      .then(() => {
-        setTimeout(() => {
-          location.reload();
-        }, 600);
-      })
-      .catch(error => {
-        console.error('Delete error:', error);
-        showLoadingState(false);
-        alert('Gagal menghapus data!');
-      });
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/dashboard/delete/${id}?_method=DELETE`;
+    document.body.appendChild(form);
+    form.submit();
   }
+}
+
+function confirmDelete(id) {
+  deleteUser(id);
 }
 
 // ============================================
@@ -602,8 +451,6 @@ function initTouchEnhancements() {
     }
     lastTouchEnd = now;
   }, { passive: false });
-
-  initSwipeToRefresh();
 }
 
 // ============================================
@@ -667,33 +514,9 @@ function initKeyboardShortcuts() {
   if (HIFI.isMobile()) return;
 
   document.addEventListener('keydown', (e) => {
-    // Ctrl/Cmd + K: Focus search
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      document.querySelector('.dataTables_filter input')?.focus();
-    }
-    
-    // Ctrl/Cmd + R: Refresh
-    if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-      if (document.activeElement.tagName !== 'INPUT' && 
-          document.activeElement.tagName !== 'TEXTAREA') {
-        e.preventDefault();
-        refreshData();
-      }
-    }
-    
     // Escape: Close modals/dropdowns
     if (e.key === 'Escape') {
       closeAllDropdowns();
-      const dt = getDT();
-      if (dt) {
-        dt.rows().every(function() {
-          if (this.child && this.child.isShown()) {
-            this.child.hide();
-            $(this.node()).removeClass('shown');
-          }
-        });
-      }
     }
   });
 }
@@ -723,6 +546,7 @@ function handleOrientationChange() {
 // PERFORMANCE OPTIMIZATION
 // ============================================
 function optimizePerformance() {
+  // Lazy load images
   if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -742,6 +566,7 @@ function optimizePerformance() {
     });
   }
 
+  // Debounce resize events
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
@@ -757,6 +582,7 @@ function optimizePerformance() {
 // ACCESSIBILITY ENHANCEMENTS
 // ============================================
 function initAccessibility() {
+  // Add ARIA labels
   document.querySelectorAll('.btn-action').forEach(btn => {
     if (!btn.getAttribute('aria-label')) {
       const title = btn.getAttribute('title') || btn.textContent.trim();
@@ -764,32 +590,14 @@ function initAccessibility() {
     }
   });
 
+  // Screen reader announcements
   const announcer = document.createElement('div');
   announcer.setAttribute('role', 'status');
   announcer.setAttribute('aria-live', 'polite');
   announcer.setAttribute('aria-atomic', 'true');
   announcer.className = 'sr-only';
+  announcer.style.cssText = 'position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;';
   document.body.appendChild(announcer);
-
-  document.querySelectorAll('.modal-glass').forEach(modal => {
-    const focusableElements = modal.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstFocusable = focusableElements[0];
-    const lastFocusable = focusableElements[focusableElements.length - 1];
-
-    modal.addEventListener('keydown', (e) => {
-      if (e.key === 'Tab') {
-        if (e.shiftKey && document.activeElement === firstFocusable) {
-          e.preventDefault();
-          lastFocusable.focus();
-        } else if (!e.shiftKey && document.activeElement === lastFocusable) {
-          e.preventDefault();
-          firstFocusable.focus();
-        }
-      }
-    });
-  });
 }
 
 // ============================================
@@ -798,9 +606,6 @@ function initAccessibility() {
 function initErrorHandling() {
   window.addEventListener('error', (e) => {
     console.error('Runtime error:', e.error);
-    if (HIFI.isMobile()) {
-      alert('Terjadi kesalahan. Silakan refresh halaman.');
-    }
   });
 
   window.addEventListener('unhandledrejection', (e) => {
@@ -844,6 +649,7 @@ function showToast(message, type = 'info', duration = 3000) {
     z-index: 10000;
     animation: slideUp 0.3s ease-out;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-size: 14px;
   `;
   
   document.body.appendChild(toast);
@@ -859,16 +665,16 @@ function showToast(message, type = 'info', duration = 3000) {
 }
 
 // ============================================
-// INIT ALL - RESPONSIVE
+// INIT ALL - RESPONSIVE (NO DATATABLE CONFLICTS)
 // ============================================
 function initAll() {
-  console.log('🚀 Initializing HIFI Admin Panel (Responsive Mode)');
+  console.log('🚀 Initializing HIFI Admin Panel (Enhanced Mode)');
   console.log('📱 Device:', HIFI.isMobile() ? 'Mobile' : HIFI.isTablet() ? 'Tablet' : 'Desktop');
   console.log('👆 Touch:', HIFI.isTouch() ? 'Enabled' : 'Disabled');
 
-  // Core functionality
+  // Core functionality (NO DataTable initialization - handled by script.txt)
   initSidebarToggle();
-  initDataTable(); // Hanya enhance, tidak init ulang
+  enhanceExistingDataTable(); // Only enhance, don't initialize
   initCharts();
   animateStatCards();
 
@@ -913,17 +719,26 @@ if (document.readyState === 'loading') {
 // EXPORT GLOBAL API
 // ============================================
 window.HIFIAdmin = {
-  refreshData,
+  // Core functions
   editUser,
   deleteUser,
+  confirmDelete,
+  
+  // Dropdown functions
   toggleNotifications,
   toggleProfileDropdown,
   closeAllDropdowns,
+  
+  // Utility functions
   showLoadingState,
   showToast,
+  
+  // Device detection
   isMobile: HIFI.isMobile,
   isTablet: HIFI.isTablet,
   isTouch: HIFI.isTouch,
+  
+  // DataTable access
   getDataTable: getDT
 };
 
@@ -932,6 +747,23 @@ window.HIFIAdmin = {
 // ============================================
 const responsiveStyles = document.createElement('style');
 responsiveStyles.textContent = `
+  /* Sidebar Overlay */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Loading Overlay */
   .loading-overlay {
     display: none;
     position: fixed;
@@ -954,11 +786,26 @@ responsiveStyles.textContent = `
     color: white;
   }
   
+  .loading-spinner .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+  }
+  
   .loading-spinner p {
     margin-top: 16px;
     font-size: 14px;
   }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
+  /* Swipe to Refresh */
   .swipe-refresh-indicator {
     position: fixed;
     top: -60px;
@@ -978,9 +825,10 @@ responsiveStyles.textContent = `
   }
 
   .swipe-refresh-indicator i {
-    color: var(--primary-blue);
+    color: #1E3A8A;
   }
 
+  /* Toast Animation */
   @keyframes slideUp {
     from {
       transform: translateX(-50%) translateY(100px);
@@ -1003,32 +851,54 @@ responsiveStyles.textContent = `
     }
   }
 
+  /* Disable animations during resize */
   .resize-animation-stopper * {
     animation: none !important;
     transition: none !important;
   }
 
+  /* Touch feedback */
   .is-touch button:active,
   .is-touch .btn-action:active,
   .is-touch .btn-primary-gradient:active {
     transform: scale(0.95);
   }
 
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  /* Mobile optimizations */
   @media screen and (max-width: 768px) {
     .glass-card,
     .stat-card {
       transform-origin: center;
     }
     
+    /* Smoother scrolling */
     * {
       -webkit-overflow-scrolling: touch;
     }
     
+    /* Better tap targets */
     button, a, .btn-action {
       -webkit-tap-highlight-color: rgba(30, 58, 138, 0.1);
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Mobile sidebar */
+    .sidebar-glass.active {
+      transform: translateX(0) !important;
     }
   }
 
+  /* Landscape mobile adjustments */
   @media screen and (max-height: 500px) and (orientation: landscape) {
     .loading-spinner p {
       display: none;
@@ -1043,4 +913,4 @@ responsiveStyles.textContent = `
 
 document.head.appendChild(responsiveStyles);
 
-console.log('📱 HIFI Admin Panel - Responsive Mode Loaded');
+console.log('📱 HIFI Admin Panel - Enhanced Mode Loaded');

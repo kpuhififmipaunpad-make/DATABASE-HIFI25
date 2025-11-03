@@ -2538,6 +2538,163 @@ input::-ms-clear {
     width: 250px;
   }
 }
+
+/* ============================================
+   ENHANCED DASHBOARD STYLES
+   ============================================ */
+
+/* Dashboard Header */
+.dashboard-header {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Enhanced Stat Cards */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.stat-card:hover::before {
+  left: 100%;
+}
+
+/* Scroll to Top Button */
+.scroll-to-top {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Enhanced Table Container */
+.table-container {
+  position: relative;
+  overflow: visible;
+}
+
+/* Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 8px;
+}
+
+/* Enhanced Hover Effects */
+.clickable-row {
+  cursor: pointer;
+  position: relative;
+}
+
+.clickable-row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #DC143C 0%, #1E3A8A 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.clickable-row:hover::after {
+  transform: scaleX(1);
+}
+
+/* Badge Animations */
+.badge-glass {
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-glass::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+}
+
+.badge-glass:hover::before {
+  width: 200%;
+  height: 200%;
+}
+
+/* Enhanced Responsive Behavior */
+@media screen and (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 28px !important;
+  }
+  
+  .dashboard-header p {
+    font-size: 14px !important;
+  }
+  
+  #currentDateTime {
+    font-size: 12px !important;
+  }
+  
+  .scroll-to-top {
+    bottom: 70px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-header {
+    margin-bottom: 24px !important;
+  }
+  
+  .dashboard-header > div {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+}
+
+/* Print Styles Enhancement */
+@media print {
+  .scroll-to-top,
+  .bg-shape,
+  .stat-card-icon,
+  .sidebar-overlay {
+    display: none !important;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+  }
+  
+  .stat-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
 /* ============================================
    END OF RESPONSIVE CSS
    ============================================ */

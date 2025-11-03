@@ -1,233 +1,268 @@
-<!-- jQuery (required for DataTables) -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
-<!-- Bootstrap Bundle (if needed) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-
-<!-- DataTables Core -->
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
-<!-- DataTables Responsive Extension -->
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
-
-<!-- DataTables Buttons Extension -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-
-<!-- Font Awesome -->
-<script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
-
-<!-- Custom DataTable Initialization -->
 <script>
-$(document).ready(function() {
-    console.log('🚀 Initializing DataTable...');
-    
-    // Initialize DataTable with enhanced configuration
-    const table = $('#usersTable').DataTable({
-        // Responsive
-        responsive: {
-            details: {
-                type: 'column',
-                target: 0,
-                renderer: function(api, rowIdx, columns) {
-                    const data = $.map(columns, function(col, i) {
-                        return col.hidden ?
-                            '<li data-dtr-index="' + col.columnIndex + '" data-dt-row="' + col.rowIndex + '" data-dt-column="' + col.columnIndex + '">' +
-                            '<span class="dtr-title">' + col.title + '</span> ' +
-                            '<span class="dtr-data">' + col.data + '</span>' +
-                            '</li>' :
-                            '';
-                    }).join('');
-                    return data ? $('<ul class="dtr-details"/>').append(data) : false;
+/**
+ * HIFI Database - Admin Panel Scripts (FIXED & ENHANCED)
+ * FULL RESPONSIVE - ALL DEVICES
+ * DataTables initialization with custom controls
+ */
+
+(function() {
+    'use strict';
+
+    // ============================================
+    // DATATABLE INITIALIZATION
+    // ============================================
+    let table;
+
+    function initDataTable() {
+        if (!jQuery || !jQuery.fn.DataTable) {
+            console.error('❌ jQuery or DataTables not loaded');
+            return;
+        }
+
+        if (jQuery.fn.DataTable.isDataTable('#usersTable')) {
+            console.log('⚠️ DataTable already initialized, destroying...');
+            jQuery('#usersTable').DataTable().destroy();
+        }
+
+        try {
+            table = jQuery('#usersTable').DataTable({
+                // Core Settings
+                pageLength: 25,
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+                
+                // Responsive
+                responsive: true,
+                autoWidth: false,
+                
+                // Language
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data",
+                    info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+                    infoEmpty: "Tidak ada data",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    },
+                    emptyTable: "Tidak ada data tersedia",
+                    zeroRecords: "Data tidak ditemukan"
+                },
+                
+                // Column Settings
+                columnDefs: [
+                    { 
+                        targets: 0, 
+                        width: '50px',
+                        className: 'text-center',
+                        orderable: true
+                    },
+                    { 
+                        targets: 1, 
+                        width: '200px',
+                        orderable: true
+                    },
+                    { 
+                        targets: 2, 
+                        width: '120px',
+                        className: 'text-center',
+                        orderable: true
+                    },
+                    { 
+                        targets: 3, 
+                        width: '180px',
+                        orderable: true
+                    },
+                    { 
+                        targets: 4, 
+                        width: '130px',
+                        orderable: false
+                    },
+                    { 
+                        targets: 5, 
+                        width: '100px',
+                        className: 'text-center',
+                        orderable: false
+                    },
+                    { 
+                        targets: 6, 
+                        width: '120px',
+                        className: 'text-center',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                
+                // Order
+                order: [[0, 'asc']],
+                
+                // DOM Layout (hide default controls, we use custom)
+                dom: 'rt',
+                
+                // Callbacks
+                drawCallback: function() {
+                    updateTableInfo();
+                    updatePagination();
                 }
-            }
-        },
-        
-        // Column definitions
-        columnDefs: [
-            {
-                className: 'dtr-control',
-                orderable: false,
-                targets: 0,
-                render: function() {
-                    return '<i class="fas fa-plus-circle" style="color: #DC143C; cursor: pointer; font-size: 16px;"></i>';
-                }
-            },
-            {
-                targets: -1, // Last column (Actions)
-                orderable: false,
-                searchable: false
-            }
-        ],
-        
-        // Layout and styling
-        order: [[1, 'asc']], // Sort by Name (second column)
-        pageLength: 10,
-        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
-            search: "_INPUT_",
-            searchPlaceholder: "Cari data...",
-            lengthMenu: "Tampilkan _MENU_ data",
-            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-            infoEmpty: "Tidak ada data",
-            infoFiltered: "(difilter dari _MAX_ total data)",
-            paginate: {
-                first: '<i class="fas fa-angle-double-left"></i>',
-                previous: '<i class="fas fa-angle-left"></i>',
-                next: '<i class="fas fa-angle-right"></i>',
-                last: '<i class="fas fa-angle-double-right"></i>'
-            }
-        },
-        
-        // Buttons configuration
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-             '<"row"<"col-sm-12 col-md-12"B>>' +
-             '<"row"<"col-sm-12"tr>>' +
-             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-        
-        buttons: [
-            {
-                extend: 'copy',
-                text: '<i class="fas fa-copy"></i> Copy',
-                className: 'btn-primary-gradient',
-                exportOptions: {
-                    columns: ':visible:not(:last-child)'
-                }
-            },
-            {
-                extend: 'excel',
-                text: '<i class="fas fa-file-excel"></i> Excel',
-                className: 'btn-primary-gradient',
-                exportOptions: {
-                    columns: ':visible:not(:last-child)'
-                }
-            },
-            {
-                extend: 'pdf',
-                text: '<i class="fas fa-file-pdf"></i> PDF',
-                className: 'btn-primary-gradient',
-                orientation: 'landscape',
-                pageSize: 'A4',
-                exportOptions: {
-                    columns: ':visible:not(:last-child)'
-                }
-            },
-            {
-                extend: 'print',
-                text: '<i class="fas fa-print"></i> Print',
-                className: 'btn-primary-gradient',
-                exportOptions: {
-                    columns: ':visible:not(:last-child)'
-                }
-            }
-        ],
-        
-        // Performance
-        deferRender: true,
-        processing: true,
-        
-        // Callbacks
-        drawCallback: function() {
-            console.log('✅ DataTable drawn');
-            
-            // Add smooth animations to rows
-            $('#usersTable tbody tr').each(function(index) {
-                $(this).css({
-                    'animation': `fadeInUp 0.4s ease-out ${index * 0.05}s both`
-                });
             });
-        },
-        
-        initComplete: function() {
+
+            // Custom Search
+            jQuery('#searchNama').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+
+            // Custom Length Menu
+            jQuery('#itemsPerPage').on('change', function() {
+                table.page.len(parseInt(this.value)).draw();
+            });
+
             console.log('✅ DataTable initialized successfully');
             
-            // Add custom styling to buttons
-            $('.dt-buttons').addClass('mb-3');
-            $('.dt-button').addClass('me-2');
+        } catch (error) {
+            console.error('❌ DataTable initialization failed:', error);
+        }
+    }
+
+    // ============================================
+    // CUSTOM TABLE INFO
+    // ============================================
+    function updateTableInfo() {
+        if (!table) return;
+        
+        const info = table.page.info();
+        const infoEl = document.getElementById('tableInfo');
+        
+        if (infoEl) {
+            if (info.recordsDisplay === 0) {
+                infoEl.innerHTML = 'Tidak ada data yang ditampilkan';
+            } else {
+                infoEl.innerHTML = `Menampilkan <strong>${info.start + 1}</strong> - <strong>${info.end}</strong> dari <strong>${info.recordsDisplay}</strong> data` +
+                    (info.recordsTotal !== info.recordsDisplay ? ` (difilter dari <strong>${info.recordsTotal}</strong> total data)` : '');
+            }
+        }
+    }
+
+    // ============================================
+    // CUSTOM PAGINATION
+    // ============================================
+    function updatePagination() {
+        if (!table) return;
+        
+        const info = table.page.info();
+        const paginateEl = document.getElementById('tablePaginate');
+        
+        if (!paginateEl) return;
+        
+        if (info.pages <= 1) {
+            paginateEl.innerHTML = '';
+            return;
+        }
+        
+        let html = '<ul class="pagination" style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin: 0; padding: 0; list-style: none;">';
+        
+        // Previous Button
+        html += `<li class="page-item ${info.page === 0 ? 'disabled' : ''}">
+            <a href="#" class="page-link" data-page="prev" style="min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid rgba(30, 58, 138, 0.15); background: rgba(255, 255, 255, 0.9); color: #1F2937; padding: 8px 12px; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>`;
+        
+        // Page Numbers
+        const currentPage = info.page;
+        const totalPages = info.pages;
+        let startPage = Math.max(0, currentPage - 2);
+        let endPage = Math.min(totalPages - 1, currentPage + 2);
+        
+        // First page
+        if (startPage > 0) {
+            html += `<li class="page-item">
+                <a href="#" class="page-link" data-page="0" style="min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid rgba(30, 58, 138, 0.15); background: rgba(255, 255, 255, 0.9); color: #1F2937; padding: 8px 12px; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">1</a>
+            </li>`;
+            if (startPage > 1) {
+                html += `<li class="page-item disabled">
+                    <span class="page-link" style="min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; color: #9CA3AF; background: transparent; border: none; padding: 8px 12px;">...</span>
+                </li>`;
+            }
+        }
+        
+        // Page range
+        for (let i = startPage; i <= endPage; i++) {
+            const isActive = i === currentPage;
+            html += `<li class="page-item ${isActive ? 'active' : ''}">
+                <a href="#" class="page-link" data-page="${i}" style="min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; ${isActive ? 'background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); color: #fff; border: none; box-shadow: 0 8px 18px rgba(0,0,0,.18);' : 'border: 1px solid rgba(30, 58, 138, 0.15); background: rgba(255, 255, 255, 0.9); color: #1F2937;'} padding: 8px 12px; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">${i + 1}</a>
+            </li>`;
+        }
+        
+        // Last page
+        if (endPage < totalPages - 1) {
+            if (endPage < totalPages - 2) {
+                html += `<li class="page-item disabled">
+                    <span class="page-link" style="min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; color: #9CA3AF; background: transparent; border: none; padding: 8px 12px;">...</span>
+                </li>`;
+            }
+            html += `<li class="page-item">
+                <a href="#" class="page-link" data-page="${totalPages - 1}" style="min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid rgba(30, 58, 138, 0.15); background: rgba(255, 255, 255, 0.9); color: #1F2937; padding: 8px 12px; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">${totalPages}</a>
+            </li>`;
+        }
+        
+        // Next Button
+        html += `<li class="page-item ${info.page === info.pages - 1 ? 'disabled' : ''}">
+            <a href="#" class="page-link" data-page="next" style="min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid rgba(30, 58, 138, 0.15); background: rgba(255, 255, 255, 0.9); color: #1F2937; padding: 8px 12px; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>`;
+        
+        html += '</ul>';
+        paginateEl.innerHTML = html;
+        
+        // Add event listeners
+        paginateEl.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                
+                if (this.closest('.page-item').classList.contains('disabled')) return;
+                
+                if (page === 'prev') {
+                    table.page('previous').draw('page');
+                } else if (page === 'next') {
+                    table.page('next').draw('page');
+                } else {
+                    table.page(parseInt(page)).draw('page');
+                }
+            });
             
-            // Add loading state removal
-            $('.table-container').removeClass('loading');
-        }
-    });
-    
-    // Add row click animation
-    $('#usersTable tbody').on('click', 'tr', function() {
-        if (!$(this).hasClass('child')) {
-            $(this).toggleClass('shown');
-        }
-    });
-    
-    // Add search enhancement
-    $('#usersTable_filter input').addClass('form-control-glass');
-    $('#usersTable_length select').addClass('form-control-glass');
-    
-    console.log('✅ DataTable setup complete');
-});
-
-// Handle delete confirmation
-function confirmDelete(id, nama) {
-    if (confirm(`Apakah Anda yakin ingin menghapus data ${nama}?`)) {
-        document.getElementById(`deleteForm-${id}`).submit();
+            // Hover effects
+            link.addEventListener('mouseenter', function() {
+                if (!this.closest('.page-item').classList.contains('active') && !this.closest('.page-item').classList.contains('disabled')) {
+                    this.style.background = 'rgba(30, 58, 138, 0.1)';
+                    this.style.color = '#1E3A8A';
+                }
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                if (!this.closest('.page-item').classList.contains('active')) {
+                    this.style.background = 'rgba(255, 255, 255, 0.9)';
+                    this.style.color = '#1F2937';
+                }
+            });
+        });
     }
-}
 
-// Auto-dismiss alerts after 5 seconds
-setTimeout(function() {
-    const alerts = document.querySelectorAll('.alert-glass');
-    alerts.forEach(alert => {
-        alert.style.opacity = '0';
-        alert.style.transform = 'translateX(100px)';
-        setTimeout(() => alert.remove(), 400);
-    });
-}, 5000);
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDataTable);
+    } else {
+        initDataTable();
+    }
+
+    // Export to global for debugging
+    window.getDataTable = function() {
+        return table;
+    };
+})();
 </script>
-
-<!-- Custom Animations -->
-<style>
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Loading State */
-.table-container.loading::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.table-container.loading::after {
-    content: 'Memuat data...';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    color: #1E3A8A;
-    font-weight: 600;
-    font-size: 16px;
-}
-</style>

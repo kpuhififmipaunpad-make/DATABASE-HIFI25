@@ -80,7 +80,6 @@ module.exports = {
                         // save user
                         newUser.save().then((value) => {
                            console.log(value);
-                           // delete user._doc.password
                            req.flash('alertMessage', 'Berhasil membuat akun! Silahkan login kembali');
                            req.flash('alertStatus', 'green')
                            res.redirect('/auth/login');
@@ -99,24 +98,13 @@ module.exports = {
    },
 
    actionLogOut: async (req, res, next) => {
-      // Passport 0.6+ mewajibkan callback pada req.logout
       req.logout(function (err) {
          if (err) {
             return next(err);
          }
-         // Hancurkan sesi & bersihkan cookie supaya benar-benar logout
-         if (req.session) {
-            req.session.destroy(() => {
-               res.clearCookie('connect.sid'); // ganti jika nama cookie sesi kamu beda
-               req.flash("alertMessage", "Logout berhasil!");
-               req.flash("alertStatus", "green");
-               return res.redirect("/auth/login");
-            });
-         } else {
-            req.flash("alertMessage", "Logout berhasil!");
-            req.flash("alertStatus", "green");
-            return res.redirect("/auth/login");
-         }
+         req.flash("alertMessage", "Logout berhasil!");
+         req.flash("alertStatus", "green");
+         res.redirect("/auth/login");
       });
    },
 }

@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/img/LogoHIFI-2.png?v=2">
   <link rel="apple-touch-icon" href="/img/LogoHIFI-2.png?v=2">
-  <%- include('partials/header') %>
+  <title>Dashboard Admin - HIFI Database</title>
+  
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/adminlte/plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/adminlte/dist/css/adminlte.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+  
   <style>
     body {
       background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
@@ -43,17 +59,6 @@
     @keyframes morph { 
       0%,100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%;} 
       50%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%;} 
-    }
-    
-    /* Particle Canvas */
-    #particles-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
     }
     
     .wrapper {
@@ -182,12 +187,6 @@
       -webkit-text-fill-color: transparent;
     }
     
-    .table-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -221,14 +220,11 @@
     }
   </style>
 </head>
-<body>
+<body class="hold-transition sidebar-mini layout-fixed">
   <!-- Background Shapes -->
   <div class="bg-shape bg-shape-1"></div>
   <div class="bg-shape bg-shape-2"></div>
   <div class="bg-shape bg-shape-3"></div>
-  
-  <!-- Particle Canvas -->
-  <canvas id="particles-canvas"></canvas>
   
   <div class="wrapper">
     <%- include('partials/sidebar') %>
@@ -246,31 +242,31 @@
       
       <!-- Statistics Cards -->
       <div class="stats-grid">
-        <div class="stat-card" data-tilt>
+        <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-users"></i>
           </div>
-          <div class="stat-value" data-counter="<%= count.user %>">0</div>
+          <div class="stat-value"><%= count.user %></div>
           <div class="stat-label">Total Anggota</div>
         </div>
         
-        <div class="stat-card" data-tilt>
+        <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-user-shield"></i>
           </div>
-          <div class="stat-value" data-counter="<%= admin.length %>">0</div>
+          <div class="stat-value"><%= admin.length %></div>
           <div class="stat-label">Administrator</div>
         </div>
         
-        <div class="stat-card" data-tilt>
+        <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-user-check"></i>
           </div>
-          <div class="stat-value" data-counter="<%= count.user - admin.length %>">0</div>
+          <div class="stat-value"><%= count.user - admin.length %></div>
           <div class="stat-label">Anggota Aktif</div>
         </div>
         
-        <div class="stat-card" data-tilt>
+        <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-chart-line"></i>
           </div>
@@ -298,91 +294,5 @@
   
   <script src="/javascript/animations.js"></script>
   <script src="/javascript/admin-animations.js"></script>
-  
-  <script>
-    // Particle Animation
-    (function() {
-      const canvas = document.getElementById('particles-canvas');
-      if (!canvas) return;
-      
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      
-      const particles = [];
-      const particleCount = 80;
-      
-      class Particle {
-        constructor() {
-          this.x = Math.random() * canvas.width;
-          this.y = Math.random() * canvas.height;
-          this.size = Math.random() * 2 + 1;
-          this.speedX = Math.random() * 0.5 - 0.25;
-          this.speedY = Math.random() * 0.5 - 0.25;
-          this.opacity = Math.random() * 0.5 + 0.2;
-        }
-        
-        update() {
-          this.x += this.speedX;
-          this.y += this.speedY;
-          
-          if (this.x > canvas.width) this.x = 0;
-          if (this.x < 0) this.x = canvas.width;
-          if (this.y > canvas.height) this.y = 0;
-          if (this.y < 0) this.y = canvas.height;
-        }
-        
-        draw() {
-          ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      
-      function init() {
-        for (let i = 0; i < particleCount; i++) {
-          particles.push(new Particle());
-        }
-      }
-      
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        particles.forEach(particle => {
-          particle.update();
-          particle.draw();
-        });
-        
-        // Connect particles
-        for (let i = 0; i < particles.length; i++) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 120) {
-              ctx.strokeStyle = `rgba(255, 255, 255, ${0.15 * (1 - distance / 120)})`;
-              ctx.lineWidth = 1;
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.stroke();
-            }
-          }
-        }
-        
-        requestAnimationFrame(animate);
-      }
-      
-      init();
-      animate();
-      
-      window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      });
-    })();
-  </script>
 </body>
 </html>

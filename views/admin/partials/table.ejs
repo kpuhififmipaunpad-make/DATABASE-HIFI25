@@ -1,101 +1,193 @@
-<div class="table-container animate-fadeInUp" style="animation-delay: 0.3s;">
-    <div class="table-header">
-        <h2 class="table-title">
-            <i class="fas fa-database" style="margin-right: 8px;"></i>
-            Database Anggota HIFI
-        </h2>
-        <div class="table-toolbar">
-            <input 
-                type="text" 
-                id="searchNama" 
-                placeholder="🔍 Cari nama..." 
-                class="form-control-glass"
-                aria-label="Cari anggota"
-            >
-            <select id="itemsPerPage" class="form-control-glass" aria-label="Items per halaman">
-                <option value="10">10 / halaman</option>
-                <option value="25" selected>25 / halaman</option>
-                <option value="50">50 / halaman</option>
-                <option value="100">100 / halaman</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="table-responsive">
-        <table id="usersTable" class="table-glass" style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>NPM</th>
-                    <th>Email</th>
-                    <th>No. HP</th>
-                    <th>Golongan Darah</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if (users && users.length > 0) { %>
-                    <% users.forEach(function(user, index) { %>
-                        <tr data-user-id="<%= user._id %>">
-                            <td><%= index + 1 %></td>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div class="avatar" style="width: 36px; height: 36px; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">
-                                        <%= user.nama ? user.nama.charAt(0).toUpperCase() : 'U' %>
-                                    </div>
-                                    <div>
-                                        <strong style="color: #1F2937;"><%= user.nama || '-' %></strong>
-                                        <% if (user.role === 'admin') { %>
-                                            <span class="badge-glass badge-red" style="margin-left: 8px; font-size: 10px; padding: 3px 8px;">
-                                                <i class="fas fa-shield-alt"></i> Admin
-                                            </span>
-                                        <% } %>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><strong><%= user.npm || '-' %></strong></td>
-                            <td><%= user.email || '-' %></td>
-                            <td><%= user.hp || '-' %></td>
-                            <td>
-                                <span class="badge-glass" style="background: rgba(220, 20, 60, 0.1); color: #DC143C; font-weight: 700;">
-                                    <%= user.goldar || '-' %>
-                                </span>
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
-                                    <a href="/dashboard/edit/<%= user._id %>" class="btn-action btn-edit" title="Edit" aria-label="Edit <%= user.nama %>">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="/dashboard/delete/<%= user._id %>?_method=DELETE" method="POST" style="margin: 0; display: inline;" onsubmit="return confirmDelete('<%= user.nama %>')">
-                                        <button type="submit" class="btn-action btn-delete" title="Hapus" aria-label="Hapus <%= user.nama %>">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    <% }); %>
-                <% } else { %>
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: #6B7280;">
-                            <i class="fas fa-database" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
-                            <p style="margin: 0; font-size: 16px; font-weight: 600;">Tidak ada data anggota</p>
-                        </td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="dt-bottom" style="margin-top: 20px;">
-        <div class="dataTables_info" id="tableInfo"></div>
-        <div class="dataTables_paginate" id="tablePaginate"></div>
-    </div>
+<div class="table-responsive">
+  <table id="usersTable" class="display" style="width:100%">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Username</th>
+        <th>Nama</th>
+        <th>NPM</th>
+        <th>Email</th>
+        <th>No. HP</th>
+        <th>Role</th>
+        <th>Terakhir Update</th>
+        <th class="no-export">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach((user, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><strong><%= user.username %></strong></td>
+          <td><%= user.nama || '-' %></td>
+          <td><%= user.npm || '-' %></td>
+          <td><%= user.email || '-' %></td>
+          <td><%= user.hp || '-' %></td>
+          <td>
+            <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>">
+              <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
+              <%= user.role === 'admin' ? 'Admin' : 'User' %>
+            </span>
+          </td>
+          <td><%= user.time || '-' %></td>
+          <td class="no-export">
+            <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-action btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
 </div>
 
-<script>
-    function confirmDelete(nama) {
-        return confirm(`Apakah Anda yakin ingin menghapus data "${nama}"?\n\nTindakan ini tidak dapat dibatalkan.`);
+<style>
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #usersTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  #usersTable thead {
+    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+  }
+
+  #usersTable thead th {
+    padding: 16px;
+    color: white;
+    font-weight: 600;
+    text-align: left;
+    border: none;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  #usersTable thead th:first-child {
+    border-top-left-radius: 12px;
+  }
+
+  #usersTable thead th:last-child {
+    border-top-right-radius: 12px;
+  }
+
+  #usersTable tbody tr {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  #usersTable tbody tr:hover {
+    background: rgba(30, 58, 138, 0.05);
+    transform: scale(1.01);
+  }
+
+  #usersTable tbody tr.shown {
+    background: rgba(220, 20, 60, 0.05);
+  }
+
+  #usersTable tbody td {
+    padding: 16px;
+    border: none;
+    font-size: 14px;
+    color: #374151;
+  }
+
+  .detail-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 10px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: fadeInUp 0.4s ease-out;
+  }
+
+  .detail-card .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -12px;
+  }
+
+  .detail-card .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 0 12px;
+  }
+
+  .detail-card h6 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .detail-card p {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.6;
+  }
+
+  .detail-card strong {
+    color: #1F2937;
+    font-weight: 600;
+  }
+
+  .detail-card .mt-3 {
+    margin-top: 20px;
+  }
+
+  .detail-card .d-flex {
+    display: flex;
+  }
+
+  .detail-card .gap-2 {
+    gap: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .detail-card .col-md-6 {
+      flex: 0 0 100%;
+      max-width: 100%;
     }
+
+    #usersTable thead th,
+    #usersTable tbody td {
+      padding: 12px 8px;
+      font-size: 13px;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  function confirmDelete(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/dashboard/delete/${id}?_method=DELETE`;
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }
 </script>

@@ -1,696 +1,157 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="/img/LogoHIFI-2.png?v=2">
-  <link rel="apple-touch-icon" href="/img/LogoHIFI-2.png?v=2">
-  <title>Dashboard Admin - HIFI Database</title>
-  
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="/adminlte/plugins/fontawesome-free/css/all.min.css">
-  <!-- DataTables -->
-  <link rel="stylesheet" href="/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="/adminlte/dist/css/adminlte.min.css">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/style.css">
-  
-  <style>
-    /* ===========================
-       GLOBAL STYLES
-    =========================== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      background: linear-gradient(135deg, #1E3A8A 0%, #DC143C 100%);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-      position: relative;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
-    
-    /* ===========================
-       BACKGROUND ANIMATIONS
-    =========================== */
-    .bg-shape {
-      position: fixed;
-      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-      opacity: 0.1;
-      animation: morph 8s ease-in-out infinite;
-      z-index: 0;
-      pointer-events: none;
-      will-change: border-radius;
-    }
-    
-    .bg-shape-1 { 
-      width: 400px; 
-      height: 400px; 
-      background: #DC143C; 
-      top: -100px; 
-      left: -100px; 
-      animation-delay: 0s; 
-    }
-    
-    .bg-shape-2 { 
-      width: 350px; 
-      height: 350px; 
-      background: #1E3A8A; 
-      bottom: -100px; 
-      right: -100px; 
-      animation-delay: 2s; 
-    }
-    
-    .bg-shape-3 { 
-      width: 300px; 
-      height: 300px; 
-      background: #3B82F6; 
-      top: 50%; 
-      right: 10%; 
-      animation-delay: 4s; 
-    }
-    
-    @keyframes morph { 
-      0%, 100% {
-        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-        transform: rotate(0deg);
-      } 
-      50% {
-        border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-        transform: rotate(180deg);
-      } 
-    }
-    
-    /* Particle Canvas */
-    #particles-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-    
-    /* ===========================
-       LAYOUT STRUCTURE
-    =========================== */
-    .wrapper {
-      display: flex;
-      min-height: 100vh;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .content-wrapper {
-      flex: 1;
-      margin-left: 260px;
-      padding: 80px 30px 30px;
-      transition: margin-left 0.3s ease;
-      position: relative;
-      z-index: 10;
-    }
-    
-    .content-wrapper.expanded {
-      margin-left: 80px;
-    }
-    
-    /* ===========================
-       DASHBOARD HEADER
-    =========================== */
-    .dashboard-header {
-      margin-bottom: 40px;
-      animation: fadeInUp 0.6s ease-out;
-    }
-    
-    .page-title {
-      font-size: 32px;
-      font-weight: 700;
-      color: white;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      letter-spacing: -0.5px;
-    }
-    
-    .page-subtitle {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 16px;
-      font-weight: 400;
-    }
-    
-    /* ===========================
-       STATISTICS CARDS
-    =========================== */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      margin-bottom: 40px;
-      animation: fadeInUp 0.8s ease-out;
-    }
-    
-    .stat-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 28px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-    }
-    
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, #DC143C 0%, #1E3A8A 100%);
-      transition: height 0.3s ease;
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-    }
-    
-    .stat-card:hover::before {
-      height: 6px;
-    }
-    
-    .stat-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-      transition: transform 0.3s ease;
-    }
-    
-    .stat-card:hover .stat-icon {
-      transform: scale(1.1) rotate(5deg);
-    }
-    
-    .stat-value {
-      font-size: 36px;
-      font-weight: 700;
-      color: #1F2937;
-      margin-bottom: 8px;
-      line-height: 1;
-      transition: color 0.3s ease;
-    }
-    
-    .stat-card:hover .stat-value {
-      color: #DC143C;
-    }
-    
-    .stat-label {
-      color: #6B7280;
-      font-size: 14px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    /* ===========================
-       TABLE CONTAINER
-    =========================== */
-    .table-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      animation: fadeInUp 1s ease-out;
-    }
-    
-    .table-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 16px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid rgba(220, 20, 60, 0.1);
-    }
-    
-    .table-title {
-      font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .table-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    
-    /* ===========================
-       ANIMATIONS
-    =========================== */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-    
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.05);
-      }
-    }
-    
-    /* ===========================
-       RESPONSIVE DESIGN
-    =========================== */
-    @media (max-width: 1024px) {
-      .content-wrapper {
-        margin-left: 0;
-        padding: 100px 20px 30px;
-      }
-      
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .content-wrapper {
-        padding: 80px 15px 20px;
-      }
-      
-      .page-title {
-        font-size: 24px;
-      }
-      
-      .page-subtitle {
-        font-size: 14px;
-      }
-      
-      .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      
-      .stat-card {
-        padding: 20px;
-      }
-      
-      .stat-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 24px;
-      }
-      
-      .stat-value {
-        font-size: 28px;
-      }
-      
-      .table-container {
-        padding: 20px;
-        overflow-x: auto;
-        border-radius: 16px;
-      }
-      
-      .table-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      
-      .table-title {
-        font-size: 20px;
-      }
-      
-      .bg-shape {
-        display: none;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .content-wrapper {
-        padding: 70px 10px 20px;
-      }
-      
-      .dashboard-header {
-        margin-bottom: 24px;
-      }
-      
-      .stats-grid {
-        gap: 12px;
-        margin-bottom: 24px;
-      }
-      
-      .stat-card {
-        padding: 16px;
-      }
-      
-      .table-container {
-        padding: 16px;
-      }
-    }
-    
-    /* ===========================
-       UTILITY CLASSES
-    =========================== */
-    .fade-in {
-      animation: fadeIn 0.5s ease-in;
-    }
-    
-    .pulse-animation {
-      animation: pulse 2s infinite;
-    }
-    
-    /* Print Styles */
-    @media print {
-      .bg-shape,
-      #particles-canvas,
-      .sidebar,
-      .navbar {
-        display: none !important;
-      }
-      
-      .content-wrapper {
-        margin-left: 0 !important;
-        padding: 20px !important;
-      }
-      
-      body {
-        background: white !important;
-      }
-      
-      .stat-card,
-      .table-container {
-        box-shadow: none !important;
-        border: 1px solid #ddd !important;
-      }
-    }
-  </style>
+    <%- include('partials/header') %>
+    <title>Admin Dashboard | Database HIFI</title>
 </head>
+<body class="is-desktop">
+    <!-- Background Shapes -->
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+    <div class="bg-shape bg-shape-3"></div>
 
-<body class="hold-transition sidebar-mini layout-fixed">
-  <!-- Background Shapes -->
-  <div class="bg-shape bg-shape-1"></div>
-  <div class="bg-shape bg-shape-2"></div>
-  <div class="bg-shape bg-shape-3"></div>
-  
-  <!-- Particle Canvas -->
-  <canvas id="particles-canvas"></canvas>
-  
-  <div class="wrapper">
-    <!-- Sidebar -->
-    <%- include('partials/sidebar') %>
-    
     <!-- Navbar -->
     <%- include('partials/navbar') %>
-    
-    <!-- Content Wrapper -->
-    <div class="content-wrapper">
-      <!-- Dashboard Header -->
-      <div class="dashboard-header">
-        <h1 class="page-title">Dashboard Admin</h1>
-        <p class="page-subtitle">Selamat datang, <%= nama %>!</p>
-      </div>
-      
-      <!-- Alert Messages -->
-      <%- include('partials/message', {message: alert.message, status: alert.status}) %>
-      
-      <!-- Statistics Cards -->
-      <div class="stats-grid">
-        <!-- Total Anggota Card -->
-        <div class="stat-card" data-stat="users">
-          <div class="stat-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <div class="stat-value" id="totalUsers"><%= count.user %></div>
-          <div class="stat-label">Total Anggota</div>
+
+    <!-- Sidebar -->
+    <%- include('partials/sidebar') %>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-glass">
+            <!-- Alert Messages -->
+            <%- include('partials/message') %>
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header" style="margin-bottom: 32px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h1 class="text-gradient" style="font-size: 36px; margin: 0; font-weight: 800; letter-spacing: -1px;">
+                            Dashboard Admin
+                        </h1>
+                        <p style="color: #6B7280; margin: 8px 0 0 0; font-size: 16px; font-weight: 500;">
+                            Selamat datang kembali, <strong style="color: #1E3A8A;"><%= nama %></strong>
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 16px; padding: 12px 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-clock" style="color: #DC143C; font-size: 18px;"></i>
+                            <span id="currentDateTime" style="color: #1F2937; font-weight: 600; font-size: 14px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid-responsive" style="margin-bottom: 40px;">
+                <!-- Total Users Card -->
+                <div class="stat-card" style="opacity: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <i class="fas fa-users" style="color: #DC143C; font-size: 24px;"></i>
+                                <h3 style="margin: 0; color: #6B7280; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Total Anggota
+                                </h3>
+                            </div>
+                            <p style="margin: 0; font-size: 40px; font-weight: 800; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">
+                                <%= count.user %>
+                            </p>
+                            <p style="margin: 8px 0 0 0; color: #9CA3AF; font-size: 13px; font-weight: 500;">
+                                <i class="fas fa-arrow-up" style="color: #10B981; margin-right: 4px;"></i>
+                                Terdaftar di sistem
+                            </p>
+                        </div>
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #DC143C 0%, #FF6B8A 100%);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Count Card -->
+                <div class="stat-card" style="opacity: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <i class="fas fa-user-shield" style="color: #1E3A8A; font-size: 24px;"></i>
+                                <h3 style="margin: 0; color: #6B7280; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Total Admin
+                                </h3>
+                            </div>
+                            <p style="margin: 0; font-size: 40px; font-weight: 800; background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">
+                                <%= admin.length %>
+                            </p>
+                            <p style="margin: 8px 0 0 0; color: #9CA3AF; font-size: 13px; font-weight: 500;">
+                                <i class="fas fa-shield-alt" style="color: #3B82F6; margin-right: 4px;"></i>
+                                Pengelola sistem
+                            </p>
+                        </div>
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Users Card -->
+                <div class="stat-card" style="opacity: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <i class="fas fa-user-check" style="color: #10B981; font-size: 24px;"></i>
+                                <h3 style="margin: 0; color: #6B7280; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    Status
+                                </h3>
+                            </div>
+                            <p style="margin: 0; font-size: 40px; font-weight: 800; background: linear-gradient(135deg, #10B981 0%, #059669 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;">
+                                Aktif
+                            </p>
+                            <p style="margin: 8px 0 0 0; color: #9CA3AF; font-size: 13px; font-weight: 500;">
+                                <i class="fas fa-check-circle" style="color: #10B981; margin-right: 4px;"></i>
+                                Sistem berjalan normal
+                            </p>
+                        </div>
+                        <div class="stat-card-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="table-container">
+                <%- include('partials/table') %>
+            </div>
         </div>
-        
-        <!-- Administrator Card -->
-        <div class="stat-card" data-stat="admins">
-          <div class="stat-icon">
-            <i class="fas fa-user-shield"></i>
-          </div>
-          <div class="stat-value" id="totalAdmins"><%= admin.length %></div>
-          <div class="stat-label">Administrator</div>
-        </div>
-        
-        <!-- Anggota Aktif Card -->
-        <div class="stat-card" data-stat="active">
-          <div class="stat-icon">
-            <i class="fas fa-user-check"></i>
-          </div>
-          <div class="stat-value" id="activeMembers"><%= count.user - admin.length %></div>
-          <div class="stat-label">Anggota Aktif</div>
-        </div>
-        
-        <!-- Database Status Card -->
-        <div class="stat-card" data-stat="status">
-          <div class="stat-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <div class="stat-value">100%</div>
-          <div class="stat-label">Database Aktif</div>
-        </div>
-      </div>
-      
-      <!-- Data Table -->
-      <div class="table-container">
-        <div class="table-header">
-          <h2 class="table-title">
-            <i class="fas fa-table"></i>
-            <span>Data Warga HIFI</span>
-          </h2>
-        </div>
-        
-        <!-- Include Table Partial -->
-        <%- include('partials/table', {users: users}) %>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Scripts -->
-  <%- include('partials/script') %>
-  
-  <!-- Custom Scripts -->
-  <script src="/javascript/animations.js"></script>
-  <script src="/javascript/admin-animations.js"></script>
-  
-  <!-- Particle Animation Script -->
-  <script>
-    (function() {
-      'use strict';
-      
-      // Particle Canvas Setup
-      const canvas = document.getElementById('particles-canvas');
-      if (!canvas) return;
-      
-      const ctx = canvas.getContext('2d');
-      let particles = [];
-      const particleCount = 80;
-      let animationId;
-      
-      // Set canvas size
-      function setCanvasSize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-      
-      setCanvasSize();
-      
-      // Particle Class
-      class Particle {
-        constructor() {
-          this.reset();
+    </main>
+
+    <!-- Scripts -->
+    <%- include('partials/script') %>
+    <%- include('partials/footer') %>
+
+    <!-- Additional Admin Scripts -->
+    <script src="/javascript/admin-animations.js"></script>
+
+    <!-- Real-time Clock -->
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            const dateTimeString = now.toLocaleDateString('id-ID', options);
+            const el = document.getElementById('currentDateTime');
+            if (el) el.textContent = dateTimeString;
         }
         
-        reset() {
-          this.x = Math.random() * canvas.width;
-          this.y = Math.random() * canvas.height;
-          this.size = Math.random() * 2 + 1;
-          this.speedX = (Math.random() - 0.5) * 0.5;
-          this.speedY = (Math.random() - 0.5) * 0.5;
-          this.opacity = Math.random() * 0.5 + 0.2;
-        }
-        
-        update() {
-          this.x += this.speedX;
-          this.y += this.speedY;
-          
-          // Wrap around edges
-          if (this.x > canvas.width) this.x = 0;
-          if (this.x < 0) this.x = canvas.width;
-          if (this.y > canvas.height) this.y = 0;
-          if (this.y < 0) this.y = canvas.height;
-        }
-        
-        draw() {
-          ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      
-      // Initialize particles
-      function init() {
-        particles = [];
-        for (let i = 0; i < particleCount; i++) {
-          particles.push(new Particle());
-        }
-      }
-      
-      // Connect particles with lines
-      function connectParticles() {
-        for (let i = 0; i < particles.length; i++) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 120) {
-              const opacity = 0.15 * (1 - distance / 120);
-              ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-              ctx.lineWidth = 1;
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.stroke();
-            }
-          }
-        }
-      }
-      
-      // Animation loop
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        particles.forEach(particle => {
-          particle.update();
-          particle.draw();
-        });
-        
-        connectParticles();
-        
-        animationId = requestAnimationFrame(animate);
-      }
-      
-      // Handle window resize
-      window.addEventListener('resize', () => {
-        setCanvasSize();
-        init();
-      });
-      
-      // Pause animation when tab is not visible
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          cancelAnimationFrame(animationId);
-        } else {
-          animate();
-        }
-      });
-      
-      // Start animation
-      init();
-      animate();
-      
-      // Number counter animation for stat cards
-      function animateValue(element, start, end, duration) {
-        const range = end - start;
-        const increment = end > start ? 1 : -1;
-        const stepTime = Math.abs(Math.floor(duration / range));
-        let current = start;
-        
-        const timer = setInterval(() => {
-          current += increment;
-          element.textContent = current;
-          
-          if (current === end) {
-            clearInterval(timer);
-          }
-        }, stepTime);
-      }
-      
-      // Animate stat values on page load
-      window.addEventListener('load', () => {
-        const totalUsers = document.getElementById('totalUsers');
-        const totalAdmins = document.getElementById('totalAdmins');
-        const activeMembers = document.getElementById('activeMembers');
-        
-        if (totalUsers) {
-          const targetValue = parseInt(totalUsers.textContent);
-          totalUsers.textContent = '0';
-          animateValue(totalUsers, 0, targetValue, 1500);
-        }
-        
-        if (totalAdmins) {
-          const targetValue = parseInt(totalAdmins.textContent);
-          totalAdmins.textContent = '0';
-          animateValue(totalAdmins, 0, targetValue, 1500);
-        }
-        
-        if (activeMembers) {
-          const targetValue = parseInt(activeMembers.textContent);
-          activeMembers.textContent = '0';
-          animateValue(activeMembers, 0, targetValue, 1500);
-        }
-      });
-      
-      // Stat card click effects
-      document.querySelectorAll('.stat-card').forEach(card => {
-        card.addEventListener('click', function() {
-          this.style.animation = 'pulse 0.5s ease';
-          setTimeout(() => {
-            this.style.animation = '';
-          }, 500);
-        });
-      });
-      
-    })();
-  </script>
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
 </body>
 </html>

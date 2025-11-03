@@ -1,331 +1,233 @@
-<!-- Font Awesome Icon -->
-<script src="https://kit.fontawesome.com/7cc967098c.js" crossorigin="anonymous"></script>
-<!-- Iconify -->
-<script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@2.2.1/dist/iconify.min.js"></script>
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- jQuery UI -->
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery (required for DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<!-- Bootstrap Bundle (if needed) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
 <!-- DataTables Core -->
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- DataTables Buttons -->
+<!-- DataTables Responsive Extension -->
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<!-- DataTables Buttons Extension -->
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
 
-<!-- DataTable Initialization Script -->
+<!-- Custom DataTable Initialization -->
 <script>
 $(document).ready(function() {
-  console.log('🚀 Initializing DataTable...');
-  
-  // Destroy existing instance if any
-  if ($.fn.DataTable.isDataTable('#usersTable')) {
-    $('#usersTable').DataTable().destroy();
-    console.log('♻️ Destroyed existing DataTable instance');
-  }
-
-  // Initialize DataTable
-  const table = $('#usersTable').DataTable({
-    // Core Settings
-    responsive: false,
-    autoWidth: false,
-    processing: true,
-    deferRender: true,
+    console.log('🚀 Initializing DataTable...');
     
-    // Display Settings
-    pageLength: 10,
-    lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
-    
-    // Feature Controls
-    lengthChange: true,
-    searching: true,
-    ordering: true,
-    info: true,
-    paging: true,
-    
-    // Scroll Settings
-    scrollX: true,
-    scrollCollapse: true,
-    
-    // Layout
-    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-         'B' +
-         '<"row"<"col-sm-12"tr>>' +
-         '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-    
-    // Language Settings
-    language: {
-      search: "Cari:",
-      searchPlaceholder: "Ketik untuk mencari...",
-      lengthMenu: "Tampilkan _MENU_ data",
-      info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-      infoEmpty: "Tidak ada data",
-      infoFiltered: "(disaring dari _MAX_ total)",
-      zeroRecords: "Data tidak ditemukan",
-      emptyTable: "Tidak ada data tersedia",
-      loadingRecords: "Memuat data...",
-      processing: "Memproses...",
-      paginate: {
-        first: "Pertama",
-        last: "Terakhir",
-        next: "Berikutnya",
-        previous: "Sebelumnya"
-      }
-    },
-    
-    // Column Settings
-    columnDefs: [
-      { 
-        targets: 0, 
-        width: '50px',
-        orderable: true 
-      },
-      { 
-        targets: -1, 
-        orderable: false,
-        className: 'no-export'
-      }
-    ],
-    
-    // Order Settings
-    order: [[2, 'asc']],
-    
-    // Buttons Configuration
-    buttons: [
-      {
-        extend: 'excel',
-        text: '<i class="fas fa-file-excel"></i> Export Excel',
-        className: 'dt-button buttons-excel',
-        title: 'Data Warga HIFI - ' + new Date().toLocaleDateString('id-ID'),
-        exportOptions: {
-          columns: ':not(.no-export)'
+    // Initialize DataTable with enhanced configuration
+    const table = $('#usersTable').DataTable({
+        // Responsive
+        responsive: {
+            details: {
+                type: 'column',
+                target: 0,
+                renderer: function(api, rowIdx, columns) {
+                    const data = $.map(columns, function(col, i) {
+                        return col.hidden ?
+                            '<li data-dtr-index="' + col.columnIndex + '" data-dt-row="' + col.rowIndex + '" data-dt-column="' + col.columnIndex + '">' +
+                            '<span class="dtr-title">' + col.title + '</span> ' +
+                            '<span class="dtr-data">' + col.data + '</span>' +
+                            '</li>' :
+                            '';
+                    }).join('');
+                    return data ? $('<ul class="dtr-details"/>').append(data) : false;
+                }
+            }
         },
-        filename: 'data-hifi-' + new Date().toISOString().split('T')[0]
-      },
-      {
-        extend: 'pdf',
-        text: '<i class="fas fa-file-pdf"></i> Export PDF',
-        className: 'dt-button buttons-pdf',
-        title: 'Data Warga HIFI',
-        orientation: 'landscape',
-        pageSize: 'A4',
-        exportOptions: {
-          columns: ':not(.no-export)'
+        
+        // Column definitions
+        columnDefs: [
+            {
+                className: 'dtr-control',
+                orderable: false,
+                targets: 0,
+                render: function() {
+                    return '<i class="fas fa-plus-circle" style="color: #DC143C; cursor: pointer; font-size: 16px;"></i>';
+                }
+            },
+            {
+                targets: -1, // Last column (Actions)
+                orderable: false,
+                searchable: false
+            }
+        ],
+        
+        // Layout and styling
+        order: [[1, 'asc']], // Sort by Name (second column)
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
+            search: "_INPUT_",
+            searchPlaceholder: "Cari data...",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data",
+            infoFiltered: "(difilter dari _MAX_ total data)",
+            paginate: {
+                first: '<i class="fas fa-angle-double-left"></i>',
+                previous: '<i class="fas fa-angle-left"></i>',
+                next: '<i class="fas fa-angle-right"></i>',
+                last: '<i class="fas fa-angle-double-right"></i>'
+            }
         },
-        filename: 'data-hifi-' + new Date().toISOString().split('T')[0],
-        customize: function(doc) {
-          doc.defaultStyle.fontSize = 9;
-          doc.styles.tableHeader = {
-            fontSize: 10,
-            bold: true,
-            fillColor: '#1E3A8A',
-            color: 'white',
-            alignment: 'left'
-          };
-          doc.content[1].table.widths = Array(doc.content[1].table.body[0].length).fill('*');
-        }
-      },
-      {
-        extend: 'print',
-        text: '<i class="fas fa-print"></i> Print',
-        className: 'dt-button buttons-print',
-        title: 'Data Warga HIFI',
-        messageTop: '<h3 style="text-align:center; color:#DC143C; margin-bottom:20px;">Data Warga HIFI</h3><p style="text-align:center; margin-bottom:20px;">Dicetak pada: ' + new Date().toLocaleString('id-ID') + '</p>',
-        exportOptions: {
-          columns: ':not(.no-export)'
+        
+        // Buttons configuration
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12 col-md-12"B>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        
+        buttons: [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn-primary-gradient',
+                exportOptions: {
+                    columns: ':visible:not(:last-child)'
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn-primary-gradient',
+                exportOptions: {
+                    columns: ':visible:not(:last-child)'
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn-primary-gradient',
+                orientation: 'landscape',
+                pageSize: 'A4',
+                exportOptions: {
+                    columns: ':visible:not(:last-child)'
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn-primary-gradient',
+                exportOptions: {
+                    columns: ':visible:not(:last-child)'
+                }
+            }
+        ],
+        
+        // Performance
+        deferRender: true,
+        processing: true,
+        
+        // Callbacks
+        drawCallback: function() {
+            console.log('✅ DataTable drawn');
+            
+            // Add smooth animations to rows
+            $('#usersTable tbody tr').each(function(index) {
+                $(this).css({
+                    'animation': `fadeInUp 0.4s ease-out ${index * 0.05}s both`
+                });
+            });
         },
-        customize: function(win) {
-          $(win.document.body)
-            .css('font-size', '10pt')
-            .prepend('<style>@media print { body { padding: 20px; } table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #ddd; padding: 8px; } thead { background-color: #1E3A8A !important; color: white !important; -webkit-print-color-adjust: exact; } }</style>');
-          
-          $(win.document.body).find('table')
-            .addClass('compact')
-            .css('font-size', '9pt');
+        
+        initComplete: function() {
+            console.log('✅ DataTable initialized successfully');
+            
+            // Add custom styling to buttons
+            $('.dt-buttons').addClass('mb-3');
+            $('.dt-button').addClass('me-2');
+            
+            // Add loading state removal
+            $('.table-container').removeClass('loading');
         }
-      }
-    ],
+    });
     
-    // Callbacks
-    initComplete: function() {
-      console.log('✅ DataTable initialized successfully');
-      
-      // Add custom styling
-      $('.dataTables_wrapper').addClass('glass-card');
-      
-      // Style inputs
-      $('.dataTables_filter input')
-        .attr('placeholder', 'Cari data...')
-        .css({
-          'border': '2px solid rgba(30, 58, 138, 0.2)',
-          'border-radius': '12px',
-          'padding': '10px 16px'
-        });
-      
-      // Style select
-      $('.dataTables_length select').css({
-        'border': '2px solid rgba(30, 58, 138, 0.2)',
-        'border-radius': '10px',
-        'padding': '8px 32px 8px 12px'
-      });
-      
-      // Animate initial rows
-      $('#usersTable tbody tr').each(function(index) {
-        $(this).css({
-          'animation': 'fadeInUp 0.4s ease-out',
-          'animation-delay': (index * 0.05) + 's',
-          'animation-fill-mode': 'both'
-        });
-      });
-    },
-    
-    drawCallback: function() {
-      // Animate rows on redraw
-      $('#usersTable tbody tr').each(function(index) {
-        $(this).css({
-          'animation': 'fadeInUp 0.3s ease-out',
-          'animation-delay': (index * 0.03) + 's',
-          'animation-fill-mode': 'both'
-        });
-      });
-      
-      console.log('🔄 Table redrawn');
-    }
-  });
-
-  // Row click event for detail expansion
-  $('#usersTable tbody').on('click', 'tr', function(e) {
-    // Prevent expansion when clicking action buttons
-    if ($(e.target).closest('.btn-action, .no-export').length > 0) {
-      return;
-    }
-
-    const row = table.row(this);
-    
-    if (row.child.isShown()) {
-      // Close detail
-      row.child.hide();
-      $(this).removeClass('shown');
-      console.log('❌ Detail row closed');
-    } else {
-      // Close all other details first
-      table.rows().every(function() {
-        if (this.child.isShown()) {
-          this.child.hide();
-          $(this.node()).removeClass('shown');
+    // Add row click animation
+    $('#usersTable tbody').on('click', 'tr', function() {
+        if (!$(this).hasClass('child')) {
+            $(this).toggleClass('shown');
         }
-      });
-      
-      // Open this detail
-      const data = row.data();
-      row.child(formatDetailRow(data)).show();
-      $(this).addClass('shown');
-      
-      console.log('✅ Detail row opened');
-      
-      // Animate detail card
-      setTimeout(() => {
-        $(row.child()).find('.detail-card').css({
-          'animation': 'fadeInUp 0.4s ease-out',
-          'animation-fill-mode': 'both'
-        });
-      }, 10);
-    }
-  });
-
-  // Format detail row
-  function formatDetailRow(data) {
-    // Extract data safely
-    const username = $(data[1]).text().trim() || data[1].replace(/<[^>]*>/g, '').trim();
-    const nama = data[2] || '-';
-    const npm = data[3] || '-';
-    const email = data[4] || '-';
-    const noHp = data[5] || '-';
-    const role = data[6] ? (data[6].includes('Admin') ? 'Administrator' : 'User') : 'User';
-    const lastUpdate = data[7] || '-';
+    });
     
-    return `
-      <div class="detail-card" style="background: rgba(255,255,255,0.98); border-radius: 16px; padding: 24px; margin: 10px 0; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);">
-        <div class="row">
-          <div class="col-md-6" style="margin-bottom: 20px;">
-            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-              <i class="fas fa-user-circle"></i> Informasi Personal
-            </h6>
-            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>Username:</strong> ${username}</p>
-            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>Nama Lengkap:</strong> ${nama}</p>
-            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>NPM:</strong> ${npm}</p>
-            <p style="margin-bottom: 0; font-size: 14px; color: #374151;"><strong>Role:</strong> ${role}</p>
-          </div>
-          <div class="col-md-6" style="margin-bottom: 20px;">
-            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-              <i class="fas fa-address-card"></i> Kontak & Informasi
-            </h6>
-            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>Email:</strong> ${email}</p>
-            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>No. HP:</strong> ${noHp}</p>
-            <p style="margin-bottom: 0; font-size: 14px; color: #374151;"><strong>Terakhir Update:</strong> ${lastUpdate}</p>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  console.log('🎉 DataTable setup complete!');
+    // Add search enhancement
+    $('#usersTable_filter input').addClass('form-control-glass');
+    $('#usersTable_length select').addClass('form-control-glass');
+    
+    console.log('✅ DataTable setup complete');
 });
 
-// Delete confirmation function
-function confirmDelete(id) {
-  if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `/dashboard/delete/${id}?_method=DELETE`;
-    
-    const csrf = document.querySelector('input[name="_csrf"]');
-    if (csrf) {
-      const csrfInput = document.createElement('input');
-      csrfInput.type = 'hidden';
-      csrfInput.name = '_csrf';
-      csrfInput.value = csrf.value;
-      form.appendChild(csrfInput);
+// Handle delete confirmation
+function confirmDelete(id, nama) {
+    if (confirm(`Apakah Anda yakin ingin menghapus data ${nama}?`)) {
+        document.getElementById(`deleteForm-${id}`).submit();
     }
-    
-    document.body.appendChild(form);
-    form.submit();
-  }
 }
 
-// Counter Animation for Stats
-document.querySelectorAll('[data-counter]').forEach(counter => {
-  const target = parseInt(counter.getAttribute('data-counter'));
-  const duration = 2000;
-  const step = target / (duration / 16);
-  let current = 0;
-  
-  const timer = setInterval(() => {
-    current += step;
-    if (current >= target) {
-      counter.textContent = target;
-      clearInterval(timer);
-    } else {
-      counter.textContent = Math.floor(current);
-    }
-  }, 16);
-});
+// Auto-dismiss alerts after 5 seconds
+setTimeout(function() {
+    const alerts = document.querySelectorAll('.alert-glass');
+    alerts.forEach(alert => {
+        alert.style.opacity = '0';
+        alert.style.transform = 'translateX(100px)';
+        setTimeout(() => alert.remove(), 400);
+    });
+}, 5000);
 </script>
 
-<!-- Admin Animations -->
-<script src="/javascript/admin-animations.js"></script>
+<!-- Custom Animations -->
+<style>
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-</body>
-</html>
+/* Loading State */
+.table-container.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-container.loading::after {
+    content: 'Memuat data...';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    color: #1E3A8A;
+    font-weight: 600;
+    font-size: 16px;
+}
+</style>

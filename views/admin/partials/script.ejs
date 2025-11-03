@@ -3,442 +3,329 @@
 <!-- Iconify -->
 <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@2.2.1/dist/iconify.min.js"></script>
 <!-- jQuery -->
-<script src="/adminlte/plugins/jquery/jquery.min.js"></script>
-<!-- jQuery UI 1.11.4 -->
-<script src="/adminlte/plugins/jquery-ui/jquery-ui.min.js"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-<script>
-  $.widget.bridge('uibutton', $.ui.button)
-</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- ChartJS -->
-<script src="/adminlte/plugins/chart.js/Chart.min.js"></script>
-<!-- Sparkline -->
-<script src="/adminlte/plugins/sparklines/sparkline.js"></script>
-<!-- JQVMap -->
-<script src="/adminlte/plugins/jqvmap/jquery.vmap.min.js"></script>
-<script src="/adminlte/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
-<!-- jQuery Knob Chart -->
-<script src="/adminlte/plugins/jquery-knob/jquery.knob.min.js"></script>
-<!-- daterangepicker -->
-<script src="/adminlte/plugins/moment/moment.min.js"></script>
-<script src="/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
-<!-- Tempusdominus Bootstrap 4 -->
-<script src="/adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-<!-- Summernote -->
-<script src="/adminlte/plugins/summernote/summernote-bs4.min.js"></script>
-<!-- overlayScrollbars -->
-<script src="/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-<!-- AdminLTE App -->
-<script src="/adminlte/dist/js/adminlte.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="/adminlte/dist/js/demo.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="/adminlte/dist/js/pages/dashboard.js"></script>
-<!-- bs-custom-file-input -->
-<script src="/adminlte/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables & Plugins -->
-<script src="/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-<script src="/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-<script src="/adminlte/plugins/jszip/jszip.min.js"></script>
-<script src="/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
-<script src="/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
-<script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- DataTables Core -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
 
-<!-- Enhanced DataTable Initialization -->
+<!-- DataTables Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- DataTable Initialization Script -->
 <script>
-$(function () {
-  'use strict';
+$(document).ready(function() {
+  console.log('🚀 Initializing DataTable...');
   
-  // Check if table exists
-  if (!$('#usersTable').length) {
-    console.log('Table not found');
-    return;
-  }
-
-  // Destroy existing DataTable if exists
+  // Destroy existing instance if any
   if ($.fn.DataTable.isDataTable('#usersTable')) {
     $('#usersTable').DataTable().destroy();
+    console.log('♻️ Destroyed existing DataTable instance');
   }
 
-  // Detect device type
-  const isMobile = window.innerWidth <= 768;
-  const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-  
-  // Dynamic page length based on device
-  let defaultPageLength = 10;
-  if (isMobile) defaultPageLength = 5;
-  else if (isTablet) defaultPageLength = 8;
-
-  // Initialize DataTable with all features
+  // Initialize DataTable
   const table = $('#usersTable').DataTable({
+    // Core Settings
     responsive: false,
     autoWidth: false,
+    processing: true,
+    deferRender: true,
+    
+    // Display Settings
+    pageLength: 10,
+    lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+    
+    // Feature Controls
     lengthChange: true,
     searching: true,
     ordering: true,
     info: true,
     paging: true,
+    
+    // Scroll Settings
     scrollX: true,
-    pageLength: defaultPageLength,
-    lengthMenu: [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "Semua"]],
-    pagingType: isMobile ? 'simple' : 'simple_numbers',
+    scrollCollapse: true,
+    
+    // Layout
+    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+         'B' +
+         '<"row"<"col-sm-12"tr>>' +
+         '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+    
+    // Language Settings
     language: {
       search: "Cari:",
       searchPlaceholder: "Ketik untuk mencari...",
-      lengthMenu: "Tampilkan _MENU_ data per halaman",
-      info: isMobile ? "_START_-_END_ / _TOTAL_" : "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+      lengthMenu: "Tampilkan _MENU_ data",
+      info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
       infoEmpty: "Tidak ada data",
-      infoFiltered: "(difilter dari _MAX_ total data)",
-      zeroRecords: "Tidak ada data yang cocok",
+      infoFiltered: "(disaring dari _MAX_ total)",
+      zeroRecords: "Data tidak ditemukan",
       emptyTable: "Tidak ada data tersedia",
+      loadingRecords: "Memuat data...",
+      processing: "Memproses...",
       paginate: {
         first: "Pertama",
         last: "Terakhir",
-        next: isMobile ? "›" : "Selanjutnya",
-        previous: isMobile ? "‹" : "Sebelumnya"
+        next: "Berikutnya",
+        previous: "Sebelumnya"
       }
     },
-    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-         '<"row"<"col-sm-12"B>>' +
-         'rt' +
-         '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+    
+    // Column Settings
+    columnDefs: [
+      { 
+        targets: 0, 
+        width: '50px',
+        orderable: true 
+      },
+      { 
+        targets: -1, 
+        orderable: false,
+        className: 'no-export'
+      }
+    ],
+    
+    // Order Settings
+    order: [[2, 'asc']],
+    
+    // Buttons Configuration
     buttons: [
       {
         extend: 'excel',
-        text: isMobile ? '<i class="fas fa-file-excel"></i>' : '<i class="fas fa-file-excel"></i> Export Excel',
-        className: 'btn btn-success btn-sm mr-2',
+        text: '<i class="fas fa-file-excel"></i> Export Excel',
+        className: 'dt-button buttons-excel',
         title: 'Data Warga HIFI - ' + new Date().toLocaleDateString('id-ID'),
         exportOptions: {
           columns: ':not(.no-export)'
         },
-        customize: function(xlsx) {
-          var sheet = xlsx.xl.worksheets['sheet1.xml'];
-          $('row c[r^="A"]', sheet).attr('s', '2');
-        }
+        filename: 'data-hifi-' + new Date().toISOString().split('T')[0]
       },
       {
         extend: 'pdf',
-        text: isMobile ? '<i class="fas fa-file-pdf"></i>' : '<i class="fas fa-file-pdf"></i> Export PDF',
-        className: 'btn btn-danger btn-sm mr-2',
+        text: '<i class="fas fa-file-pdf"></i> Export PDF',
+        className: 'dt-button buttons-pdf',
         title: 'Data Warga HIFI',
         orientation: 'landscape',
         pageSize: 'A4',
         exportOptions: {
           columns: ':not(.no-export)'
         },
+        filename: 'data-hifi-' + new Date().toISOString().split('T')[0],
         customize: function(doc) {
-          doc.defaultStyle.fontSize = 10;
-          doc.styles.tableHeader.fontSize = 11;
-          doc.styles.tableHeader.fillColor = '#1E3A8A';
-          doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+          doc.defaultStyle.fontSize = 9;
+          doc.styles.tableHeader = {
+            fontSize: 10,
+            bold: true,
+            fillColor: '#1E3A8A',
+            color: 'white',
+            alignment: 'left'
+          };
+          doc.content[1].table.widths = Array(doc.content[1].table.body[0].length).fill('*');
         }
       },
       {
         extend: 'print',
-        text: isMobile ? '<i class="fas fa-print"></i>' : '<i class="fas fa-print"></i> Print',
-        className: 'btn btn-primary btn-sm',
+        text: '<i class="fas fa-print"></i> Print',
+        className: 'dt-button buttons-print',
         title: 'Data Warga HIFI',
-        messageTop: '<h3 style="text-align:center; color:#DC143C;">Data Warga HIFI</h3><p style="text-align:center;">Dicetak pada: ' + new Date().toLocaleString('id-ID') + '</p>',
+        messageTop: '<h3 style="text-align:center; color:#DC143C; margin-bottom:20px;">Data Warga HIFI</h3><p style="text-align:center; margin-bottom:20px;">Dicetak pada: ' + new Date().toLocaleString('id-ID') + '</p>',
         exportOptions: {
           columns: ':not(.no-export)'
         },
         customize: function(win) {
-          $(win.document.body).css('font-size', '10pt');
-          $(win.document.body).find('table').addClass('compact').css('font-size', '9pt');
+          $(win.document.body)
+            .css('font-size', '10pt')
+            .prepend('<style>@media print { body { padding: 20px; } table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #ddd; padding: 8px; } thead { background-color: #1E3A8A !important; color: white !important; -webkit-print-color-adjust: exact; } }</style>');
+          
+          $(win.document.body).find('table')
+            .addClass('compact')
+            .css('font-size', '9pt');
         }
       }
     ],
+    
+    // Callbacks
     initComplete: function() {
-      // Custom styling after initialization
-      $('.dataTables_wrapper').addClass('table-wrapper-enhanced');
-      $('.dataTables_filter input').addClass('form-control form-control-sm').attr('placeholder', 'Cari data...');
-      $('.dataTables_length select').addClass('form-control form-control-sm');
-      
-      // Style buttons
-      $('.dt-buttons').addClass('mb-3');
-      
       console.log('✅ DataTable initialized successfully');
+      
+      // Add custom styling
+      $('.dataTables_wrapper').addClass('glass-card');
+      
+      // Style inputs
+      $('.dataTables_filter input')
+        .attr('placeholder', 'Cari data...')
+        .css({
+          'border': '2px solid rgba(30, 58, 138, 0.2)',
+          'border-radius': '12px',
+          'padding': '10px 16px'
+        });
+      
+      // Style select
+      $('.dataTables_length select').css({
+        'border': '2px solid rgba(30, 58, 138, 0.2)',
+        'border-radius': '10px',
+        'padding': '8px 32px 8px 12px'
+      });
+      
+      // Animate initial rows
+      $('#usersTable tbody tr').each(function(index) {
+        $(this).css({
+          'animation': 'fadeInUp 0.4s ease-out',
+          'animation-delay': (index * 0.05) + 's',
+          'animation-fill-mode': 'both'
+        });
+      });
     },
+    
     drawCallback: function() {
-      // Add animation to rows on redraw
+      // Animate rows on redraw
       $('#usersTable tbody tr').each(function(index) {
         $(this).css({
           'animation': 'fadeInUp 0.3s ease-out',
-          'animation-delay': (index * 0.05) + 's'
+          'animation-delay': (index * 0.03) + 's',
+          'animation-fill-mode': 'both'
         });
       });
+      
+      console.log('🔄 Table redrawn');
     }
   });
 
-  // Row click to expand/collapse details
+  // Row click event for detail expansion
   $('#usersTable tbody').on('click', 'tr', function(e) {
-    // Don't expand when clicking action buttons
-    if ($(e.target).closest('.btn-action').length > 0) {
+    // Prevent expansion when clicking action buttons
+    if ($(e.target).closest('.btn-action, .no-export').length > 0) {
       return;
     }
 
     const row = table.row(this);
     
     if (row.child.isShown()) {
-      // Close the row
+      // Close detail
       row.child.hide();
       $(this).removeClass('shown');
+      console.log('❌ Detail row closed');
     } else {
-      // Close other open rows
+      // Close all other details first
       table.rows().every(function() {
         if (this.child.isShown()) {
           this.child.hide();
           $(this.node()).removeClass('shown');
         }
       });
-
-      // Open this row
+      
+      // Open this detail
       const data = row.data();
-      row.child(formatUserDetails(data)).show();
+      row.child(formatDetailRow(data)).show();
       $(this).addClass('shown');
       
-      // Animate child row
-      $(row.child()).find('.detail-card').css({
-        'animation': 'fadeInUp 0.4s ease-out'
-      });
+      console.log('✅ Detail row opened');
+      
+      // Animate detail card
+      setTimeout(() => {
+        $(row.child()).find('.detail-card').css({
+          'animation': 'fadeInUp 0.4s ease-out',
+          'animation-fill-mode': 'both'
+        });
+      }, 10);
     }
   });
 
-  // Format function for row details
-  function formatUserDetails(data) {
-    // Extract data from table row
-    const username = data[1].replace(/<[^>]*>/g, '').trim();
-    const nama = data[2];
-    const npm = data[3];
-    const email = data[4];
-    const no_hp = data[5];
-    const role = data[6].includes('Admin') ? 'Administrator' : 'User';
-    const lastUpdate = data[7];
+  // Format detail row
+  function formatDetailRow(data) {
+    // Extract data safely
+    const username = $(data[1]).text().trim() || data[1].replace(/<[^>]*>/g, '').trim();
+    const nama = data[2] || '-';
+    const npm = data[3] || '-';
+    const email = data[4] || '-';
+    const noHp = data[5] || '-';
+    const role = data[6] ? (data[6].includes('Admin') ? 'Administrator' : 'User') : 'User';
+    const lastUpdate = data[7] || '-';
     
     return `
-      <div class="detail-card">
+      <div class="detail-card" style="background: rgba(255,255,255,0.98); border-radius: 16px; padding: 24px; margin: 10px 0; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);">
         <div class="row">
-          <div class="col-md-6">
-            <h6><i class="fas fa-user-circle"></i> Informasi Personal</h6>
-            <p><strong>Username:</strong> ${username}</p>
-            <p><strong>Nama Lengkap:</strong> ${nama}</p>
-            <p><strong>NPM:</strong> ${npm}</p>
-            <p><strong>Role:</strong> ${role}</p>
+          <div class="col-md-6" style="margin-bottom: 20px;">
+            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              <i class="fas fa-user-circle"></i> Informasi Personal
+            </h6>
+            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>Username:</strong> ${username}</p>
+            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>Nama Lengkap:</strong> ${nama}</p>
+            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>NPM:</strong> ${npm}</p>
+            <p style="margin-bottom: 0; font-size: 14px; color: #374151;"><strong>Role:</strong> ${role}</p>
           </div>
-          <div class="col-md-6">
-            <h6><i class="fas fa-address-card"></i> Kontak & Informasi</h6>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>No. HP:</strong> ${no_hp}</p>
-            <p><strong>Terakhir Update:</strong> ${lastUpdate}</p>
+          <div class="col-md-6" style="margin-bottom: 20px;">
+            <h6 style="font-size: 16px; font-weight: 700; margin-bottom: 16px; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              <i class="fas fa-address-card"></i> Kontak & Informasi
+            </h6>
+            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>Email:</strong> ${email}</p>
+            <p style="margin-bottom: 12px; font-size: 14px; color: #374151;"><strong>No. HP:</strong> ${noHp}</p>
+            <p style="margin-bottom: 0; font-size: 14px; color: #374151;"><strong>Terakhir Update:</strong> ${lastUpdate}</p>
           </div>
-        </div>
-        <div class="mt-3 d-flex gap-2">
-          <button class="btn btn-primary btn-sm" onclick="editUser('${username}')" title="Edit">
-            <i class="fas fa-edit"></i> Edit
-          </button>
         </div>
       </div>
     `;
   }
 
-  // Add custom styles for DataTables
-  const style = document.createElement('style');
-  style.textContent = `
-    .table-wrapper-enhanced {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    }
-
-    .dataTables_wrapper .row {
-      margin-bottom: 15px;
-    }
-
-    .dataTables_length label,
-    .dataTables_filter label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0;
-      font-weight: 600;
-      color: #374151;
-    }
-
-    .dataTables_length select {
-      width: auto;
-      min-width: 70px;
-    }
-
-    .dataTables_filter input {
-      width: 250px;
-      margin-left: 10px;
-    }
-
-    .dataTables_info {
-      padding-top: 12px;
-      font-weight: 500;
-      color: #6B7280;
-    }
-
-    .dataTables_paginate {
-      padding-top: 12px;
-    }
-
-    .dataTables_paginate .paginate_button {
-      padding: 8px 16px;
-      margin: 0 2px;
-      border-radius: 8px;
-      border: 1px solid rgba(30, 58, 138, 0.2);
-      background: rgba(255, 255, 255, 0.9);
-      color: #1E3A8A !important;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .dataTables_paginate .paginate_button:hover:not(.disabled) {
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
-      color: white !important;
-      border-color: transparent;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-    }
-
-    .dataTables_paginate .paginate_button.current {
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
-      color: white !important;
-      border-color: transparent;
-      box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-    }
-
-    .dataTables_paginate .paginate_button.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .dt-buttons .btn {
-      margin-right: 8px;
-      margin-bottom: 8px;
-    }
-
-    .detail-card {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      border-radius: 16px;
-      padding: 24px;
-      margin: 10px 0;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .detail-card h6 {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .detail-card p {
-      margin-bottom: 12px;
-      font-size: 14px;
-      color: #374151;
-      line-height: 1.6;
-    }
-
-    .detail-card strong {
-      color: #1F2937;
-      font-weight: 600;
-    }
-
-    #usersTable tbody tr {
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    #usersTable tbody tr:hover {
-      background: rgba(30, 58, 138, 0.05);
-      transform: scale(1.01);
-    }
-
-    #usersTable tbody tr.shown {
-      background: rgba(220, 20, 60, 0.05);
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .dataTables_filter input {
-        width: 100%;
-        margin-left: 0;
-        margin-top: 10px;
-      }
-
-      .dataTables_length,
-      .dataTables_filter {
-        text-align: center;
-      }
-
-      .dt-buttons {
-        text-align: center;
-      }
-
-      .dt-buttons .btn {
-        margin: 4px;
-      }
-
-      .detail-card .row {
-        flex-direction: column;
-      }
-
-      .detail-card .col-md-6 {
-        width: 100%;
-      }
-    }
-  `;
-  document.head.appendChild(style);
+  console.log('🎉 DataTable setup complete!');
 });
 
-// Helper functions
-function viewFullProfile(username) {
-  window.location.href = '/profile/' + username;
+// Delete confirmation function
+function confirmDelete(id) {
+  if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/dashboard/delete/${id}?_method=DELETE`;
+    
+    const csrf = document.querySelector('input[name="_csrf"]');
+    if (csrf) {
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = '_csrf';
+      csrfInput.value = csrf.value;
+      form.appendChild(csrfInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+  }
 }
 
-function editUser(username) {
-  // Find user ID from table and redirect
-  $('#usersTable tbody tr').each(function() {
-    const rowData = $('#usersTable').DataTable().row(this).data();
-    const rowUsername = rowData[1].replace(/<[^>]*>/g, '').trim();
-    if (rowUsername === username) {
-      const editBtn = $(this).find('.btn-edit')[0];
-      if (editBtn) {
-        editBtn.click();
-      }
-      return false;
+// Counter Animation for Stats
+document.querySelectorAll('[data-counter]').forEach(counter => {
+  const target = parseInt(counter.getAttribute('data-counter'));
+  const duration = 2000;
+  const step = target / (duration / 16);
+  let current = 0;
+  
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      counter.textContent = target;
+      clearInterval(timer);
+    } else {
+      counter.textContent = Math.floor(current);
     }
-  });
-}
+  }, 16);
+});
 </script>
+
+<!-- Admin Animations -->
+<script src="/javascript/admin-animations.js"></script>
+
 </body>
 </html>

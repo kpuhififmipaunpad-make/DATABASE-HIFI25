@@ -35,7 +35,7 @@ module.exports = function (passport) {
     done(null, user.id);
   });
 
-  // Ambil user dari id (FIX: tanpa callback Mongoose v7)
+  // Ambil user dari id (FIX Mongoose v7: tanpa callback)
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await User.findById(id); // atau .exec()

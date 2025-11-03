@@ -53,7 +53,7 @@
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
-<!-- Enhanced DataTable Initialization -->
+<!-- Enhanced DataTable Initialization (NO CSS CONFLICT) -->
 <script>
   $(function () {
     // Destroy existing DataTable if exists
@@ -98,10 +98,6 @@
           title: 'Data Warga HIFI - ' + new Date().toLocaleDateString('id-ID'),
           exportOptions: {
             columns: ':not(.no-export)'
-          },
-          customize: function(xlsx) {
-            var sheet = xlsx.xl.worksheets['sheet1.xml'];
-            $('row c[r^="A"]', sheet).attr('s', '2');
           }
         },
         {
@@ -113,12 +109,6 @@
           pageSize: 'A4',
           exportOptions: {
             columns: ':not(.no-export)'
-          },
-          customize: function(doc) {
-            doc.defaultStyle.fontSize = 10;
-            doc.styles.tableHeader.fontSize = 11;
-            doc.styles.tableHeader.fillColor = '#1E3A8A';
-            doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
           }
         },
         {
@@ -126,13 +116,8 @@
           text: '<i class="fas fa-print"></i> Print',
           className: 'btn-export btn-print',
           title: 'Data Warga HIFI',
-          messageTop: '<h3 style="text-align:center; color:#DC143C;">Data Warga HIFI</h3><p style="text-align:center;">Dicetak pada: ' + new Date().toLocaleString('id-ID') + '</p>',
           exportOptions: {
             columns: ':not(.no-export)'
-          },
-          customize: function(win) {
-            $(win.document.body).css('font-size', '10pt');
-            $(win.document.body).find('table').addClass('compact').css('font-size', '9pt');
           }
         }
       ],
@@ -144,9 +129,6 @@
         
         // Move buttons to header
         $('.dt-buttons').appendTo('.datatable-header .row .col-md-6:first');
-        
-        // Add custom styles to buttons
-        $('.dt-buttons').addClass('mb-3');
         
         console.log('DataTable initialized successfully');
       },
@@ -171,7 +153,6 @@
       const row = table.row(this);
       
       if (row.child.isShown()) {
-        // Close the row
         row.child.hide();
         $(this).removeClass('shown');
       } else {
@@ -187,17 +168,11 @@
         const data = row.data();
         row.child(formatUserDetails(data)).show();
         $(this).addClass('shown');
-        
-        // Animate child row
-        $(row.child()).find('.detail-card').css({
-          'animation': 'fadeInUp 0.4s ease-out'
-        });
       }
     });
 
     // Format function for row details
     function formatUserDetails(data) {
-      // Extract data from table row
       const username = data[1].replace(/<[^>]*>/g, '').trim();
       const nama = data[2];
       const npm = data[3];
@@ -231,170 +206,9 @@
         </div>
       `;
     }
-
-    // Add custom styles for DataTables
-    const style = document.createElement('style');
-    style.textContent = `
-      .datatable-header {
-        margin-bottom: 20px;
-      }
-
-      .datatable-header .row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 16px;
-      }
-
-      .dataTables_length {
-        margin-right: 20px;
-      }
-
-      .dataTables_length label,
-      .dataTables_filter label {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin: 0;
-        font-weight: 600;
-        color: #374151;
-      }
-
-      .dataTables_length select {
-        width: auto;
-        padding: 8px 32px 8px 12px;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 16px 12px;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-      }
-
-      .dataTables_filter input {
-        margin-left: 0 !important;
-        width: 300px;
-        padding: 10px 16px;
-      }
-
-      .dataTables_info {
-        padding-top: 12px;
-        font-weight: 500;
-        color: #6B7280;
-      }
-
-      .dataTables_paginate {
-        padding-top: 12px;
-      }
-
-      .dataTables_paginate .paginate_button {
-        padding: 8px 16px;
-        margin: 0 2px;
-        border-radius: 8px;
-        border: 1px solid rgba(30, 58, 138, 0.2);
-        background: rgba(255, 255, 255, 0.9);
-        color: #1E3A8A !important;
-        font-weight: 500;
-        transition: all 0.3s ease;
-      }
-
-      .dataTables_paginate .paginate_button:hover {
-        background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
-        color: white !important;
-        border-color: transparent;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-      }
-
-      .dataTables_paginate .paginate_button.current {
-        background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
-        color: white !important;
-        border-color: transparent;
-        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-      }
-
-      .dataTables_paginate .paginate_button.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .dt-buttons {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .btn-export {
-        padding: 10px 20px;
-        border-radius: 12px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: white;
-        font-size: 14px;
-      }
-
-      .btn-excel {
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-      }
-
-      .btn-pdf {
-        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-      }
-
-      .btn-print {
-        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-      }
-
-      .btn-export:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-      }
-
-      .datatable-footer {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-      }
-
-      @media (max-width: 768px) {
-        .dataTables_filter input {
-          width: 100%;
-        }
-
-        .dt-buttons {
-          width: 100%;
-        }
-
-        .btn-export {
-          flex: 1;
-          justify-content: center;
-        }
-
-        .datatable-header .row {
-          flex-direction: column;
-        }
-      }
-    `;
-    document.head.appendChild(style);
   });
 
-  // Helper functions
-  function viewFullProfile(username) {
-    window.location.href = `/profile/${username}`;
-  }
-
   function editUser(username) {
-    // Find user ID from table and redirect
     $('#usersTable tbody tr').each(function() {
       const rowData = $('#usersTable').DataTable().row(this).data();
       const rowUsername = rowData[1].replace(/<[^>]*>/g, '').trim();

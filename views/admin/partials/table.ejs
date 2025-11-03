@@ -1,404 +1,101 @@
-<div class="table-wrapper-enhanced">
-    <!-- Table Header -->
+<div class="table-container animate-fadeInUp" style="animation-delay: 0.3s;">
     <div class="table-header">
         <h2 class="table-title">
-            <i class="fas fa-users-cog" style="margin-right: 10px; color: #DC143C;"></i>
-            Manajemen Data Anggota
+            <i class="fas fa-database" style="margin-right: 8px;"></i>
+            Database Anggota HIFI
         </h2>
+        <div class="table-toolbar">
+            <input 
+                type="text" 
+                id="searchNama" 
+                placeholder="🔍 Cari nama..." 
+                class="form-control-glass"
+                aria-label="Cari anggota"
+            >
+            <select id="itemsPerPage" class="form-control-glass" aria-label="Items per halaman">
+                <option value="10">10 / halaman</option>
+                <option value="25" selected>25 / halaman</option>
+                <option value="50">50 / halaman</option>
+                <option value="100">100 / halaman</option>
+            </select>
+        </div>
     </div>
 
-    <!-- Table Responsive Wrapper -->
     <div class="table-responsive">
-        <table id="usersTable" class="table table-glass table-hover" style="width: 100%;">
+        <table id="usersTable" class="table-glass" style="width: 100%;">
             <thead>
                 <tr>
-                    <th style="width: 30px;"></th>
-                    <th style="min-width: 150px;">
-                        <i class="fas fa-user" style="margin-right: 6px;"></i>Nama
-                    </th>
-                    <th style="min-width: 120px;">
-                        <i class="fas fa-id-card" style="margin-right: 6px;"></i>NPM
-                    </th>
-                    <th style="min-width: 150px;">
-                        <i class="fas fa-envelope" style="margin-right: 6px;"></i>Email
-                    </th>
-                    <th style="min-width: 130px;">
-                        <i class="fas fa-phone" style="margin-right: 6px;"></i>No. HP
-                    </th>
-                    <th style="min-width: 120px;">
-                        <i class="fas fa-birthday-cake" style="margin-right: 6px;"></i>Tanggal Lahir
-                    </th>
-                    <th style="min-width: 100px;">
-                        <i class="fas fa-tint" style="margin-right: 6px;"></i>Golongan Darah
-                    </th>
-                    <th style="min-width: 150px;">
-                        <i class="fas fa-clock" style="margin-right: 6px;"></i>Terakhir Update
-                    </th>
-                    <th style="min-width: 150px; text-align: center;">
-                        <i class="fas fa-cog" style="margin-right: 6px;"></i>Aksi
-                    </th>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>NPM</th>
+                    <th>Email</th>
+                    <th>No. HP</th>
+                    <th>Golongan Darah</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                <% users.forEach(function(user) { %>
-                <tr class="clickable-row">
-                    <td></td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; flex-shrink: 0;">
-                                <%= (user.nama || '-').charAt(0).toUpperCase() %>
-                            </div>
-                            <div>
-                                <div style="font-weight: 700; color: #111827; margin-bottom: 2px;">
-                                    <%= user.nama || '-' %>
+                <% if (users && users.length > 0) { %>
+                    <% users.forEach(function(user, index) { %>
+                        <tr data-user-id="<%= user._id %>">
+                            <td><%= index + 1 %></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="avatar" style="width: 36px; height: 36px; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">
+                                        <%= user.nama ? user.nama.charAt(0).toUpperCase() : 'U' %>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #1F2937;"><%= user.nama || '-' %></strong>
+                                        <% if (user.role === 'admin') { %>
+                                            <span class="badge-glass badge-red" style="margin-left: 8px; font-size: 10px; padding: 3px 8px;">
+                                                <i class="fas fa-shield-alt"></i> Admin
+                                            </span>
+                                        <% } %>
+                                    </div>
                                 </div>
-                                <div style="font-size: 12px; color: #6B7280;">
-                                    @<%= user.username || '-' %>
+                            </td>
+                            <td><strong><%= user.npm || '-' %></strong></td>
+                            <td><%= user.email || '-' %></td>
+                            <td><%= user.hp || '-' %></td>
+                            <td>
+                                <span class="badge-glass" style="background: rgba(220, 20, 60, 0.1); color: #DC143C; font-weight: 700;">
+                                    <%= user.goldar || '-' %>
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+                                    <a href="/dashboard/edit/<%= user._id %>" class="btn-action btn-edit" title="Edit" aria-label="Edit <%= user.nama %>">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="/dashboard/delete/<%= user._id %>?_method=DELETE" method="POST" style="margin: 0; display: inline;" onsubmit="return confirmDelete('<%= user.nama %>')">
+                                        <button type="submit" class="btn-action btn-delete" title="Hapus" aria-label="Hapus <%= user.nama %>">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
                                 </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span style="background: rgba(30, 58, 138, 0.1); color: #1E3A8A; padding: 4px 10px; border-radius: 8px; font-weight: 600; font-size: 13px; display: inline-block;">
-                            <%= user.npm || '-' %>
-                        </span>
-                    </td>
-                    <td>
-                        <a href="mailto:<%= user.email %>" style="color: #3B82F6; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-envelope" style="font-size: 12px;"></i>
-                            <%= user.email || '-' %>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="tel:<%= user.hp %>" style="color: #10B981; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-phone-alt" style="font-size: 12px;"></i>
-                            <%= user.hp || '-' %>
-                        </a>
-                    </td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 6px; color: #6B7280;">
-                            <i class="fas fa-calendar-alt" style="font-size: 12px; color: #DC143C;"></i>
-                            <%= user.tgl || '-' %>
-                        </div>
-                    </td>
-                    <td>
-                        <% if (user.goldar) { %>
-                        <span style="background: linear-gradient(135deg, #DC143C 0%, #FF6B8A 100%); color: white; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block; box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);">
-                            <%= user.goldar %>
-                        </span>
-                        <% } else { %>
-                        <span style="color: #9CA3AF;">-</span>
-                        <% } %>
-                    </td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 6px; color: #6B7280; font-size: 13px;">
-                            <i class="fas fa-clock" style="color: #3B82F6;"></i>
-                            <%= user.time || '-' %>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-                            <!-- Edit Button -->
-                            <a href="/dashboard/edit/<%= user._id %>" class="btn-action btn-edit" title="Edit Data" style="text-decoration: none;">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            
-                            <!-- Delete Button -->
-                            <form id="deleteForm-<%= user._id %>" method="POST" action="/dashboard/delete/<%= user._id %>?_method=DELETE" style="display: inline-block; margin: 0;">
-                                <button type="button" onclick="confirmDelete('<%= user._id %>', '<%= user.nama %>')" class="btn-action btn-delete" title="Hapus Data">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                <% }); %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #6B7280;">
+                            <i class="fas fa-database" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                            <p style="margin: 0; font-size: 16px; font-weight: 600;">Tidak ada data anggota</p>
+                        </td>
+                    </tr>
+                <% } %>
             </tbody>
         </table>
     </div>
+
+    <div class="dt-bottom" style="margin-top: 20px;">
+        <div class="dataTables_info" id="tableInfo"></div>
+        <div class="dataTables_paginate" id="tablePaginate"></div>
+    </div>
 </div>
 
-<!-- Enhanced Table Styles -->
-<style>
-/* Table Enhancement */
-.table-wrapper-enhanced {
-    position: relative;
-    animation: fadeInUp 0.6s ease-out;
-}
-
-#usersTable {
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 100% !important;
-}
-
-#usersTable thead {
-    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-#usersTable thead th {
-    color: white;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 16px 14px;
-    border: none;
-    font-size: 13px;
-    white-space: nowrap;
-    vertical-align: middle;
-}
-
-#usersTable tbody tr {
-    background: rgba(255, 255, 255, 0.95);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-#usersTable tbody tr:hover {
-    background: rgba(30, 58, 138, 0.05);
-    transform: scale(1.01);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-#usersTable tbody tr.shown {
-    background: rgba(220, 20, 60, 0.05);
-}
-
-#usersTable tbody td {
-    padding: 14px;
-    vertical-align: middle;
-    color: #111827;
-    font-size: 14px;
-    border: none;
-}
-
-/* Responsive Control Icon */
-#usersTable tbody td.dtr-control {
-    cursor: pointer;
-    text-align: center;
-}
-
-#usersTable tbody td.dtr-control:before {
-    display: none;
-}
-
-/* Action Buttons Enhancement */
-.btn-action {
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 14px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.btn-edit {
-    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-    color: white;
-}
-
-.btn-edit:hover {
-    transform: translateY(-3px) scale(1.1);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-.btn-delete {
-    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-    color: white;
-}
-
-.btn-delete:hover {
-    transform: translateY(-3px) scale(1.1);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-}
-
-/* DataTables Custom Styling */
-.dataTables_wrapper {
-    padding: 0;
-}
-
-.dataTables_wrapper .dataTables_length,
-.dataTables_wrapper .dataTables_filter {
-    margin-bottom: 20px;
-}
-
-.dataTables_wrapper .dataTables_length label,
-.dataTables_wrapper .dataTables_filter label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 600;
-    color: #374151;
-    font-size: 14px;
-}
-
-.dataTables_wrapper .dataTables_filter input {
-    margin-left: 0 !important;
-    padding: 10px 16px;
-    border: 2px solid rgba(30, 58, 138, 0.2);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    min-width: 250px;
-}
-
-.dataTables_wrapper .dataTables_filter input:focus {
-    outline: none;
-    border-color: #1E3A8A;
-    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
-}
-
-.dataTables_wrapper .dataTables_length select {
-    padding: 8px 32px 8px 12px;
-    border: 2px solid rgba(30, 58, 138, 0.2);
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #1F2937;
-    cursor: pointer;
-}
-
-/* Buttons */
-.dt-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.dt-button {
-    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 12px !important;
-    padding: 10px 20px !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3) !important;
-    transition: all 0.3s ease !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-}
-
-.dt-button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4) !important;
-}
-
-/* Pagination */
-.dataTables_paginate {
-    margin-top: 20px;
-}
-
-.dataTables_paginate .pagination {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.dataTables_paginate .page-item .page-link {
-    border-radius: 10px;
-    border: 1px solid rgba(30, 58, 138, 0.15);
-    background: rgba(255, 255, 255, 0.9);
-    color: #1F2937;
-    padding: 10px 14px;
-    min-width: 42px;
-    min-height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.dataTables_paginate .page-item.active .page-link {
-    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-    color: white;
-    border-color: transparent;
-    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
-}
-
-.dataTables_paginate .page-item .page-link:hover {
-    background: rgba(30, 58, 138, 0.1);
-    color: #1E3A8A;
-    transform: translateY(-2px);
-}
-
-/* Responsive Details */
-#usersTable tbody tr.child ul.dtr-details {
-    background: rgba(248, 250, 252, 0.95);
-    border-radius: 12px;
-    padding: 16px;
-    margin: 8px 0;
-}
-
-#usersTable tbody tr.child ul.dtr-details li {
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-#usersTable tbody tr.child ul.dtr-details li:last-child {
-    border-bottom: none;
-}
-
-#usersTable tbody tr.child span.dtr-title {
-    font-weight: 700;
-    color: #374151;
-    min-width: 150px;
-    display: inline-block;
-}
-
-#usersTable tbody tr.child span.dtr-data {
-    color: #111827;
-    font-weight: 500;
-}
-
-/* Mobile Responsive */
-@media screen and (max-width: 768px) {
-    .table-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+<script>
+    function confirmDelete(nama) {
+        return confirm(`Apakah Anda yakin ingin menghapus data "${nama}"?\n\nTindakan ini tidak dapat dibatalkan.`);
     }
-    
-    .table-title {
-        font-size: 18px;
-    }
-    
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 12px;
-    }
-    
-    .dataTables_wrapper .dataTables_filter input {
-        min-width: 100%;
-        width: 100%;
-    }
-    
-    .dt-buttons {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .dt-button {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .btn-action {
-        width: 36px;
-        height: 36px;
-        font-size: 13px;
-    }
-}
-</style>
+</script>

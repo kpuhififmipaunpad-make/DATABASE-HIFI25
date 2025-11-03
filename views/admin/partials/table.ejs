@@ -1,5 +1,5 @@
-<div class="table-responsive">
-  <table id="usersTable" class="table table-bordered table-striped table-hover" style="width:100%">
+<div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+  <table id="usersTable" class="display table table-striped table-hover" style="width:100%;">
     <thead>
       <tr>
         <th>No</th>
@@ -14,50 +14,65 @@
       </tr>
     </thead>
     <tbody>
-      <% users.forEach((user, index) => { %>
+      <% if (users && users.length > 0) { %>
+        <% users.forEach((user, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><strong><%= user.username || '-' %></strong></td>
+            <td><%= user.nama || '-' %></td>
+            <td><%= user.npm || '-' %></td>
+            <td><%= user.email || '-' %></td>
+            <td><%= user.hp || '-' %></td>
+            <td>
+              <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>" 
+                    style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
+                <%= user.role === 'admin' ? 'Admin' : 'User' %>
+              </span>
+            </td>
+            <td><%= user.time || '-' %></td>
+            <td class="no-export">
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <button class="btn-action btn-edit" 
+                        onclick="window.location.href='/dashboard/edit/<%= user._id %>'" 
+                        title="Edit Data"
+                        style="width: 36px; height: 36px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color: white; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3); transition: all 0.3s ease;">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-action btn-delete" 
+                        onclick="confirmDelete('<%= user._id %>')" 
+                        title="Hapus Data"
+                        style="width: 36px; height: 36px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3); transition: all 0.3s ease;">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
         <tr>
-          <td><%= index + 1 %></td>
-          <td><strong><%= user.username %></strong></td>
-          <td><%= user.nama || '-' %></td>
-          <td><%= user.npm || '-' %></td>
-          <td><%= user.email || '-' %></td>
-          <td><%= user.hp || '-' %></td>
-          <td>
-            <% if (user.role === 'admin') { %>
-              <span class="badge badge-danger">
-                <i class="fas fa-crown"></i> Admin
-              </span>
-            <% } else { %>
-              <span class="badge badge-primary">
-                <i class="fas fa-user"></i> User
-              </span>
-            <% } %>
-          </td>
-          <td><%= user.time || '-' %></td>
-          <td class="no-export">
-            <button class="btn btn-primary btn-sm btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn btn-danger btn-sm btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
-              <i class="fas fa-trash"></i>
-            </button>
+          <td colspan="9" style="text-align: center; padding: 40px; color: #9CA3AF; font-size: 16px; font-weight: 600;">
+            <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+            Tidak ada data tersedia
           </td>
         </tr>
-      <% }) %>
+      <% } %>
     </tbody>
   </table>
 </div>
 
 <style>
   .table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    border-radius: 12px;
+    overflow: visible;
   }
 
   #usersTable {
-    width: 100%;
+    width: 100% !important;
     border-collapse: separate;
     border-spacing: 0;
+    margin: 0 !important;
   }
 
   #usersTable thead {
@@ -65,14 +80,13 @@
   }
 
   #usersTable thead th {
-    padding: 16px;
+    padding: 16px 14px;
     color: white;
-    font-weight: 600;
+    font-weight: 700;
     text-align: left;
     border: none;
     font-size: 14px;
     white-space: nowrap;
-    vertical-align: middle;
   }
 
   #usersTable thead th:first-child {
@@ -86,64 +100,50 @@
   #usersTable tbody tr {
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
+    cursor: pointer;
+    background: white;
+  }
+
+  #usersTable tbody tr:hover {
+    background: rgba(30, 58, 138, 0.06);
+    transform: scale(1.005);
+  }
+
+  #usersTable tbody tr.shown {
+    background: rgba(220, 20, 60, 0.06);
   }
 
   #usersTable tbody td {
-    padding: 16px;
+    padding: 14px;
     border: none;
     font-size: 14px;
     color: #374151;
-    vertical-align: middle;
   }
 
-  .btn-edit,
-  .btn-delete {
-    padding: 6px 12px;
-    font-size: 13px;
-    margin-right: 4px;
-    transition: all 0.3s ease;
+  .btn-action:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
-  .btn-edit:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-  }
-
-  .btn-delete:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-  }
-
-  .badge {
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: 6px;
+  .btn-action:active {
+    transform: scale(0.95);
   }
 
   @media (max-width: 768px) {
     #usersTable thead th,
     #usersTable tbody td {
-      padding: 12px 8px;
-      font-size: 13px;
+      padding: 10px 8px;
+      font-size: 12px;
     }
 
-    .btn-edit,
-    .btn-delete {
+    .btn-action {
+      width: 32px;
+      height: 32px;
+    }
+
+    .badge-glass {
+      font-size: 11px;
       padding: 4px 8px;
-      font-size: 12px;
     }
   }
 </style>
-
-<script>
-  function confirmDelete(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = '/dashboard/delete/' + id + '?_method=DELETE';
-      document.body.appendChild(form);
-      form.submit();
-    }
-  }
-</script>

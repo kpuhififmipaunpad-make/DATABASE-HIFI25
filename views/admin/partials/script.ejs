@@ -53,9 +53,7 @@
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
-<!-- ============================================
-     UNIFIED DATATABLE INITIALIZATION
-     ============================================ -->
+<!-- Enhanced DataTable Initialization -->
 <script>
   $(function () {
     // Destroy existing DataTable if exists
@@ -63,10 +61,9 @@
       $('#usersTable').DataTable().destroy();
     }
 
-    // MASTER DataTable Configuration
+    // Initialize DataTable with all features
     const table = $('#usersTable').DataTable({
-      // Core Settings
-      responsive: true,
+      responsive: false,
       autoWidth: false,
       lengthChange: true,
       searching: true,
@@ -74,13 +71,8 @@
       info: true,
       paging: true,
       scrollX: true,
-      scrollCollapse: true,
-      
-      // Pagination
       pageLength: 10,
       lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
-      
-      // Language (Indonesian)
       language: {
         search: "Cari:",
         searchPlaceholder: "Ketik untuk mencari...",
@@ -95,30 +87,13 @@
           last: "Terakhir",
           next: "Selanjutnya",
           previous: "Sebelumnya"
-        },
-        loadingRecords: "Memuat...",
-        processing: "Memproses..."
+        }
       },
-      
-      // DOM Layout
-      dom: '<"datatable-wrapper"' +
-           '<"datatable-top"' +
-           '<"datatable-top-left"l>' +
-           '<"datatable-top-center"B>' +
-           '<"datatable-top-right"f>' +
-           '>' +
-           '<"datatable-table-wrapper"t>' +
-           '<"datatable-bottom"' +
-           '<"datatable-bottom-left"i>' +
-           '<"datatable-bottom-right"p>' +
-           '>' +
-           '>',
-      
-      // Export Buttons
+      dom: '<"datatable-header"<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>>rt<"datatable-footer"<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>>B',
       buttons: [
         {
           extend: 'excel',
-          text: '<i class="fas fa-file-excel"></i> Excel',
+          text: '<i class="fas fa-file-excel"></i> Export Excel',
           className: 'btn-export btn-excel',
           title: 'Data Warga HIFI - ' + new Date().toLocaleDateString('id-ID'),
           exportOptions: {
@@ -131,7 +106,7 @@
         },
         {
           extend: 'pdf',
-          text: '<i class="fas fa-file-pdf"></i> PDF',
+          text: '<i class="fas fa-file-pdf"></i> Export PDF',
           className: 'btn-export btn-pdf',
           title: 'Data Warga HIFI',
           orientation: 'landscape',
@@ -161,60 +136,35 @@
           }
         }
       ],
-      
-      // Column Definitions
-      columnDefs: [
-        {
-          targets: 0,
-          width: '50px',
-          className: 'text-center'
-        },
-        {
-          targets: -1,
-          orderable: false,
-          className: 'text-center no-export',
-          width: '120px'
-        }
-      ],
-      
-      // Order
-      order: [[1, 'asc']],
-      
-      // Callbacks
       initComplete: function() {
-        console.log('✅ DataTable initialized successfully');
+        // Custom styling after initialization
+        $('.dataTables_wrapper').addClass('glass-card');
+        $('.dataTables_filter input').addClass('form-control-glass').attr('placeholder', 'Cari data...');
+        $('.dataTables_length select').addClass('form-control-glass');
         
-        // Apply custom styling
-        $('.dataTables_filter input')
-          .addClass('dt-search-input')
-          .attr('placeholder', 'Cari data...');
+        // Move buttons to header
+        $('.dt-buttons').appendTo('.datatable-header .row .col-md-6:first');
         
-        $('.dataTables_length select')
-          .addClass('dt-length-select');
+        // Add custom styles to buttons
+        $('.dt-buttons').addClass('mb-3');
+        
+        console.log('DataTable initialized successfully');
       },
-      
       drawCallback: function() {
-        // Animate rows on draw
+        // Add animation to rows on redraw
         $('#usersTable tbody tr').each(function(index) {
           $(this).css({
-            'animation': 'fadeInRow 0.3s ease-out',
-            'animation-delay': (index * 0.03) + 's',
-            'animation-fill-mode': 'both'
+            'animation': 'fadeInUp 0.3s ease-out',
+            'animation-delay': (index * 0.05) + 's'
           });
         });
-        
-        // Update pagination info
-        const info = table.page.info();
-        console.log(`📊 Page ${info.page + 1} of ${info.pages} | Total: ${info.recordsTotal} records`);
       }
     });
 
-    // ============================================
-    // ROW CLICK TO EXPAND DETAIL
-    // ============================================
+    // Row click to expand/collapse details
     $('#usersTable tbody').on('click', 'tr', function(e) {
       // Don't expand when clicking action buttons
-      if ($(e.target).closest('.btn-action, a, button').length > 0) {
+      if ($(e.target).closest('.btn-action').length > 0) {
         return;
       }
 
@@ -240,361 +190,222 @@
         
         // Animate child row
         $(row.child()).find('.detail-card').css({
-          'animation': 'slideDown 0.4s ease-out'
+          'animation': 'fadeInUp 0.4s ease-out'
         });
       }
     });
 
-    // ============================================
-    // FORMAT FUNCTION FOR ROW DETAILS
-    // ============================================
+    // Format function for row details
     function formatUserDetails(data) {
       // Extract data from table row
-      const username = $(data[1]).text().trim() || data[1].replace(/<[^>]*>/g, '').trim();
+      const username = data[1].replace(/<[^>]*>/g, '').trim();
       const nama = data[2];
       const npm = data[3];
       const email = data[4];
       const no_hp = data[5];
-      const roleBadge = data[6];
-      const role = roleBadge.includes('Admin') ? 'Administrator' : 'User';
-      const roleIcon = roleBadge.includes('Admin') ? 'crown' : 'user';
+      const role = data[6].includes('Admin') ? 'Administrator' : 'User';
       const lastUpdate = data[7];
       
       return `
         <div class="detail-card">
-          <div class="detail-header">
-            <div class="detail-avatar">
-              <i class="fas fa-user-circle"></i>
+          <div class="row">
+            <div class="col-md-6">
+              <h6><i class="fas fa-user-circle"></i> Informasi Personal</h6>
+              <p><strong>Username:</strong> ${username}</p>
+              <p><strong>Nama Lengkap:</strong> ${nama}</p>
+              <p><strong>NPM:</strong> ${npm}</p>
+              <p><strong>Role:</strong> ${role}</p>
             </div>
-            <div class="detail-header-info">
-              <h5 class="detail-name">${nama}</h5>
-              <span class="detail-role badge-glass badge-${roleBadge.includes('Admin') ? 'red' : 'blue'}">
-                <i class="fas fa-${roleIcon}"></i> ${role}
-              </span>
-            </div>
-          </div>
-          
-          <div class="detail-body">
-            <div class="detail-section">
-              <h6><i class="fas fa-id-card"></i> Informasi Personal</h6>
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <strong>Username:</strong>
-                  <span>${username}</span>
-                </div>
-                <div class="detail-item">
-                  <strong>NPM:</strong>
-                  <span>${npm}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="detail-section">
-              <h6><i class="fas fa-address-card"></i> Kontak</h6>
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <strong>Email:</strong>
-                  <span>${email}</span>
-                </div>
-                <div class="detail-item">
-                  <strong>No. HP:</strong>
-                  <span>${no_hp}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="detail-section">
-              <h6><i class="fas fa-clock"></i> Aktivitas</h6>
-              <div class="detail-item">
-                <strong>Terakhir Update:</strong>
-                <span>${lastUpdate}</span>
-              </div>
+            <div class="col-md-6">
+              <h6><i class="fas fa-address-card"></i> Kontak & Informasi</h6>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>No. HP:</strong> ${no_hp}</p>
+              <p><strong>Terakhir Update:</strong> ${lastUpdate}</p>
             </div>
           </div>
-          
-          <div class="detail-footer">
-            <p class="detail-hint">
-              <i class="fas fa-info-circle"></i>
-              Klik baris lagi untuk menutup detail
-            </p>
+          <div class="mt-3 d-flex gap-2">
+            <button class="btn-action btn-edit" onclick="editUser('${username}')" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
           </div>
         </div>
       `;
     }
 
-    // ============================================
-    // CUSTOM STYLING INJECTION
-    // ============================================
-    const customStyle = document.createElement('style');
-    customStyle.textContent = `
-      /* Fade In Row Animation */
-      @keyframes fadeInRow {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+    // Add custom styles for DataTables
+    const style = document.createElement('style');
+    style.textContent = `
+      .datatable-header {
+        margin-bottom: 20px;
       }
-      
-      /* Slide Down Animation */
-      @keyframes slideDown {
-        from {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
-      /* DataTable Wrapper */
-      .datatable-wrapper {
-        width: 100%;
-      }
-      
-      /* Top Section */
-      .datatable-top {
+
+      .datatable-header .row {
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 16px;
-        margin-bottom: 20px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid rgba(30, 58, 138, 0.1);
       }
-      
-      .datatable-top-left {
-        flex: 0 0 auto;
+
+      .dataTables_length {
+        margin-right: 20px;
       }
-      
-      .datatable-top-center {
-        flex: 1 1 auto;
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-      }
-      
-      .datatable-top-right {
-        flex: 0 0 auto;
-        min-width: 250px;
-      }
-      
-      /* Length Select */
-      .dt-length-select {
-        padding: 10px 36px 10px 14px;
-        border: 2px solid rgba(30, 58, 138, 0.2);
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.95);
-        font-weight: 600;
-        color: #1F2937;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%231E3A8A' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 16px 12px;
-      }
-      
-      .dt-length-select:focus {
-        outline: none;
-        border-color: #DC143C;
-        box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
-      }
-      
-      /* Search Input */
-      .dt-search-input {
-        width: 100%;
-        padding: 10px 16px 10px 42px;
-        border: 2px solid rgba(30, 58, 138, 0.2);
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.95);
-        font-weight: 500;
-        color: #1F2937;
-        transition: all 0.3s ease;
-      }
-      
-      .dt-search-input:focus {
-        outline: none;
-        border-color: #DC143C;
-        box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
-        background: white;
-      }
-      
-      .dataTables_filter {
-        position: relative;
-      }
-      
-      .dataTables_filter::before {
-        content: "\\f002";
-        font-family: "Font Awesome 5 Free";
-        font-weight: 900;
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6B7280;
-        pointer-events: none;
-        z-index: 1;
-      }
-      
+
+      .dataTables_length label,
       .dataTables_filter label {
-        display: block;
-        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
         margin: 0;
+        font-weight: 600;
+        color: #374151;
       }
-      
-      /* Export Buttons */
+
+      .dataTables_length select {
+        width: auto;
+        padding: 8px 32px 8px 12px;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 16px 12px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+
+      .dataTables_filter input {
+        margin-left: 0 !important;
+        width: 300px;
+        padding: 10px 16px;
+      }
+
+      .dataTables_info {
+        padding-top: 12px;
+        font-weight: 500;
+        color: #6B7280;
+      }
+
+      .dataTables_paginate {
+        padding-top: 12px;
+      }
+
+      .dataTables_paginate .paginate_button {
+        padding: 8px 16px;
+        margin: 0 2px;
+        border-radius: 8px;
+        border: 1px solid rgba(30, 58, 138, 0.2);
+        background: rgba(255, 255, 255, 0.9);
+        color: #1E3A8A !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .dataTables_paginate .paginate_button:hover {
+        background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
+        color: white !important;
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+      }
+
+      .dataTables_paginate .paginate_button.current {
+        background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
+        color: white !important;
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+      }
+
+      .dataTables_paginate .paginate_button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .dt-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
       .btn-export {
-        padding: 10px 18px;
+        padding: 10px 20px;
         border-radius: 12px;
         border: none;
-        font-weight: 700;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: white !important;
-        font-size: 13px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-      }
-      
-      .btn-excel {
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-      }
-      
-      .btn-pdf {
-        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-      }
-      
-      .btn-print {
-        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-      }
-      
-      .btn-export:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-      }
-      
-      /* Table Wrapper */
-      .datatable-table-wrapper {
-        overflow-x: auto;
-        margin-bottom: 20px;
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      }
-      
-      /* Bottom Section */
-      .datatable-bottom {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 16px;
-        padding-top: 20px;
-        border-top: 2px solid rgba(30, 58, 138, 0.1);
-      }
-      
-      .datatable-bottom-left {
-        font-weight: 600;
-        color: #374151;
+        color: white;
         font-size: 14px;
       }
-      
-      .datatable-bottom-right {
-        display: flex;
-        gap: 4px;
+
+      .btn-excel {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
       }
-      
-      /* Pagination */
-      .dataTables_paginate .paginate_button {
-        padding: 8px 14px !important;
-        margin: 0 2px !important;
-        border-radius: 10px !important;
-        border: 2px solid rgba(30, 58, 138, 0.2) !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        color: #1F2937 !important;
-        font-weight: 600 !important;
-        transition: all 0.3s ease !important;
-        cursor: pointer !important;
+
+      .btn-pdf {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
       }
-      
-      .dataTables_paginate .paginate_button:hover {
-        background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
-        color: white !important;
-        border-color: transparent !important;
+
+      .btn-print {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-export:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
       }
-      
-      .dataTables_paginate .paginate_button.current {
-        background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%) !important;
-        color: white !important;
-        border-color: transparent !important;
-        box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+
+      .datatable-footer {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
       }
-      
-      .dataTables_paginate .paginate_button.disabled {
-        opacity: 0.5;
-        cursor: not-allowed !important;
-        pointer-events: none;
-      }
-      
-      /* Responsive */
+
       @media (max-width: 768px) {
-        .datatable-top {
-          flex-direction: column;
-        }
-        
-        .datatable-top-left,
-        .datatable-top-center,
-        .datatable-top-right {
+        .dataTables_filter input {
           width: 100%;
         }
-        
-        .datatable-top-center {
-          justify-content: flex-start;
-          flex-wrap: wrap;
+
+        .dt-buttons {
+          width: 100%;
         }
-        
+
         .btn-export {
           flex: 1;
           justify-content: center;
-          min-width: calc(50% - 4px);
         }
-        
-        .datatable-bottom {
+
+        .datatable-header .row {
           flex-direction: column;
-          text-align: center;
-        }
-        
-        .datatable-bottom-right {
-          width: 100%;
-          justify-content: center;
-          flex-wrap: wrap;
         }
       }
     `;
-    document.head.appendChild(customStyle);
+    document.head.appendChild(style);
   });
 
-  // ============================================
-  // HELPER FUNCTIONS
-  // ============================================
-  function confirmDelete(id) {
-    if (confirm('❌ Apakah Anda yakin ingin menghapus data ini?\n\nData yang dihapus tidak dapat dikembalikan.')) {
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = `/dashboard/delete/${id}?_method=DELETE`;
-      document.body.appendChild(form);
-      form.submit();
-    }
+  // Helper functions
+  function viewFullProfile(username) {
+    window.location.href = `/profile/${username}`;
+  }
+
+  function editUser(username) {
+    // Find user ID from table and redirect
+    $('#usersTable tbody tr').each(function() {
+      const rowData = $('#usersTable').DataTable().row(this).data();
+      const rowUsername = rowData[1].replace(/<[^>]*>/g, '').trim();
+      if (rowUsername === username) {
+        const editBtn = $(this).find('.btn-edit')[0];
+        if (editBtn) {
+          editBtn.click();
+        }
+        return false;
+      }
+    });
   }
 </script>
 </body>

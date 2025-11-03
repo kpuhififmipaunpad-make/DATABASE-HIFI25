@@ -1,5 +1,5 @@
 <div class="table-responsive">
-  <table id="usersTable" class="display" style="width:100%">
+  <table id="usersTable" class="table table-bordered table-striped table-hover" style="width:100%">
     <thead>
       <tr>
         <th>No</th>
@@ -23,17 +23,22 @@
           <td><%= user.email || '-' %></td>
           <td><%= user.hp || '-' %></td>
           <td>
-            <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>">
-              <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
-              <%= user.role === 'admin' ? 'Admin' : 'User' %>
-            </span>
+            <% if (user.role === 'admin') { %>
+              <span class="badge badge-danger">
+                <i class="fas fa-crown"></i> Admin
+              </span>
+            <% } else { %>
+              <span class="badge badge-primary">
+                <i class="fas fa-user"></i> User
+              </span>
+            <% } %>
           </td>
           <td><%= user.time || '-' %></td>
           <td class="no-export">
-            <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
+            <button class="btn btn-primary btn-sm btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
               <i class="fas fa-edit"></i>
             </button>
-            <button class="btn-action btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
+            <button class="btn btn-danger btn-sm btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
               <i class="fas fa-trash"></i>
             </button>
           </td>
@@ -67,6 +72,7 @@
     border: none;
     font-size: 14px;
     white-space: nowrap;
+    vertical-align: middle;
   }
 
   #usersTable thead th:first-child {
@@ -80,16 +86,6 @@
   #usersTable tbody tr {
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
-    cursor: pointer;
-  }
-
-  #usersTable tbody tr:hover {
-    background: rgba(30, 58, 138, 0.05);
-    transform: scale(1.01);
-  }
-
-  #usersTable tbody tr.shown {
-    background: rgba(220, 20, 60, 0.05);
   }
 
   #usersTable tbody td {
@@ -97,85 +93,45 @@
     border: none;
     font-size: 14px;
     color: #374151;
+    vertical-align: middle;
   }
 
-  .detail-card {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    border-radius: 16px;
-    padding: 24px;
-    margin: 10px 0;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    animation: fadeInUp 0.4s ease-out;
+  .btn-edit,
+  .btn-delete {
+    padding: 6px 12px;
+    font-size: 13px;
+    margin-right: 4px;
+    transition: all 0.3s ease;
   }
 
-  .detail-card .row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 -12px;
+  .btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
   }
 
-  .detail-card .col-md-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
-    padding: 0 12px;
+  .btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
   }
 
-  .detail-card h6 {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .detail-card p {
-    margin-bottom: 12px;
-    font-size: 14px;
-    color: #374151;
-    line-height: 1.6;
-  }
-
-  .detail-card strong {
-    color: #1F2937;
+  .badge {
+    padding: 6px 12px;
+    font-size: 12px;
     font-weight: 600;
-  }
-
-  .detail-card .mt-3 {
-    margin-top: 20px;
-  }
-
-  .detail-card .d-flex {
-    display: flex;
-  }
-
-  .detail-card .gap-2 {
-    gap: 8px;
+    border-radius: 6px;
   }
 
   @media (max-width: 768px) {
-    .detail-card .col-md-6 {
-      flex: 0 0 100%;
-      max-width: 100%;
-    }
-
     #usersTable thead th,
     #usersTable tbody td {
       padding: 12px 8px;
       font-size: 13px;
     }
-  }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    .btn-edit,
+    .btn-delete {
+      padding: 4px 8px;
+      font-size: 12px;
     }
   }
 </style>
@@ -185,7 +141,7 @@
     if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
       const form = document.createElement('form');
       form.method = 'POST';
-      form.action = `/dashboard/delete/${id}?_method=DELETE`;
+      form.action = '/dashboard/delete/' + id + '?_method=DELETE';
       document.body.appendChild(form);
       form.submit();
     }

@@ -1,10 +1,10 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- * HIFI DATABASE - ADMIN PANEL ANIMATIONS v2.0
+ * HIFI DATABASE - ADMIN PANEL v3.1 FINAL
  * ═══════════════════════════════════════════════════════════════
- * ✨ ENHANCED: Smooth animations, better UX, responsive design
+ * ✨ FIXED: Glassmorphism sidebar, clean table, perfect layout
  * 📱 FULL RESPONSIVE - Mobile, Tablet, Desktop optimized
- * 🎨 SATISFYING: Polished transitions & micro-interactions
+ * 🎨 ULTRA SATISFYING: Smooth transitions & micro-interactions
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -67,7 +67,7 @@ const HIFI = (() => {
     };
   };
   
-  // Template detail row - ENHANCED RESPONSIVE
+  // ✨ Enhanced detail template
   const buildDetail = (data) => {
     const isMobileView = isMobile();
     
@@ -81,42 +81,77 @@ const HIFI = (() => {
     const lastUpdate = data[7] || '-';
     
     return `
-      <div class="dt-detail animate-slide-down">
-        <div class="detail-card" style="
-          display: grid;
-          grid-template-columns: ${isMobileView ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))'};
-          gap: ${isMobileView ? '12px' : '16px'};
-        ">
-          <div class="detail-item fade-in" style="animation-delay: 0.05s">
-            <b><i class="fas fa-user-circle"></i> Username</b>
-            <span>${esc(username)}</span>
+      <tr class="detail-row">
+        <td colspan="9" class="detail-cell">
+          <div class="dt-detail-wrapper">
+            <div class="detail-grid" style="
+              display: grid;
+              grid-template-columns: ${isMobileView ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))'};
+              gap: ${isMobileView ? '12px' : '16px'};
+            ">
+              <div class="detail-card">
+                <div class="detail-header">
+                  <i class="fas fa-user-circle"></i>
+                  <span>Username</span>
+                </div>
+                <div class="detail-value">${esc(username)}</div>
+              </div>
+              
+              <div class="detail-card">
+                <div class="detail-header">
+                  <i class="fas fa-user"></i>
+                  <span>Nama Lengkap</span>
+                </div>
+                <div class="detail-value">${esc(nama)}</div>
+              </div>
+              
+              <div class="detail-card">
+                <div class="detail-header">
+                  <i class="fas fa-id-card"></i>
+                  <span>NPM</span>
+                </div>
+                <div class="detail-value">${esc(npm)}</div>
+              </div>
+              
+              <div class="detail-card">
+                <div class="detail-header">
+                  <i class="fas fa-envelope"></i>
+                  <span>Email</span>
+                </div>
+                <div class="detail-value">${esc(email)}</div>
+              </div>
+              
+              <div class="detail-card">
+                <div class="detail-header">
+                  <i class="fas fa-phone"></i>
+                  <span>No. HP</span>
+                </div>
+                <div class="detail-value">${esc(no_hp)}</div>
+              </div>
+              
+              <div class="detail-card">
+                <div class="detail-header">
+                  <i class="fas fa-shield-alt"></i>
+                  <span>Role</span>
+                </div>
+                <div class="detail-value">
+                  <span class="role-badge ${role === 'Administrator' ? 'role-admin' : 'role-user'}">
+                    ${esc(role)}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="detail-card full-width">
+                <div class="detail-header">
+                  <i class="fas fa-clock"></i>
+                  <span>Terakhir Update</span>
+                </div>
+                <div class="detail-value">${esc(lastUpdate)}</div>
+              </div>
+            </div>
           </div>
-          <div class="detail-item fade-in" style="animation-delay: 0.1s">
-            <b><i class="fas fa-user"></i> Nama Lengkap</b>
-            <span>${esc(nama)}</span>
-          </div>
-          <div class="detail-item fade-in" style="animation-delay: 0.15s">
-            <b><i class="fas fa-id-card"></i> NPM</b>
-            <span>${esc(npm)}</span>
-          </div>
-          <div class="detail-item fade-in" style="animation-delay: 0.2s">
-            <b><i class="fas fa-envelope"></i> Email</b>
-            <span>${esc(email)}</span>
-          </div>
-          <div class="detail-item fade-in" style="animation-delay: 0.25s">
-            <b><i class="fas fa-phone"></i> No. HP</b>
-            <span>${esc(no_hp)}</span>
-          </div>
-          <div class="detail-item fade-in" style="animation-delay: 0.3s">
-            <b><i class="fas fa-shield-alt"></i> Role</b>
-            <span class="role-badge ${role === 'Administrator' ? 'role-admin' : 'role-user'}">${esc(role)}</span>
-          </div>
-          <div class="detail-item fade-in" style="grid-column:1/-1; animation-delay: 0.35s">
-            <b><i class="fas fa-clock"></i> Terakhir Update</b>
-            <span>${esc(lastUpdate)}</span>
-          </div>
-        </div>
-      </div>
+        </td>
+      </tr>
     `;
   };
 
@@ -144,74 +179,37 @@ function getDT() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📱 RESPONSIVE SIDEBAR - SMOOTH TRANSITIONS
+// 📱 SIDEBAR - GLASSMORPHISM FIXED
 // ═══════════════════════════════════════════════════════════════
 function initSidebarToggle() {
   const sidebar = document.querySelector('.sidebar-glass');
-  const toggleBtn = document.querySelector('#sidebarToggle');
+  const hamburger = document.querySelector('.navbar-toggle, #navbarToggle, #sidebarToggle');
   const mainContent = document.querySelector('.content-wrapper, .main-content');
   let overlay = document.querySelector('.sidebar-overlay');
   
   if (!sidebar) return;
   
-  // Create overlay if not exists
+  // Create overlay for mobile only
   if (!overlay) {
     overlay = document.createElement('div');
     overlay.className = 'sidebar-overlay';
     document.body.appendChild(overlay);
   }
 
-  // ✨ Enhanced toggle with smooth animation
-  const toggleSidebar = (force) => {
-    const isCollapsed = force !== undefined ? !force : sidebar.classList.contains('active');
-    
+  const toggleSidebar = () => {
     if (HIFI.isMobile()) {
-      // Mobile: slide animation with backdrop
-      sidebar.classList.toggle('active', !isCollapsed);
-      overlay.classList.toggle('active', !isCollapsed);
-      document.body.style.overflow = isCollapsed ? '' : 'hidden';
+      const isActive = sidebar.classList.contains('mobile-active');
       
-      // Haptic feedback on mobile (if supported)
+      sidebar.classList.toggle('mobile-active');
+      overlay.classList.toggle('active');
+      document.body.style.overflow = isActive ? '' : 'hidden';
+      
       if (navigator.vibrate) {
         navigator.vibrate(10);
       }
-    } else {
-      // Desktop: smooth collapse/expand
-      sidebar.classList.toggle('collapsed', isCollapsed);
-      mainContent?.classList.toggle('expanded', isCollapsed);
-      mainContent?.classList.toggle('sidebar-collapsed', isCollapsed);
-      
-      // Smooth icon rotation
-      if (toggleBtn) {
-        const icon = toggleBtn.querySelector('i');
-        if (icon) {
-          icon.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
-        }
-      }
     }
-    
-    localStorage.setItem('sidebarCollapsed', isCollapsed);
-    
-    // Trigger DataTable column adjustment after animation
-    setTimeout(() => {
-      const dt = getDT();
-      if (dt) {
-        dt.columns.adjust().responsive.recalc();
-      }
-    }, 350);
   };
 
-  // Toggle button handler
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleSidebar();
-    });
-  }
-
-  // Hamburger menu for mobile
-  const hamburger = document.querySelector('.navbar-toggle, #navbarToggle');
   if (hamburger) {
     hamburger.addEventListener('click', (e) => {
       e.preventDefault();
@@ -220,57 +218,40 @@ function initSidebarToggle() {
     });
   }
 
-  // Overlay click to close
   overlay.addEventListener('click', () => {
-    if (HIFI.isMobile() && sidebar.classList.contains('active')) {
-      toggleSidebar(false);
-    }
-  });
-
-  // Close sidebar on outside click (mobile)
-  document.addEventListener('click', (e) => {
-    if (HIFI.isMobile() && 
-        sidebar.classList.contains('active') &&
-        !sidebar.contains(e.target) && 
-        !e.target.closest('.navbar-toggle, #sidebarToggle, #navbarToggle')) {
-      toggleSidebar(false);
-    }
-  });
-
-  // Restore saved state
-  const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-  if (!HIFI.isMobile() && isCollapsed) {
-    sidebar.classList.add('collapsed');
-    mainContent?.classList.add('expanded', 'sidebar-collapsed');
-    const icon = toggleBtn?.querySelector('i');
-    if (icon) icon.style.transform = 'rotate(180deg)';
-  }
-
-  // ✨ Smooth resize handler
-  const handleResize = HIFI.debounce(() => {
     if (HIFI.isMobile()) {
-      sidebar.classList.remove('collapsed');
-      mainContent?.classList.remove('expanded', 'sidebar-collapsed');
-      if (!sidebar.classList.contains('active')) {
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    } else {
-      sidebar.classList.remove('active');
+      sidebar.classList.remove('mobile-active');
       overlay.classList.remove('active');
       document.body.style.overflow = '';
-      if (isCollapsed) {
-        sidebar.classList.add('collapsed');
-        mainContent?.classList.add('expanded', 'sidebar-collapsed');
-      }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (HIFI.isMobile() && 
+        sidebar.classList.contains('mobile-active') &&
+        !sidebar.contains(e.target) && 
+        !e.target.closest('.navbar-toggle, #sidebarToggle, #navbarToggle')) {
+      sidebar.classList.remove('mobile-active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+
+  const handleResize = HIFI.debounce(() => {
+    if (!HIFI.isMobile()) {
+      sidebar.classList.remove('mobile-active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
     }
   }, 250);
 
   window.addEventListener('resize', handleResize);
+  
+  console.log('✅ Sidebar initialized - Glassmorphism fixed layout');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📊 DATATABLE - ENHANCED RESPONSIVE
+// 📊 DATATABLE - CLEAN & SMOOTH
 // ═══════════════════════════════════════════════════════════════
 function initDataTable() {
   if (!window.jQuery || !$.fn.DataTable) {
@@ -284,30 +265,29 @@ function initDataTable() {
     return;
   }
 
-  // Destroy existing instance
   if ($.fn.DataTable.isDataTable('#usersTable')) {
     $('#usersTable').DataTable().destroy();
   }
 
-  // Responsive configuration
   const isMobile = HIFI.isMobile();
   const isTablet = HIFI.isTablet();
   
-  // Dynamic page length
-  let defaultPageLength = 10;
-  if (isMobile) defaultPageLength = 5;
-  else if (isTablet) defaultPageLength = 8;
+  let defaultPageLength = 25;
+  if (isMobile) defaultPageLength = 10;
+  else if (isTablet) defaultPageLength = 25;
 
-  // ✨ Initialize with smooth animations
+  // ✨ Initialize dengan layout custom
   const dt = $table.DataTable({
     responsive: false,
     autoWidth: false,
     searching: true,
     lengthChange: true,
-    pagingType: 'simple_numbers',
+    pagingType: 'full_numbers',
     pageLength: defaultPageLength,
-    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
-    dom: "Bfrtip",
+    lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+    dom: "<'datatable-header'<'header-left'B><'header-right'lf>>" +
+         "<'datatable-body't>" +
+         "<'datatable-footer'<'footer-left'i><'footer-right'p>>",
     order: [[2, 'asc']],
     columnDefs: [
       { 
@@ -324,176 +304,213 @@ function initDataTable() {
     language: {
       paginate: { 
         first: '<i class="fas fa-angle-double-left"></i>', 
-        previous: isMobile ? '<i class="fas fa-angle-left"></i>' : '<i class="fas fa-angle-left"></i> Prev', 
-        next: isMobile ? '<i class="fas fa-angle-right"></i>' : 'Next <i class="fas fa-angle-right"></i>', 
+        previous: '<i class="fas fa-angle-left"></i>', 
+        next: '<i class="fas fa-angle-right"></i>', 
         last: '<i class="fas fa-angle-double-right"></i>' 
       },
-      info: isMobile ? '_START_-_END_ / _TOTAL_' : 'Menampilkan _START_ - _END_ dari _TOTAL_ data',
-      infoEmpty: 'Tidak ada data',
-      infoFiltered: isMobile ? '' : '(disaring dari _MAX_ total data)',
-      zeroRecords: '<div class="empty-state"><i class="fas fa-inbox fa-3x"></i><p>Data tidak ditemukan</p></div>',
-      emptyTable: '<div class="empty-state"><i class="fas fa-database fa-3x"></i><p>Tidak ada data tersedia</p></div>',
-      lengthMenu: isMobile ? '_MENU_' : 'Tampilkan _MENU_ data',
+      info: isMobile ? '_START_-_END_ / _TOTAL_' : 'Showing _START_ to _END_ of _TOTAL_ entries',
+      infoEmpty: 'No entries',
+      infoFiltered: isMobile ? '' : '(filtered from _MAX_)',
+      zeroRecords: `
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-search fa-3x"></i>
+          </div>
+          <p class="empty-title">No Data Found</p>
+          <p class="empty-subtitle">Try adjusting your search</p>
+        </div>
+      `,
+      emptyTable: `
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-database fa-3x"></i>
+          </div>
+          <p class="empty-title">No Data Available</p>
+          <p class="empty-subtitle">The table is empty</p>
+        </div>
+      `,
+      lengthMenu: '_MENU_',
       search: '',
-      searchPlaceholder: isMobile ? 'Cari...' : 'Ketik untuk mencari...'
+      searchPlaceholder: isMobile ? 'Search...' : 'Type to search...'
     },
     buttons: [
       {
         extend: 'excel',
-        text: isMobile ? '<i class="fas fa-file-excel"></i>' : '<i class="fas fa-file-excel"></i> Excel',
-        className: 'dt-btn-green btn-smooth',
+        text: '<i class="fas fa-file-excel"></i><span class="btn-text"> Excel</span>',
+        className: 'dt-btn-export dt-btn-excel',
         title: 'Data Warga HIFI',
         exportOptions: { columns: ':not(.no-export)' }
       },
       {
         extend: 'pdf',
-        text: isMobile ? '<i class="fas fa-file-pdf"></i>' : '<i class="fas fa-file-pdf"></i> PDF',
-        className: 'dt-btn-green btn-smooth',
+        text: '<i class="fas fa-file-pdf"></i><span class="btn-text"> PDF</span>',
+        className: 'dt-btn-export dt-btn-pdf',
         title: 'Data Warga HIFI',
         orientation: 'landscape',
         exportOptions: { columns: ':not(.no-export)' }
       },
       {
         extend: 'print',
-        text: isMobile ? '<i class="fas fa-print"></i>' : '<i class="fas fa-print"></i> Print',
-        className: 'dt-btn-green btn-smooth',
+        text: '<i class="fas fa-print"></i><span class="btn-text"> Print</span>',
+        className: 'dt-btn-export dt-btn-print',
         title: 'Data Warga HIFI',
         exportOptions: { columns: ':not(.no-export)' }
       }
     ],
     initComplete: function() {
-      // ✨ Fade in table after load
-      $table.addClass('table-loaded');
+      $table.addClass('table-initialized');
+      $('.dataTables_wrapper').addClass('wrapper-loaded');
+      
+      // Add search icon
+      const searchWrapper = $('.dataTables_filter');
+      if (!searchWrapper.find('.search-icon').length) {
+        searchWrapper.prepend('<i class="fas fa-search search-icon"></i>');
+      }
     },
-    drawCallback: function() {
+    drawCallback: function(settings) {
       if (HIFI.isTouch()) {
         $table.addClass('touch-enabled');
       }
       
-      // ✨ Animate rows on draw
-      $table.find('tbody tr').each((i, row) => {
-        $(row).css({
-          'animation': `fadeInUp 0.4s ease ${i * 0.03}s both`
+      // ✨ Wave animation
+      const rows = $table.find('tbody tr');
+      rows.each((i, row) => {
+        const $row = $(row);
+        $row.css({
+          opacity: '0',
+          transform: 'translateY(20px)'
         });
+        
+        setTimeout(() => {
+          $row.css({
+            transition: `all 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${i * 25}ms`,
+            opacity: '1',
+            transform: 'translateY(0)'
+          });
+        }, 10);
       });
     }
   });
 
   enhanceDataTable(dt);
   
-  console.log('✅ DataTable initialized with enhanced animations');
+  console.log('✅ DataTable initialized - Clean layout');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ✨ DATATABLE ENHANCEMENTS - SMOOTH INTERACTIONS
+// ✨ DATATABLE ENHANCEMENTS - FIXED DETAIL
 // ═══════════════════════════════════════════════════════════════
 function enhanceDataTable(dt) {
   if (!dt) return;
 
-  // Style wrappers dengan animasi
-  $('.dataTables_wrapper').addClass('glass-card').css('opacity', '0');
-  setTimeout(() => {
-    $('.dataTables_wrapper').css({
-      'transition': 'opacity 0.5s ease',
-      'opacity': '1'
-    });
-  }, 100);
+  let activeRow = null;
 
-  $('.dataTables_filter input').addClass('form-control-glass');
-  $('.dataTables_length select').addClass('form-control-glass');
-
-  // ✨ Enhanced search input dengan icon
-  const searchWrapper = $('.dataTables_filter');
-  if (!searchWrapper.find('.search-icon').length) {
-    searchWrapper.prepend('<i class="fas fa-search search-icon"></i>');
-  }
-
-  // ✨ Toggle child-row dengan smooth animation
+  // ✨ FIXED: Proper detail row handling
   $('#usersTable tbody')
-    .off('click.hifi touchend.hifi')
-    .on('click.hifi touchend.hifi', 'tr', function (e) {
-      // Prevent double-firing
-      if (e.type === 'touchend') {
-        e.preventDefault();
-      }
-      
+    .off('click.hifi')
+    .on('click.hifi', 'tr:not(.detail-row)', function (e) {
       // Ignore interactive elements
       if ($(e.target).closest('.btn-action, button, a, form, input, select, .no-detail').length) {
         return;
       }
 
-      const $tr = $(this);
-      const row = dt.row($tr);
+      const $clickedRow = $(this);
+      const rowData = dt.row($clickedRow).data();
+      
+      // Skip if not a data row
+      if (!rowData) return;
 
-      if (row.child.isShown()) {
-        // ✨ Close with slide-up animation
-        $tr.removeClass('shown');
-        $tr.find('.dt-detail').slideUp(300, function() {
-          row.child.hide();
+      // Check if this row already has detail
+      const $existingDetail = $clickedRow.next('tr.detail-row');
+      const isCurrentlyExpanded = $existingDetail.length > 0;
+
+      // ✨ Close previous detail if different row
+      if (activeRow && activeRow[0] !== $clickedRow[0]) {
+        const $prevDetail = activeRow.next('tr.detail-row');
+        if ($prevDetail.length) {
+          activeRow.removeClass('row-expanded');
+          $prevDetail.find('.dt-detail-wrapper').css({
+            animation: 'slideOutUp 0.3s ease forwards'
+          });
+          setTimeout(() => {
+            $prevDetail.remove();
+          }, 300);
+        }
+      }
+
+      if (isCurrentlyExpanded) {
+        // ✨ Close current detail
+        $clickedRow.removeClass('row-expanded');
+        $existingDetail.find('.dt-detail-wrapper').css({
+          animation: 'slideOutUp 0.3s ease forwards'
         });
+        setTimeout(() => {
+          $existingDetail.remove();
+        }, 300);
+        activeRow = null;
       } else {
-        // Close other rows first
-        dt.rows().every(function () {
-          if (this.child && this.child.isShown()) {
-            $(this.node()).removeClass('shown');
-            $(this.node()).find('.dt-detail').slideUp(200, () => {
-              this.child.hide();
-            });
-          }
+        // ✨ Open new detail
+        const detailHtml = HIFI.buildDetail(rowData);
+        $clickedRow.after(detailHtml);
+        
+        $clickedRow.addClass('row-expanded');
+        
+        const $newDetail = $clickedRow.next('tr.detail-row');
+        const $wrapper = $newDetail.find('.dt-detail-wrapper');
+        
+        $wrapper.css({
+          display: 'block',
+          animation: 'slideInDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
         });
         
-        // ✨ Open with slide-down animation
-        const rowData = row.data();
-        row.child(HIFI.buildDetail(rowData)).show();
+        // Animate cards
+        setTimeout(() => {
+          $wrapper.find('.detail-card').each((i, card) => {
+            $(card).css({
+              animation: `fadeInUp 0.3s ease ${i * 40}ms both`
+            });
+          });
+        }, 100);
         
-        // Initial hide untuk animasi
-        const $detail = $tr.next('tr.child').find('.dt-detail');
-        $detail.hide().slideDown(350, 'swing');
-        
-        setTimeout(() => $tr.addClass('shown'), 50);
+        activeRow = $clickedRow;
         
         // Scroll into view on mobile
         if (HIFI.isMobile()) {
           setTimeout(() => {
-            const childRow = row.child()[0];
-            if (childRow) {
-              childRow.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest',
-                inline: 'nearest'
-              });
-            }
-          }, 400);
+            $newDetail[0].scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'nearest'
+            });
+          }, 450);
         }
 
         // Haptic feedback
         if (navigator.vibrate) {
-          navigator.vibrate(5);
+          navigator.vibrate([5, 30, 5]);
         }
       }
     });
 
-  // ✨ Smooth resize handler
-  const handleResize = HIFI.debounce(() => {
-    const isMobile = HIFI.isMobile();
-    const isTablet = HIFI.isTablet();
-    
-    let newLength = 10;
-    if (isMobile) newLength = 5;
-    else if (isTablet) newLength = 8;
-    
-    if (dt.page.len() !== newLength) {
-      dt.page.len(newLength).draw();
+  // Pagination smooth scroll
+  $('.dataTables_paginate').on('click', 'a.paginate_button:not(.disabled)', function() {
+    if (!HIFI.isMobile()) {
+      $('html, body').animate({
+        scrollTop: $table.offset().top - 100
+      }, 400);
     }
-    
-    dt.columns.adjust().responsive.recalc();
+  });
+
+  const handleResize = HIFI.debounce(() => {
+    dt.columns.adjust();
   }, 300);
 
   $(window).on('resize.datatable', handleResize);
+  
+  console.log('✅ DataTable enhanced - Fixed detail behavior');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📈 CHART - SMOOTH ANIMATIONS
+// 📈 CHART
 // ═══════════════════════════════════════════════════════════════
 function initCharts() {
   if (typeof Chart === 'undefined') return;
@@ -502,7 +519,6 @@ function initCharts() {
 
   const isMobile = HIFI.isMobile();
   
-  // ✨ Enhanced chart with smooth animations
   new Chart(ctx, {
     type: 'line',
     data: {
@@ -519,10 +535,7 @@ function initCharts() {
         pointHoverRadius: isMobile ? 5 : 6,
         pointBackgroundColor: 'rgb(220, 20, 60)',
         pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgb(220, 20, 60)',
-        pointHoverBorderWidth: 2
+        pointBorderWidth: 2
       }]
     },
     options: {
@@ -530,7 +543,7 @@ function initCharts() {
       maintainAspectRatio: true,
       aspectRatio: isMobile ? 1.5 : 2,
       animation: {
-        duration: 1500,
+        duration: 1800,
         easing: 'easeInOutQuart'
       },
       plugins: {
@@ -538,84 +551,65 @@ function initCharts() {
           display: !isMobile,
           labels: { 
             font: { size: isMobile ? 10 : 12 },
-            padding: 15,
-            usePointStyle: true
+            padding: 15
           }
         },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
           padding: 12,
           borderColor: 'rgba(220, 20, 60, 0.5)',
-          borderWidth: 1,
-          displayColors: false,
-          callbacks: {
-            title: (context) => context[0].label,
-            label: (context) => `Pendaftar: ${context.parsed.y} orang`
-          }
+          borderWidth: 1
         }
       },
       scales: {
         y: {
           beginAtZero: true,
           ticks: { 
-            font: { size: isMobile ? 10 : 12 },
-            padding: 8
+            font: { size: isMobile ? 10 : 12 }
           },
           grid: {
-            color: 'rgba(0, 0, 0, 0.05)',
-            drawBorder: false
+            color: 'rgba(0, 0, 0, 0.05)'
           }
         },
         x: {
           ticks: { 
-            font: { size: isMobile ? 10 : 12 },
-            padding: 8
+            font: { size: isMobile ? 10 : 12 }
           },
           grid: {
-            display: false,
-            drawBorder: false
+            display: false
           }
         }
-      },
-      interaction: {
-        mode: 'index',
-        intersect: false
       }
     }
   });
-
-  console.log('✅ Chart initialized with smooth animations');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 💫 STAT CARDS - SATISFYING ANIMATIONS
+// 💫 STAT CARDS
 // ═══════════════════════════════════════════════════════════════
 function animateStatCards() {
   const cards = document.querySelectorAll('.stat-card');
   if (!cards.length) return;
 
   const isMobile = HIFI.isMobile();
-  const delay = isMobile ? 80 : 120;
-  const duration = isMobile ? 500 : 700;
+  const delay = isMobile ? 100 : 150;
+  const duration = isMobile ? 600 : 800;
 
   cards.forEach((card, i) => {
-    // Initial state
     card.style.opacity = '0';
-    card.style.transform = 'translateY(40px) scale(0.9)';
+    card.style.transform = 'translateY(50px) scale(0.9)';
     
     setTimeout(() => {
       card.style.transition = `all ${duration}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
       card.style.opacity = '1';
       card.style.transform = 'translateY(0) scale(1)';
       
-      // ✨ Add hover effect after animation
       setTimeout(() => {
         card.classList.add('card-animated');
       }, duration);
     }, i * delay);
   });
 
-  // ✨ Animate counter values with easing
   setTimeout(() => {
     cards.forEach(card => {
       const valueEl = card.querySelector('[data-counter]');
@@ -624,17 +618,13 @@ function animateStatCards() {
         animateCounter(valueEl, 0, target, 2000);
       }
     });
-  }, 400);
-
-  console.log('✅ Stat cards animated');
+  }, 500);
 }
 
-// ✨ Enhanced counter animation dengan easing
 function animateCounter(element, start, end, duration) {
   const range = end - start;
   const startTime = performance.now();
   
-  // Easing function (ease-out-cubic)
   const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
   
   function updateCounter(currentTime) {
@@ -656,7 +646,7 @@ function animateCounter(element, start, end, duration) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ⏳ LOADING STATE - SMOOTH OVERLAY
+// ⏳ LOADING STATE
 // ═══════════════════════════════════════════════════════════════
 function showLoadingState(show = true) {
   let overlay = document.querySelector('.loading-overlay');
@@ -691,7 +681,7 @@ function showLoadingState(show = true) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 🗑️ USER ACTIONS - ENHANCED CONFIRMATIONS
+// 🗑️ USER ACTIONS
 // ═══════════════════════════════════════════════════════════════
 function confirmDelete(id) {
   const message = HIFI.isMobile() 
@@ -701,12 +691,10 @@ function confirmDelete(id) {
   if (confirm(message)) {
     showLoadingState(true);
     
-    // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate([10, 50, 10]);
     }
     
-    // Submit form
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = `/dashboard/delete/${id}?_method=DELETE`;
@@ -716,7 +704,7 @@ function confirmDelete(id) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 👆 TOUCH ENHANCEMENTS - BETTER MOBILE UX
+// 👆 TOUCH ENHANCEMENTS
 // ═══════════════════════════════════════════════════════════════
 function initTouchEnhancements() {
   if (!HIFI.isTouch()) return;
@@ -726,36 +714,29 @@ function initTouchEnhancements() {
   );
 
   touchElements.forEach(el => {
-    // ✨ Press effect
-    el.addEventListener('touchstart', function(e) {
+    el.addEventListener('touchstart', function() {
       this.classList.add('touch-pressed');
       this.style.transform = 'scale(0.95)';
     }, { passive: true });
     
-    // ✨ Release effect
     el.addEventListener('touchend', function() {
       this.classList.remove('touch-pressed');
       this.style.transform = '';
     }, { passive: true });
 
-    // ✨ Cancel effect
     el.addEventListener('touchcancel', function() {
       this.classList.remove('touch-pressed');
       this.style.transform = '';
     }, { passive: true });
   });
 
-  // ✨ Prevent 300ms delay on mobile
   document.addEventListener('touchstart', function() {}, { passive: true });
-
-  console.log('✅ Touch enhancements activated');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ♿ ACCESSIBILITY - BETTER A11Y
+// ♿ ACCESSIBILITY
 // ═══════════════════════════════════════════════════════════════
 function initAccessibility() {
-  // Add ARIA labels
   document.querySelectorAll('.btn-action').forEach(btn => {
     if (!btn.getAttribute('aria-label')) {
       const title = btn.getAttribute('title') || btn.textContent.trim();
@@ -763,7 +744,6 @@ function initAccessibility() {
     }
   });
 
-  // Focus visible untuk keyboard navigation
   document.querySelectorAll('button, a, input, select, textarea').forEach(el => {
     el.addEventListener('keydown', function(e) {
       if (e.key === 'Tab') {
@@ -776,7 +756,6 @@ function initAccessibility() {
     });
   });
 
-  // Skip to content link
   if (!document.querySelector('.skip-link')) {
     const skipLink = document.createElement('a');
     skipLink.href = '#main-content';
@@ -784,96 +763,30 @@ function initAccessibility() {
     skipLink.textContent = 'Skip to main content';
     document.body.insertBefore(skipLink, document.body.firstChild);
   }
-
-  console.log('✅ Accessibility enhancements applied');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 🎯 SCROLL ANIMATIONS - REVEAL ON SCROLL
-// ═══════════════════════════════════════════════════════════════
-function initScrollAnimations() {
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-
-  // Observe elements
-  document.querySelectorAll('.glass-card, .stat-card').forEach(el => {
-    el.classList.add('fade-on-scroll');
-    observer.observe(el);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 🎨 THEME TOGGLE (Optional Enhancement)
-// ═══════════════════════════════════════════════════════════════
-function initThemeToggle() {
-  const themeToggle = document.querySelector('#themeToggle');
-  if (!themeToggle) return;
-
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-
-  themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    
-    // ✨ Smooth transition
-    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 🚀 INIT ALL - ORCHESTRATE EVERYTHING
+// 🚀 INIT ALL
 // ═══════════════════════════════════════════════════════════════
 function initAll() {
   console.log('═══════════════════════════════════════════');
-  console.log('🚀 HIFI Admin Panel v2.0 - Initializing...');
+  console.log('🚀 HIFI Admin Panel v3.1 FINAL');
   console.log('═══════════════════════════════════════════');
   
   const deviceType = HIFI.isMobile() ? 'Mobile 📱' : 
                      HIFI.isTablet() ? 'Tablet 💻' : 
                      'Desktop 🖥️';
   console.log(`📱 Device: ${deviceType}`);
-  console.log(`👆 Touch: ${HIFI.isTouch() ? 'Yes' : 'No'}`);
 
-  // Core functionality
   initSidebarToggle();
   
-  // Delay DataTable untuk smooth initial load
-  setTimeout(() => {
-    initDataTable();
-  }, 100);
+  setTimeout(() => initDataTable(), 100);
+  setTimeout(() => initCharts(), 300);
+  setTimeout(() => animateStatCards(), 500);
   
-  // Delay charts untuk sequential animation
-  setTimeout(() => {
-    initCharts();
-  }, 300);
-  
-  // Stat cards dengan delay
-  setTimeout(() => {
-    animateStatCards();
-  }, 500);
-  
-  // Enhancements
   initTouchEnhancements();
   initAccessibility();
-  initScrollAnimations();
-  initThemeToggle();
 
-  // Add device classes
   document.body.classList.add(
     HIFI.isMobile() ? 'is-mobile' : 
     HIFI.isTablet() ? 'is-tablet' : 
@@ -884,7 +797,6 @@ function initAll() {
     document.body.classList.add('is-touch');
   }
 
-  // ✨ Page loaded animation
   document.body.classList.add('page-loaded');
 
   console.log('═══════════════════════════════════════════');
@@ -912,22 +824,22 @@ window.HIFIAdmin = {
   isDesktop: HIFI.isDesktop,
   isTouch: HIFI.isTouch,
   getDataTable: getDT,
-  version: '2.0'
+  version: '3.1'
 };
 
 // ═══════════════════════════════════════════════════════════════
-// 🎨 ENHANCED STYLES - BEAUTIFUL ANIMATIONS
+// 🎨 PERFECT STYLES - GLASSMORPHISM + CLEAN LAYOUT
 // ═══════════════════════════════════════════════════════════════
-const enhancedStyles = document.createElement('style');
-enhancedStyles.textContent = `
+const finalStyles = document.createElement('style');
+finalStyles.textContent = `
   /* ═══════════════════════════════════════════════════════════════
-     🎬 KEYFRAME ANIMATIONS
+     🎬 KEYFRAMES
      ═══════════════════════════════════════════════════════════════ */
   
   @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(30px);
     }
     to {
       opacity: 1;
@@ -935,16 +847,25 @@ enhancedStyles.textContent = `
     }
   }
 
-  @keyframes slideDown {
-    from {
+  @keyframes slideInDown {
+    0% {
       opacity: 0;
-      max-height: 0;
-      transform: translateY(-10px);
+      transform: translateY(-20px);
     }
-    to {
+    100% {
       opacity: 1;
-      max-height: 500px;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes slideOutUp {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px);
     }
   }
 
@@ -957,9 +878,94 @@ enhancedStyles.textContent = `
     50% { opacity: 0.5; }
   }
 
-  @keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
+  /* ═══════════════════════════════════════════════════════════════
+     📱 GLASSMORPHISM SIDEBAR - FIXED
+     ═══════════════════════════════════════════════════════════════ */
+  
+  .sidebar-glass {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Glassmorphism scrollbar */
+  .sidebar-glass::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar-glass::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .sidebar-glass::-webkit-scrollbar-thumb {
+    background: rgba(220, 20, 60, 0.3);
+    border-radius: 3px;
+  }
+
+  .sidebar-glass::-webkit-scrollbar-thumb:hover {
+    background: rgba(220, 20, 60, 0.5);
+  }
+
+  /* Desktop: Always visible */
+  @media (min-width: 769px) {
+    .sidebar-glass {
+      transform: translateX(0) !important;
+    }
+    
+    .main-content,
+    .content-wrapper {
+      margin-left: 260px;
+      transition: margin-left 0.4s ease;
+    }
+  }
+
+  /* Mobile: Slide from left */
+  @media (max-width: 768px) {
+    .sidebar-glass {
+      transform: translateX(-100%);
+      background: rgba(255, 255, 255, 0.95) !important;
+    }
+    
+    .sidebar-glass.mobile-active {
+      transform: translateX(0);
+      box-shadow: 4px 0 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    .main-content,
+    .content-wrapper {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -970,14 +976,14 @@ enhancedStyles.textContent = `
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 99999;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.4s ease;
   }
   
   .loading-overlay.active {
@@ -994,134 +1000,249 @@ enhancedStyles.textContent = `
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 60px;
-    height: 60px;
-    margin: -30px 0 0 -30px;
-    border: 3px solid transparent;
+    width: 70px;
+    height: 70px;
+    margin: -35px 0 0 -35px;
+    border: 4px solid transparent;
     border-top-color: #dc143c;
     border-radius: 50%;
-    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    animation: spin 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
   }
 
   .spinner-ring-2 {
-    width: 50px;
-    height: 50px;
-    margin: -25px 0 0 -25px;
+    width: 56px;
+    height: 56px;
+    margin: -28px 0 0 -28px;
+    border-width: 3px;
     border-top-color: #ff6b6b;
-    animation-delay: -0.4s;
+    animation-delay: -0.5s;
   }
 
   .spinner-ring-3 {
-    width: 40px;
-    height: 40px;
-    margin: -20px 0 0 -20px;
+    width: 42px;
+    height: 42px;
+    margin: -21px 0 0 -21px;
+    border-width: 2px;
     border-top-color: #ffa07a;
-    animation-delay: -0.8s;
+    animation-delay: -1s;
   }
 
   .loading-text {
-    margin-top: 80px;
-    font-size: 14px;
-    font-weight: 500;
+    margin-top: 90px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
     animation: pulse 1.5s ease-in-out infinite;
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     📊 DATATABLE ENHANCEMENTS
+     📊 DATATABLE - CLEAN LAYOUT
      ═══════════════════════════════════════════════════════════════ */
 
   .dataTables_wrapper {
-    transition: all 0.3s ease;
+    opacity: 0;
+    transition: opacity 0.5s ease;
   }
 
-  .table-loaded {
-    animation: fadeInUp 0.6s ease;
+  .dataTables_wrapper.wrapper-loaded {
+    opacity: 1;
   }
 
-  #usersTable tbody tr {
+  /* Header Layout: Buttons left, Length + Search right */
+  .datatable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .header-left {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .header-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  /* Footer Layout: Info left, Pagination right */
+  .datatable-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .footer-left {
+    flex: 0 0 auto;
+  }
+
+  .footer-right {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  /* Table Body */
+  .datatable-body {
+    overflow-x: auto;
+  }
+
+  #usersTable {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    width: 100% !important;
+  }
+
+  #usersTable.table-initialized {
+    opacity: 1;
+  }
+
+  #usersTable tbody tr:not(.detail-row) {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
 
-  #usersTable tbody tr:hover {
+  #usersTable tbody tr:not(.detail-row):hover {
     background-color: rgba(220, 20, 60, 0.05) !important;
     transform: translateX(4px);
     box-shadow: -4px 0 0 0 rgba(220, 20, 60, 0.5);
   }
 
-  #usersTable tbody tr.shown {
-    background-color: rgba(220, 20, 60, 0.1) !important;
+  #usersTable tbody tr.row-expanded {
+    background: rgba(220, 20, 60, 0.08) !important;
+    box-shadow: inset 4px 0 0 0 rgba(220, 20, 60, 0.8);
   }
 
-  .dt-detail {
-    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 16px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-    border-radius: 8px;
-    margin: 8px 0;
+  /* Detail Row */
+  tr.detail-row {
+    background: transparent !important;
   }
 
-  .detail-card {
+  tr.detail-row:hover {
+    background: transparent !important;
+  }
+
+  .detail-cell {
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  .dt-detail-wrapper {
+    padding: 20px;
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(250, 250, 250, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    margin: 8px;
+  }
+
+  .detail-grid {
     display: grid;
     gap: 16px;
   }
 
-  .detail-item {
-    opacity: 0;
-    animation: fadeInUp 0.4s ease forwards;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 8px;
-    border-left: 3px solid #dc143c;
+  .detail-card {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(220, 20, 60, 0.1);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
   }
 
-  .detail-item:hover {
-    background: rgba(255, 255, 255, 0.8);
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  .detail-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 0;
+    background: linear-gradient(180deg, #dc143c, #ff6b6b);
+    transition: height 0.3s ease;
   }
 
-  .detail-item b {
-    display: block;
+  .detail-card:hover::before {
+    height: 100%;
+  }
+
+  .detail-card:hover {
+    transform: translateY(-3px) translateX(3px);
+    box-shadow: -3px 6px 15px rgba(220, 20, 60, 0.15);
+    border-color: rgba(220, 20, 60, 0.3);
+  }
+
+  .detail-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .detail-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid rgba(220, 20, 60, 0.1);
+  }
+
+  .detail-header i {
     color: #dc143c;
-    font-size: 12px;
-    margin-bottom: 6px;
+    font-size: 16px;
+  }
+
+  .detail-header span {
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color: #666;
   }
 
-  .detail-item span {
-    display: block;
-    color: #333;
+  .detail-value {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
+    color: #222;
+    word-break: break-word;
   }
 
   .role-badge {
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    transition: all 0.3s ease;
   }
 
   .role-admin {
-    background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
+    background: linear-gradient(135deg, #dc143c, #ff6b6b);
     color: white;
-    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
+    box-shadow: 0 3px 10px rgba(220, 20, 60, 0.3);
   }
 
   .role-user {
-    background: linear-gradient(135deg, #6c757d 0%, #95a5a6 100%);
+    background: linear-gradient(135deg, #6c757d, #95a5a6);
     color: white;
-    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+    box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3);
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     🔍 SEARCH ENHANCEMENT
+     🔍 SEARCH & LENGTH
      ═══════════════════════════════════════════════════════════════ */
 
   .dataTables_filter {
@@ -1134,18 +1255,149 @@ enhancedStyles.textContent = `
     top: 50%;
     transform: translateY(-50%);
     color: #dc143c;
+    font-size: 14px;
     pointer-events: none;
     z-index: 1;
   }
 
   .dataTables_filter input {
-    padding-left: 40px !important;
-    transition: all 0.3s ease;
+    padding: 10px 15px 10px 38px !important;
+    border: 2px solid rgba(220, 20, 60, 0.2) !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    min-width: 200px;
   }
 
   .dataTables_filter input:focus {
-    box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
-    border-color: #dc143c;
+    box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.1) !important;
+    border-color: #dc143c !important;
+    outline: none !important;
+  }
+
+  .dataTables_length {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dataTables_length label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 600;
+    color: #666;
+  }
+
+  .dataTables_length select {
+    padding: 8px 32px 8px 12px !important;
+    border: 2px solid rgba(220, 20, 60, 0.2) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    appearance: none;
+    background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="%23dc143c" d="M6 9L1 4h10z"/></svg>') no-repeat right 10px center;
+  }
+
+  .dataTables_length select:hover {
+    border-color: #dc143c !important;
+    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.15) !important;
+  }
+
+  .dataTables_length select:focus {
+    outline: none !important;
+    border-color: #dc143c !important;
+    box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.1) !important;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     🎯 EXPORT BUTTONS
+     ═══════════════════════════════════════════════════════════════ */
+
+  .dt-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .dt-btn-export {
+    padding: 10px 18px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dt-btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .dt-btn-excel {
+    background: linear-gradient(135deg, #217346, #2ea85b) !important;
+    color: white !important;
+  }
+
+  .dt-btn-pdf {
+    background: linear-gradient(135deg, #dc143c, #ff6b6b) !important;
+    color: white !important;
+  }
+
+  .dt-btn-print {
+    background: linear-gradient(135deg, #495057, #6c757d) !important;
+    color: white !important;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     📄 PAGINATION
+     ═══════════════════════════════════════════════════════════════ */
+
+  .dataTables_paginate {
+    display: flex;
+    gap: 5px;
+  }
+
+  .dataTables_paginate .paginate_button {
+    padding: 8px 14px !important;
+    margin: 0 !important;
+    border-radius: 6px !important;
+    border: 2px solid rgba(220, 20, 60, 0.2) !important;
+    background: white !important;
+    color: #dc143c !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+  }
+
+  .dataTables_paginate .paginate_button:hover:not(.disabled) {
+    background: linear-gradient(135deg, #dc143c, #ff6b6b) !important;
+    color: white !important;
+    border-color: #dc143c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3) !important;
+  }
+
+  .dataTables_paginate .paginate_button.current {
+    background: linear-gradient(135deg, #dc143c, #ff6b6b) !important;
+    color: white !important;
+    border-color: #dc143c !important;
+    box-shadow: 0 3px 10px rgba(220, 20, 60, 0.4) !important;
+  }
+
+  .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed !important;
+  }
+
+  .dataTables_info {
+    font-weight: 600;
+    color: #666;
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1153,110 +1405,21 @@ enhancedStyles.textContent = `
      ═══════════════════════════════════════════════════════════════ */
 
   .stat-card {
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: transform;
-  }
-
-  .stat-card.card-animated {
-    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .stat-card.card-animated:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 24px rgba(220, 20, 60, 0.2);
-  }
-
-  .stat-card.card-animated:active {
-    transform: translateY(-4px) scale(1);
+    box-shadow: 0 12px 30px rgba(220, 20, 60, 0.2);
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     🎯 BUTTONS
+     👆 TOUCH & ACCESSIBILITY
      ═══════════════════════════════════════════════════════════════ */
-
-  .btn-smooth,
-  .dt-btn-green {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-smooth::before,
-  .dt-btn-green::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-
-  .btn-smooth:hover::before,
-  .dt-btn-green:hover::before {
-    width: 300px;
-    height: 300px;
-  }
-
-  .btn-smooth:hover,
-  .dt-btn-green:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-
-  .btn-smooth:active,
-  .dt-btn-green:active {
-    transform: translateY(0);
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     👆 TOUCH STATES
-     ═══════════════════════════════════════════════════════════════ */
-
-  .is-touch button,
-  .is-touch .btn-action {
-    -webkit-tap-highlight-color: rgba(220, 20, 60, 0.2);
-  }
 
   .touch-pressed {
     transition: transform 0.15s ease !important;
   }
-
-  /* ═══════════════════════════════════════════════════════════════
-     📱 SIDEBAR OVERLAY
-     ═══════════════════════════════════════════════════════════════ */
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 998;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .sidebar-glass {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .sidebar-glass.active {
-    transform: translateX(0);
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     ♿ ACCESSIBILITY
-     ═══════════════════════════════════════════════════════════════ */
 
   .skip-link {
     position: absolute;
@@ -1269,36 +1432,99 @@ enhancedStyles.textContent = `
     border-radius: 0 0 4px 0;
     z-index: 100000;
     transition: top 0.3s ease;
+    font-weight: 600;
   }
 
   .skip-link:focus {
     top: 0;
-    outline: 2px solid #fff;
+    outline: 3px solid #fff;
     outline-offset: 2px;
   }
 
   .keyboard-focus {
-    outline: 2px solid #dc143c !important;
-    outline-offset: 2px !important;
+    outline: 3px solid #dc143c !important;
+    outline-offset: 3px !important;
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     📜 SCROLL ANIMATIONS
+     🎨 EMPTY STATE
      ═══════════════════════════════════════════════════════════════ */
 
-  .fade-on-scroll {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
   }
 
-  .fade-on-scroll.visible {
-    opacity: 1;
-    transform: translateY(0);
+  .empty-icon {
+    margin-bottom: 20px;
+    color: rgba(220, 20, 60, 0.2);
+  }
+
+  .empty-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #666;
+    margin: 0 0 8px 0;
+  }
+
+  .empty-subtitle {
+    font-size: 14px;
+    color: #999;
+    margin: 0;
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     🎨 PAGE LOADED STATE
+     📱 RESPONSIVE
+     ═══════════════════════════════════════════════════════════════ */
+
+  @media (max-width: 768px) {
+    .datatable-header,
+    .datatable-footer {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .header-left,
+    .header-right {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .footer-left,
+    .footer-right {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .dataTables_filter input {
+      min-width: 100%;
+    }
+
+    .btn-text {
+      display: none;
+    }
+
+    .dt-btn-export {
+      padding: 10px 14px !important;
+    }
+
+    .dataTables_paginate .paginate_button {
+      padding: 6px 10px !important;
+      font-size: 13px !important;
+    }
+
+    .dt-detail-wrapper {
+      padding: 14px;
+      margin: 6px;
+    }
+
+    .detail-card {
+      padding: 12px;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     🎨 PAGE LOADED
      ═══════════════════════════════════════════════════════════════ */
 
   body {
@@ -1310,85 +1536,15 @@ enhancedStyles.textContent = `
     opacity: 1;
   }
 
-  /* ═══════════════════════════════════════════════════════════════
-     📱 RESPONSIVE ADJUSTMENTS
-     ═══════════════════════════════════════════════════════════════ */
-
-  @media (max-width: 768px) {
-    .dt-detail {
-      padding: 12px;
-    }
-
-    .detail-item {
-      padding: 10px;
-    }
-
-    .detail-item b {
-      font-size: 11px;
-    }
-
-    .detail-item span {
-      font-size: 13px;
-    }
-
-    .stat-card.card-animated:hover {
-      transform: translateY(-4px) scale(1.01);
-    }
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     🌙 DARK MODE SUPPORT (Optional)
-     ═══════════════════════════════════════════════════════════════ */
-
-  [data-theme="dark"] .detail-item {
-    background: rgba(0, 0, 0, 0.3);
-  }
-
-  [data-theme="dark"] .detail-item:hover {
-    background: rgba(0, 0, 0, 0.5);
-  }
-
-  [data-theme="dark"] .detail-item span {
-    color: #e0e0e0;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     🎯 EMPTY STATE
-     ═══════════════════════════════════════════════════════════════ */
-
-  .empty-state {
-    padding: 40px 20px;
-    text-align: center;
-    color: #999;
-  }
-
-  .empty-state i {
-    margin-bottom: 16px;
-    opacity: 0.3;
-  }
-
-  .empty-state p {
-    font-size: 14px;
-    margin: 0;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     ⚡ PERFORMANCE OPTIMIZATIONS
-     ═══════════════════════════════════════════════════════════════ */
-
+  /* Performance */
   * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-
-  .hardware-accelerated {
-    transform: translateZ(0);
-    will-change: transform;
-  }
 `;
 
-document.head.appendChild(enhancedStyles);
+document.head.appendChild(finalStyles);
 
 console.log('═══════════════════════════════════════════');
-console.log('✨ HIFI Admin Panel v2.0 - Enhanced Loaded');
+console.log('✨ HIFI Admin v3.1 FINAL - Perfect Layout');
 console.log('═══════════════════════════════════════════');

@@ -15,70 +15,27 @@
     </thead>
     <tbody>
       <% users.forEach((user, index) => { %>
-        <tr data-user-id="<%= user._id %>">
-          <td><strong>#<%= (index + 1).toString().padStart(3, '0') %></strong></td>
-          <td>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #DC143C, #1E3A8A); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; box-shadow: 0 4px 10px rgba(220, 20, 60, 0.3);">
-                <%= user.username.charAt(0).toUpperCase() %>
-              </div>
-              <strong><%= user.username %></strong>
-            </div>
-          </td>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><strong><%= user.username %></strong></td>
           <td><%= user.nama || '-' %></td>
           <td><%= user.npm || '-' %></td>
-          <td>
-            <a href="mailto:<%= user.email %>" style="color: #1E3A8A; text-decoration: none; font-weight: 500;" title="Kirim email">
-              <%= user.email || '-' %>
-            </a>
-          </td>
-          <td>
-            <% if (user.hp) { %>
-              <a href="tel:<%= user.hp %>" style="color: #10B981; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;" title="Hubungi via telepon">
-                <i class="fas fa-phone" style="font-size: 11px;"></i>
-                <%= user.hp %>
-              </a>
-            <% } else { %>
-              -
-            <% } %>
-          </td>
+          <td><%= user.email || '-' %></td>
+          <td><%= user.hp || '-' %></td>
           <td>
             <span class="badge-glass badge-<%= user.role === 'admin' ? 'red' : 'blue' %>">
               <i class="fas fa-<%= user.role === 'admin' ? 'crown' : 'user' %>"></i>
               <%= user.role === 'admin' ? 'Admin' : 'User' %>
             </span>
           </td>
-          <td>
-            <div style="display: flex; align-items: center; gap: 6px; color: #6B7280; font-size: 13px;">
-              <i class="fas fa-clock" style="font-size: 11px;"></i>
-              <%= user.time || '-' %>
-            </div>
-          </td>
+          <td><%= user.time || '-' %></td>
           <td class="no-export">
-            <div style="display: flex; gap: 8px; justify-content: center;">
-              <button 
-                class="btn-action btn-view" 
-                onclick="viewUserDetails('<%= user._id %>')" 
-                title="Lihat Detail"
-                style="position: relative;"
-              >
-                <i class="fas fa-eye"></i>
-              </button>
-              <button 
-                class="btn-action btn-edit" 
-                onclick="window.location.href='/dashboard/edit/<%= user._id %>'" 
-                title="Edit"
-              >
-                <i class="fas fa-edit"></i>
-              </button>
-              <button 
-                class="btn-action btn-delete" 
-                onclick="confirmDelete('<%= user._id %>', '<%= user.username %>')" 
-                title="Hapus"
-              >
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
+            <button class="btn-action btn-edit" onclick="window.location.href='/dashboard/edit/<%= user._id %>'" title="Edit">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-action btn-delete" onclick="confirmDelete('<%= user._id %>')" title="Hapus">
+              <i class="fas fa-trash"></i>
+            </button>
           </td>
         </tr>
       <% }) %>
@@ -86,43 +43,7 @@
   </table>
 </div>
 
-<!-- Modal for User Details -->
-<div id="userDetailModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); z-index: 9999; overflow-y: auto; padding: 20px;">
-  <div style="max-width: 900px; margin: 40px auto; background: white; border-radius: 24px; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5); position: relative; animation: modalSlideIn 0.4s ease-out;">
-    <div style="padding: 32px; border-bottom: 1px solid rgba(0, 0, 0, 0.1); background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); border-radius: 24px 24px 0 0;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="margin: 0; color: white; font-size: 24px; font-weight: 800;">
-          <i class="fas fa-user-circle"></i>
-          Detail Anggota
-        </h3>
-        <button 
-          onclick="closeModal()" 
-          style="background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;"
-          onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'; this.style.transform='rotate(90deg)'"
-          onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'; this.style.transform='rotate(0deg)'"
-        >
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-    </div>
-    <div id="modalContent" style="padding: 32px;">
-      <!-- Content will be inserted here -->
-    </div>
-  </div>
-</div>
-
 <style>
-  @keyframes modalSlideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-30px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-  
   .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -131,132 +52,99 @@
   #usersTable {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 10px;
+    border-spacing: 0;
   }
 
   #usersTable thead {
-    background: linear-gradient(135deg, #DC143C 0%, #FF6B9D 50%, #1E3A8A 100%);
+    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
   }
 
   #usersTable thead th {
-    padding: 18px 16px;
+    padding: 16px;
     color: white;
-    font-weight: 700;
+    font-weight: 600;
     text-align: left;
     border: none;
-    font-size: 13px;
+    font-size: 14px;
     white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
   }
 
   #usersTable thead th:first-child {
-    border-top-left-radius: 14px;
-    padding-left: 24px;
+    border-top-left-radius: 12px;
   }
 
   #usersTable thead th:last-child {
-    border-top-right-radius: 14px;
-    padding-right: 24px;
+    border-top-right-radius: 12px;
   }
 
   #usersTable tbody tr {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
     cursor: pointer;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
   #usersTable tbody tr:hover {
-    background: rgba(220, 20, 60, 0.05);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(220, 20, 60, 0.2);
+    background: rgba(30, 58, 138, 0.05);
+    transform: scale(1.01);
   }
 
   #usersTable tbody tr.shown {
-    background: rgba(220, 20, 60, 0.08);
-    box-shadow: 0 8px 25px rgba(220, 20, 60, 0.25);
+    background: rgba(220, 20, 60, 0.05);
   }
 
   #usersTable tbody td {
-    padding: 18px 16px;
+    padding: 16px;
     border: none;
     font-size: 14px;
     color: #374151;
-    vertical-align: middle;
-  }
-
-  #usersTable tbody tr td:first-child {
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
-    padding-left: 24px;
-  }
-
-  #usersTable tbody tr td:last-child {
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    padding-right: 24px;
   }
 
   .detail-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 242, 255, 0.98));
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
     border-radius: 16px;
-    padding: 28px;
-    margin: 12px 0;
+    padding: 24px;
+    margin: 10px 0;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(220, 20, 60, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     animation: fadeInUp 0.4s ease-out;
   }
 
   .detail-card .row {
     display: flex;
     flex-wrap: wrap;
-    margin: 0 -16px;
+    margin: 0 -12px;
   }
 
   .detail-card .col-md-6 {
     flex: 0 0 50%;
     max-width: 50%;
-    padding: 0 16px;
+    padding: 0 12px;
   }
 
   .detail-card h6 {
     font-size: 16px;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid rgba(220, 20, 60, 0.2);
   }
 
   .detail-card p {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     font-size: 14px;
     color: #374151;
     line-height: 1.6;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
   }
 
   .detail-card strong {
     color: #1F2937;
     font-weight: 600;
-    min-width: 140px;
   }
 
   .detail-card .mt-3 {
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
   }
 
   .detail-card .d-flex {
@@ -264,34 +152,19 @@
   }
 
   .detail-card .gap-2 {
-    gap: 10px;
+    gap: 8px;
   }
 
   @media (max-width: 768px) {
     .detail-card .col-md-6 {
       flex: 0 0 100%;
       max-width: 100%;
-      margin-bottom: 20px;
     }
 
     #usersTable thead th,
     #usersTable tbody td {
-      padding: 14px 10px;
+      padding: 12px 8px;
       font-size: 13px;
-    }
-    
-    #usersTable tbody tr td:first-child {
-      padding-left: 16px;
-    }
-    
-    #usersTable tbody tr td:last-child {
-      padding-right: 16px;
-    }
-    
-    .btn-action {
-      width: 34px;
-      height: 34px;
-      font-size: 12px;
     }
   }
 
@@ -308,182 +181,13 @@
 </style>
 
 <script>
-  // Enhanced delete confirmation with sweet dialog
-  function confirmDelete(id, username) {
-    const modal = document.createElement('div');
-    modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.3s ease-out;';
-    
-    modal.innerHTML = `
-      <div style="background: white; border-radius: 24px; padding: 36px; max-width: 450px; width: 100%; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5); animation: modalSlideIn 0.4s ease-out;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #FEE2E2, #FECACA); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);">
-            <i class="fas fa-exclamation-triangle" style="font-size: 36px; color: #EF4444;"></i>
-          </div>
-          <h3 style="margin: 0 0 12px 0; color: #1F2937; font-size: 24px; font-weight: 800;">Konfirmasi Hapus</h3>
-          <p style="margin: 0; color: #6B7280; font-size: 15px; line-height: 1.6;">
-            Apakah Anda yakin ingin menghapus data<br>
-            <strong style="color: #DC143C;">${username}</strong>?<br>
-            <small style="color: #9CA3AF;">Tindakan ini tidak dapat dibatalkan!</small>
-          </p>
-        </div>
-        <div style="display: flex; gap: 12px;">
-          <button 
-            onclick="this.closest('[style*=fixed]').remove()" 
-            style="flex: 1; padding: 14px; border: 2px solid #E5E7EB; background: white; color: #374151; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 15px;"
-            onmouseover="this.style.background='#F3F4F6'"
-            onmouseout="this.style.background='white'"
-          >
-            <i class="fas fa-times"></i> Batal
-          </button>
-          <button 
-            onclick="deleteUser('${id}')" 
-            style="flex: 1; padding: 14px; border: none; background: linear-gradient(135deg, #EF4444, #DC2626); color: white; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 15px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);"
-            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(239, 68, 68, 0.5)'"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(239, 68, 68, 0.4)'"
-          >
-            <i class="fas fa-trash"></i> Ya, Hapus
-          </button>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Close on backdrop click
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.remove();
-      }
-    });
-  }
-  
-  function deleteUser(id) {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `/dashboard/delete/${id}?_method=DELETE`;
-    document.body.appendChild(form);
-    form.submit();
-  }
-  
-  // View user details in modal
-  function viewUserDetails(userId) {
-    const row = document.querySelector(`tr[data-user-id="${userId}"]`);
-    if (!row) return;
-    
-    const cells = row.querySelectorAll('td');
-    const username = cells[1].textContent.trim();
-    const nama = cells[2].textContent.trim();
-    const npm = cells[3].textContent.trim();
-    const email = cells[4].textContent.trim();
-    const hp = cells[5].textContent.trim();
-    const role = cells[6].textContent.trim();
-    const lastUpdate = cells[7].textContent.trim();
-    
-    const modalContent = `
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
-        <div style="padding: 24px; background: linear-gradient(135deg, rgba(220, 20, 60, 0.05), rgba(30, 58, 138, 0.05)); border-radius: 16px; border: 1px solid rgba(220, 20, 60, 0.2);">
-          <h6 style="margin: 0 0 20px 0; font-weight: 700; color: #1F2937; display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 2px solid rgba(220, 20, 60, 0.2);">
-            <i class="fas fa-user-circle" style="color: #DC143C;"></i>
-            Informasi Personal
-          </h6>
-          <div style="display: flex; flex-direction: column; gap: 14px;">
-            <div>
-              <p style="margin: 0 0 4px 0; color: #9CA3AF; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Username</p>
-              <p style="margin: 0; color: #1F2937; font-weight: 600; font-size: 15px;">${username}</p>
-            </div>
-            <div>
-              <p style="margin: 0 0 4px 0; color: #9CA3AF; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Nama Lengkap</p>
-              <p style="margin: 0; color: #1F2937; font-weight: 600; font-size: 15px;">${nama}</p>
-            </div>
-            <div>
-              <p style="margin: 0 0 4px 0; color: #9CA3AF; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">NPM</p>
-              <p style="margin: 0; color: #1F2937; font-weight: 600; font-size: 15px;">${npm}</p>
-            </div>
-            <div>
-              <p style="margin: 0 0 4px 0; color: #9CA3AF; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Role</p>
-              <p style="margin: 0;">
-                <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; background: ${role.includes('Admin') ? 'linear-gradient(135deg, rgba(220, 20, 60, 0.9), rgba(239, 68, 68, 0.9))' : 'linear-gradient(135deg, rgba(30, 58, 138, 0.9), rgba(59, 130, 246, 0.9))'}; color: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-                  <i class="fas fa-${role.includes('Admin') ? 'crown' : 'user'}"></i>
-                  ${role}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        <div style="padding: 24px; background: linear-gradient(135deg, rgba(30, 58, 138, 0.05), rgba(220, 20, 60, 0.05)); border-radius: 16px; border: 1px solid rgba(30, 58, 138, 0.2);">
-          <h6 style="margin: 0 0 20px 0; font-weight: 700; color: #1F2937; display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 2px solid rgba(30, 58, 138, 0.2);">
-            <i class="fas fa-address-card" style="color: #1E3A8A;"></i>
-            Kontak & Informasi
-          </h6>
-          <div style="display: flex; flex-direction: column; gap: 14px;">
-            <div>
-              <p style="margin: 0 0 4px 0; color: #9CA3AF; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Email</p>
-              <p style="margin: 0;">
-                <a href="mailto:${email}" style="color: #1E3A8A; text-decoration: none; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; gap: 6px;">
-                  <i class="fas fa-envelope" style="font-size: 12px;"></i>
-                  ${email}
-                </a>
-              </p>
-            </div>
-            <div>
-              <p style="margin: 0 0 4px 0; color: #9CA3AF; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">No. HP</p>
-              <p style="margin: 0;">
-                ${hp !== '-' ? `<a href="tel:${hp}" style="color: #10B981; text-decoration: none; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; gap: 6px;"><i class="fas fa-phone" style="font-size: 12px;"></i>${hp}</a>` : `<span style="color: #6B7280;">Tidak tersedia</span>`}
-              </p>
-            </div>
-            <div>
-              <p style="margin: 0 0 4px 0; color: #9CA3AF; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Terakhir Update</p>
-              <p style="margin: 0; color: #1F2937; font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 6px;">
-                <i class="fas fa-clock" style="font-size: 12px; color: #6B7280;"></i>
-                ${lastUpdate}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div style="margin-top: 28px; padding-top: 28px; border-top: 1px solid rgba(0, 0, 0, 0.1); display: flex; gap: 12px;">
-        <button 
-          onclick="window.location.href='/dashboard/edit/${userId}'" 
-          style="flex: 1; padding: 14px; border: none; background: linear-gradient(135deg, #3B82F6, #2563EB); color: white; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 15px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); display: inline-flex; align-items: center; justify-content: center; gap: 8px;"
-          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(59, 130, 246, 0.5)'"
-          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(59, 130, 246, 0.4)'"
-        >
-          <i class="fas fa-edit"></i> Edit Data
-        </button>
-        <button 
-          onclick="closeModal()" 
-          style="flex: 1; padding: 14px; border: 2px solid #E5E7EB; background: white; color: #374151; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;"
-          onmouseover="this.style.background='#F3F4F6'"
-          onmouseout="this.style.background='white'"
-        >
-          <i class="fas fa-times"></i> Tutup
-        </button>
-      </div>
-    `;
-    
-    document.getElementById('modalContent').innerHTML = modalContent;
-    document.getElementById('userDetailModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  }
-  
-  function closeModal() {
-    document.getElementById('userDetailModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
-  
-  // Close modal on escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeModal();
+  function confirmDelete(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/dashboard/delete/${id}?_method=DELETE`;
+      document.body.appendChild(form);
+      form.submit();
     }
-  });
-  
-  // Close modal on backdrop click
-  document.getElementById('userDetailModal')?.addEventListener('click', (e) => {
-    if (e.target.id === 'userDetailModal') {
-      closeModal();
-    }
-  });
+  }
 </script>

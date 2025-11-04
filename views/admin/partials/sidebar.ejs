@@ -1,107 +1,472 @@
 <aside class="sidebar-glass">
   <!-- Logo Section -->
-  <div style="padding: 24px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
-    <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI" style="width: 60px; height: auto; margin-bottom: 12px; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));">
-    <h5 style="color: white; font-weight: 700; font-size: 16px; margin: 0;">HIFI Admin</h5>
-    <small style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">Database Management</small>
+  <div class="sidebar-logo-section">
+    <img src="/img/Logo HIFI - SVG.svg" alt="Logo HIFI" class="sidebar-logo">
+    <h5 class="sidebar-title">HIFI Admin</h5>
+    <small class="sidebar-subtitle">Database Management</small>
   </div>
   
   <!-- Navigation Menu -->
-  <nav style="padding: 20px 0;">
+  <nav class="sidebar-nav">
     <a href="/dashboard" class="sidebar-menu-item active">
-      <i class="fas fa-tachometer-alt" style="width: 20px;"></i>
+      <i class="fas fa-tachometer-alt"></i>
       <span class="menu-text">Dashboard</span>
     </a>
     
     <a href="/profile" class="sidebar-menu-item">
-      <i class="fas fa-user" style="width: 20px;"></i>
+      <i class="fas fa-user"></i>
       <span class="menu-text">Profile</span>
     </a>
     
     <a href="/" class="sidebar-menu-item">
-      <i class="fas fa-home" style="width: 20px;"></i>
+      <i class="fas fa-home"></i>
       <span class="menu-text">Beranda</span>
     </a>
     
-    <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 16px 12px;"></div>
+    <div class="sidebar-divider"></div>
     
-    <a href="/auth/logout" class="sidebar-menu-item" style="color: rgba(239, 68, 68, 0.9);">
-      <i class="fas fa-sign-out-alt" style="width: 20px;"></i>
+    <a href="/auth/logout" class="sidebar-menu-item sidebar-logout">
+      <i class="fas fa-sign-out-alt"></i>
       <span class="menu-text">Keluar</span>
     </a>
   </nav>
   
   <!-- User Info at Bottom -->
-  <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.1);">
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; box-shadow: 0 4px 10px rgba(220, 20, 60, 0.3);">
-        <%= nama ? nama.charAt(0).toUpperCase() : 'A' %>
-      </div>
-      <div class="menu-text">
-        <p style="margin: 0; color: white; font-weight: 600; font-size: 14px;"><%= nama %></p>
-        <small style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">Administrator</small>
-      </div>
+  <div class="sidebar-user-info">
+    <div class="sidebar-user-avatar">
+      <%= nama ? nama.charAt(0).toUpperCase() : 'A' %>
+    </div>
+    <div class="sidebar-user-details menu-text">
+      <p class="sidebar-user-name"><%= nama %></p>
+      <small class="sidebar-user-role">Administrator</small>
     </div>
   </div>
 </aside>
 
 <style>
-  .sidebar-glass.collapsed .menu-text {
-    display: none;
+  /* ============================================
+     SIDEBAR - ENHANCED STYLING
+     ============================================ */
+  
+  /* Logo Section */
+  .sidebar-logo-section {
+    padding: 24px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
   }
   
-  .sidebar-glass.collapsed {
-    width: 80px;
+  .sidebar-logo {
+    width: 60px;
+    height: auto;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-title {
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    margin: 0 0 4px 0;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    display: block;
+    transition: all 0.3s ease;
+  }
+  
+  /* Navigation */
+  .sidebar-nav {
+    padding: 20px 0;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .sidebar-nav::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+  
+  .sidebar-menu-item i {
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  
+  .sidebar-menu-item .menu-text {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  
+  .sidebar-logout {
+    color: rgba(239, 68, 68, 0.9) !important;
+  }
+  
+  .sidebar-logout:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: rgba(239, 68, 68, 1) !important;
+  }
+  
+  .sidebar-logout.active {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+    color: white !important;
+  }
+  
+  .sidebar-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 16px 12px;
+  }
+  
+  /* User Info */
+  .sidebar-user-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #DC143C 0%, #1E3A8A 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(220, 20, 60, 0.3);
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-user-details {
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .sidebar-user-name {
+    margin: 0;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .sidebar-user-role {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    display: block;
+  }
+  
+  /* ============================================
+     COLLAPSED STATE (Desktop)
+     ============================================ */
+  .sidebar-glass.collapsed .sidebar-logo-section {
+    padding: 20px 10px;
+  }
+  
+  .sidebar-glass.collapsed .sidebar-logo {
+    width: 40px;
+    margin-bottom: 8px;
+  }
+  
+  .sidebar-glass.collapsed .sidebar-title,
+  .sidebar-glass.collapsed .sidebar-subtitle,
+  .sidebar-glass.collapsed .menu-text,
+  .sidebar-glass.collapsed .sidebar-user-details {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    display: none;
   }
   
   .sidebar-glass.collapsed .sidebar-menu-item {
     justify-content: center;
+    padding: 12px;
   }
   
+  .sidebar-glass.collapsed .sidebar-menu-item i {
+    margin: 0;
+  }
+  
+  .sidebar-glass.collapsed .sidebar-user-info {
+    justify-content: center;
+    padding: 20px 10px;
+  }
+  
+  .sidebar-glass.collapsed .sidebar-divider {
+    margin: 16px 8px;
+  }
+  
+  /* ============================================
+     MOBILE RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .sidebar-glass {
       transform: translateX(-100%);
+      box-shadow: none;
+      width: 280px;
     }
     
-    .sidebar-glass.mobile-active {
+    .sidebar-glass.active {
       transform: translateX(0);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
     }
     
-    .sidebar-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 998;
-      display: none;
+    /* Override collapsed state on mobile */
+    .sidebar-glass.collapsed {
+      width: 280px !important;
     }
     
-    .sidebar-overlay.active {
+    .sidebar-glass.collapsed .sidebar-title,
+    .sidebar-glass.collapsed .sidebar-subtitle,
+    .sidebar-glass.collapsed .menu-text,
+    .sidebar-glass.collapsed .sidebar-user-details {
+      opacity: 1;
+      width: auto;
       display: block;
     }
+    
+    .sidebar-glass.collapsed .sidebar-menu-item {
+      justify-content: flex-start;
+      padding: 12px 20px;
+    }
+    
+    .sidebar-glass.collapsed .sidebar-user-info {
+      justify-content: flex-start;
+      padding: 20px;
+    }
+    
+    .sidebar-logo-section {
+      padding: 20px;
+    }
+    
+    .sidebar-logo {
+      width: 50px;
+      margin-bottom: 10px;
+    }
+    
+    .sidebar-title {
+      font-size: 15px;
+    }
+    
+    .sidebar-subtitle {
+      font-size: 11px;
+    }
+    
+    .sidebar-menu-item {
+      font-size: 14px;
+      padding: 12px 16px;
+      margin: 4px 10px;
+    }
+    
+    .sidebar-user-info {
+      padding: 16px;
+    }
+    
+    .sidebar-user-avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 15px;
+    }
+    
+    .sidebar-user-name {
+      font-size: 13px;
+    }
+    
+    .sidebar-user-role {
+      font-size: 11px;
+    }
+  }
+  
+  /* Small Mobile */
+  @media (max-width: 480px) {
+    .sidebar-glass {
+      width: 260px;
+    }
+    
+    .sidebar-logo-section {
+      padding: 16px;
+    }
+    
+    .sidebar-logo {
+      width: 45px;
+    }
+    
+    .sidebar-title {
+      font-size: 14px;
+    }
+    
+    .sidebar-menu-item {
+      font-size: 13px;
+      padding: 10px 14px;
+      margin: 3px 8px;
+    }
+    
+    .sidebar-menu-item i {
+      font-size: 15px;
+    }
+  }
+  
+  /* ============================================
+     TABLET LANDSCAPE
+     ============================================ */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar-glass {
+      width: 220px;
+    }
+    
+    .sidebar-glass.collapsed {
+      width: 70px;
+    }
+    
+    .sidebar-logo {
+      width: 50px;
+    }
+    
+    .sidebar-title {
+      font-size: 15px;
+    }
+    
+    .sidebar-menu-item {
+      font-size: 13px;
+      padding: 10px 16px;
+    }
+  }
+  
+  /* ============================================
+     HOVER EFFECTS (Desktop Only)
+     ============================================ */
+  @media (min-width: 769px) {
+    .sidebar-logo:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    .sidebar-user-avatar:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(220, 20, 60, 0.4);
+    }
+  }
+  
+  /* ============================================
+     LANDSCAPE MOBILE
+     ============================================ */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .sidebar-logo-section {
+      padding: 12px;
+    }
+    
+    .sidebar-logo {
+      width: 35px;
+      margin-bottom: 6px;
+    }
+    
+    .sidebar-title {
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    
+    .sidebar-subtitle {
+      font-size: 10px;
+    }
+    
+    .sidebar-nav {
+      padding: 10px 0;
+    }
+    
+    .sidebar-menu-item {
+      padding: 8px 16px;
+      margin: 2px 10px;
+      font-size: 12px;
+    }
+    
+    .sidebar-menu-item i {
+      font-size: 14px;
+    }
+    
+    .sidebar-user-info {
+      padding: 12px 16px;
+    }
+    
+    .sidebar-user-avatar {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+    }
+    
+    .sidebar-user-name {
+      font-size: 12px;
+    }
+    
+    .sidebar-user-role {
+      font-size: 10px;
+    }
+  }
+  
+  /* ============================================
+     PRINT STYLES
+     ============================================ */
+  @media print {
+    .sidebar-glass {
+      display: none !important;
+    }
+  }
+  
+  /* ============================================
+     ACCESSIBILITY
+     ============================================ */
+  .sidebar-menu-item:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: -2px;
+  }
+  
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-glass,
+    .sidebar-logo,
+    .sidebar-title,
+    .sidebar-subtitle,
+    .sidebar-menu-item,
+    .sidebar-user-avatar,
+    .menu-text {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+  
+  /* ============================================
+     DARK MODE SUPPORT (Future-proof)
+     ============================================ */
+  @media (prefers-color-scheme: dark) {
+    /* Already using dark theme, but can be enhanced if needed */
   }
 </style>
-
-<script>
-  // Mobile sidebar toggle
-  document.addEventListener('DOMContentLoaded', () => {
-    if (window.innerWidth <= 768) {
-      const sidebar = document.querySelector('.sidebar-glass');
-      const toggleBtn = document.querySelector('#sidebarToggle');
-      
-      // Create overlay
-      const overlay = document.createElement('div');
-      overlay.className = 'sidebar-overlay';
-      document.body.appendChild(overlay);
-      
-      toggleBtn?.addEventListener('click', () => {
-        sidebar.classList.toggle('mobile-active');
-        overlay.classList.toggle('active');
-      });
-      
-      overlay.addEventListener('click', () => {
-        sidebar.classList.remove('mobile-active');
-        overlay.classList.remove('active');
-      });
-    }
-  });
-</script>

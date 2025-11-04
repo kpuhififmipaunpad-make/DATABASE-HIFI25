@@ -1,10 +1,10 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- * HIFI DATABASE - ADMIN PANEL v3.0
+ * HIFI DATABASE - ADMIN PANEL ANIMATIONS v2.0
  * ═══════════════════════════════════════════════════════════════
- * ✨ NEW: Fixed sidebar, enhanced pagination, satisfying animations
+ * ✨ ENHANCED: Smooth animations, better UX, responsive design
  * 📱 FULL RESPONSIVE - Mobile, Tablet, Desktop optimized
- * 🎨 ULTRA SATISFYING: Smooth transitions & micro-interactions
+ * 🎨 SATISFYING: Polished transitions & micro-interactions
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -67,7 +67,7 @@ const HIFI = (() => {
     };
   };
   
-  // ✨ NEW: Enhanced detail template dengan animasi yang lebih satisfying
+  // Template detail row - ENHANCED RESPONSIVE
   const buildDetail = (data) => {
     const isMobileView = isMobile();
     
@@ -80,91 +80,40 @@ const HIFI = (() => {
     const role = data[6]?.includes('Admin') ? 'Administrator' : 'User';
     const lastUpdate = data[7] || '-';
     
-    // ✨ Icons dengan style yang lebih menarik
-    const icons = {
-      username: '<i class="fas fa-user-circle detail-icon"></i>',
-      nama: '<i class="fas fa-user detail-icon"></i>',
-      npm: '<i class="fas fa-id-card detail-icon"></i>',
-      email: '<i class="fas fa-envelope detail-icon"></i>',
-      phone: '<i class="fas fa-phone detail-icon"></i>',
-      role: '<i class="fas fa-shield-alt detail-icon"></i>',
-      clock: '<i class="fas fa-clock detail-icon"></i>'
-    };
-    
     return `
-      <div class="dt-detail-wrapper">
-        <div class="dt-detail-container">
-          <div class="detail-grid" style="
-            display: grid;
-            grid-template-columns: ${isMobileView ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))'};
-            gap: ${isMobileView ? '14px' : '18px'};
-          ">
-            <!-- Username -->
-            <div class="detail-item-card" data-aos="fade-up" data-aos-delay="0">
-              <div class="detail-item-header">
-                ${icons.username}
-                <span class="detail-label">Username</span>
-              </div>
-              <div class="detail-value">${esc(username)}</div>
-            </div>
-            
-            <!-- Nama Lengkap -->
-            <div class="detail-item-card" data-aos="fade-up" data-aos-delay="50">
-              <div class="detail-item-header">
-                ${icons.nama}
-                <span class="detail-label">Nama Lengkap</span>
-              </div>
-              <div class="detail-value">${esc(nama)}</div>
-            </div>
-            
-            <!-- NPM -->
-            <div class="detail-item-card" data-aos="fade-up" data-aos-delay="100">
-              <div class="detail-item-header">
-                ${icons.npm}
-                <span class="detail-label">NPM</span>
-              </div>
-              <div class="detail-value">${esc(npm)}</div>
-            </div>
-            
-            <!-- Email -->
-            <div class="detail-item-card" data-aos="fade-up" data-aos-delay="150">
-              <div class="detail-item-header">
-                ${icons.email}
-                <span class="detail-label">Email</span>
-              </div>
-              <div class="detail-value">${esc(email)}</div>
-            </div>
-            
-            <!-- No. HP -->
-            <div class="detail-item-card" data-aos="fade-up" data-aos-delay="200">
-              <div class="detail-item-header">
-                ${icons.phone}
-                <span class="detail-label">No. HP</span>
-              </div>
-              <div class="detail-value">${esc(no_hp)}</div>
-            </div>
-            
-            <!-- Role -->
-            <div class="detail-item-card" data-aos="fade-up" data-aos-delay="250">
-              <div class="detail-item-header">
-                ${icons.role}
-                <span class="detail-label">Role</span>
-              </div>
-              <div class="detail-value">
-                <span class="role-badge ${role === 'Administrator' ? 'role-admin' : 'role-user'}">
-                  ${esc(role)}
-                </span>
-              </div>
-            </div>
-            
-            <!-- Terakhir Update -->
-            <div class="detail-item-card full-width" data-aos="fade-up" data-aos-delay="300">
-              <div class="detail-item-header">
-                ${icons.clock}
-                <span class="detail-label">Terakhir Update</span>
-              </div>
-              <div class="detail-value">${esc(lastUpdate)}</div>
-            </div>
+      <div class="dt-detail animate-slide-down">
+        <div class="detail-card" style="
+          display: grid;
+          grid-template-columns: ${isMobileView ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))'};
+          gap: ${isMobileView ? '12px' : '16px'};
+        ">
+          <div class="detail-item fade-in" style="animation-delay: 0.05s">
+            <b><i class="fas fa-user-circle"></i> Username</b>
+            <span>${esc(username)}</span>
+          </div>
+          <div class="detail-item fade-in" style="animation-delay: 0.1s">
+            <b><i class="fas fa-user"></i> Nama Lengkap</b>
+            <span>${esc(nama)}</span>
+          </div>
+          <div class="detail-item fade-in" style="animation-delay: 0.15s">
+            <b><i class="fas fa-id-card"></i> NPM</b>
+            <span>${esc(npm)}</span>
+          </div>
+          <div class="detail-item fade-in" style="animation-delay: 0.2s">
+            <b><i class="fas fa-envelope"></i> Email</b>
+            <span>${esc(email)}</span>
+          </div>
+          <div class="detail-item fade-in" style="animation-delay: 0.25s">
+            <b><i class="fas fa-phone"></i> No. HP</b>
+            <span>${esc(no_hp)}</span>
+          </div>
+          <div class="detail-item fade-in" style="animation-delay: 0.3s">
+            <b><i class="fas fa-shield-alt"></i> Role</b>
+            <span class="role-badge ${role === 'Administrator' ? 'role-admin' : 'role-user'}">${esc(role)}</span>
+          </div>
+          <div class="detail-item fade-in" style="grid-column:1/-1; animation-delay: 0.35s">
+            <b><i class="fas fa-clock"></i> Terakhir Update</b>
+            <span>${esc(lastUpdate)}</span>
           </div>
         </div>
       </div>
@@ -195,42 +144,74 @@ function getDT() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📱 SIDEBAR - FIXED (NO COLLAPSING TO SIDE)
+// 📱 RESPONSIVE SIDEBAR - SMOOTH TRANSITIONS
 // ═══════════════════════════════════════════════════════════════
 function initSidebarToggle() {
   const sidebar = document.querySelector('.sidebar-glass');
-  const hamburger = document.querySelector('.navbar-toggle, #navbarToggle, #sidebarToggle');
+  const toggleBtn = document.querySelector('#sidebarToggle');
   const mainContent = document.querySelector('.content-wrapper, .main-content');
   let overlay = document.querySelector('.sidebar-overlay');
   
   if (!sidebar) return;
   
-  // Create overlay for mobile only
+  // Create overlay if not exists
   if (!overlay) {
     overlay = document.createElement('div');
     overlay.className = 'sidebar-overlay';
     document.body.appendChild(overlay);
   }
 
-  // ✨ NEW: Sidebar tetap terlihat, hanya hide di mobile
-  const toggleSidebar = () => {
+  // ✨ Enhanced toggle with smooth animation
+  const toggleSidebar = (force) => {
+    const isCollapsed = force !== undefined ? !force : sidebar.classList.contains('active');
+    
     if (HIFI.isMobile()) {
-      // Mobile: slide dari kiri dengan overlay
-      const isActive = sidebar.classList.contains('mobile-active');
+      // Mobile: slide animation with backdrop
+      sidebar.classList.toggle('active', !isCollapsed);
+      overlay.classList.toggle('active', !isCollapsed);
+      document.body.style.overflow = isCollapsed ? '' : 'hidden';
       
-      sidebar.classList.toggle('mobile-active');
-      overlay.classList.toggle('active');
-      document.body.style.overflow = isActive ? '' : 'hidden';
-      
-      // Haptic feedback
+      // Haptic feedback on mobile (if supported)
       if (navigator.vibrate) {
         navigator.vibrate(10);
       }
+    } else {
+      // Desktop: smooth collapse/expand
+      sidebar.classList.toggle('collapsed', isCollapsed);
+      mainContent?.classList.toggle('expanded', isCollapsed);
+      mainContent?.classList.toggle('sidebar-collapsed', isCollapsed);
+      
+      // Smooth icon rotation
+      if (toggleBtn) {
+        const icon = toggleBtn.querySelector('i');
+        if (icon) {
+          icon.style.transform = isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+      }
     }
-    // Desktop: sidebar selalu terlihat, tidak ada collapse
+    
+    localStorage.setItem('sidebarCollapsed', isCollapsed);
+    
+    // Trigger DataTable column adjustment after animation
+    setTimeout(() => {
+      const dt = getDT();
+      if (dt) {
+        dt.columns.adjust().responsive.recalc();
+      }
+    }, 350);
   };
 
-  // Hamburger untuk mobile
+  // Toggle button handler
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleSidebar();
+    });
+  }
+
+  // Hamburger menu for mobile
+  const hamburger = document.querySelector('.navbar-toggle, #navbarToggle');
   if (hamburger) {
     hamburger.addEventListener('click', (e) => {
       e.preventDefault();
@@ -239,44 +220,57 @@ function initSidebarToggle() {
     });
   }
 
-  // Overlay click to close (mobile only)
+  // Overlay click to close
   overlay.addEventListener('click', () => {
-    if (HIFI.isMobile()) {
-      sidebar.classList.remove('mobile-active');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
+    if (HIFI.isMobile() && sidebar.classList.contains('active')) {
+      toggleSidebar(false);
     }
   });
 
   // Close sidebar on outside click (mobile)
   document.addEventListener('click', (e) => {
     if (HIFI.isMobile() && 
-        sidebar.classList.contains('mobile-active') &&
+        sidebar.classList.contains('active') &&
         !sidebar.contains(e.target) && 
         !e.target.closest('.navbar-toggle, #sidebarToggle, #navbarToggle')) {
-      sidebar.classList.remove('mobile-active');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
+      toggleSidebar(false);
     }
   });
 
-  // ✨ Handle resize - sidebar selalu visible di desktop
+  // Restore saved state
+  const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+  if (!HIFI.isMobile() && isCollapsed) {
+    sidebar.classList.add('collapsed');
+    mainContent?.classList.add('expanded', 'sidebar-collapsed');
+    const icon = toggleBtn?.querySelector('i');
+    if (icon) icon.style.transform = 'rotate(180deg)';
+  }
+
+  // ✨ Smooth resize handler
   const handleResize = HIFI.debounce(() => {
-    if (!HIFI.isMobile()) {
-      // Desktop: remove mobile classes
-      sidebar.classList.remove('mobile-active');
+    if (HIFI.isMobile()) {
+      sidebar.classList.remove('collapsed');
+      mainContent?.classList.remove('expanded', 'sidebar-collapsed');
+      if (!sidebar.classList.contains('active')) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    } else {
+      sidebar.classList.remove('active');
       overlay.classList.remove('active');
       document.body.style.overflow = '';
+      if (isCollapsed) {
+        sidebar.classList.add('collapsed');
+        mainContent?.classList.add('expanded', 'sidebar-collapsed');
+      }
     }
   }, 250);
 
   window.addEventListener('resize', handleResize);
-  
-  console.log('✅ Sidebar initialized - Fixed layout (no collapse)');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 📊 DATATABLE - ULTRA SATISFYING ANIMATIONS
+// 📊 DATATABLE - ENHANCED RESPONSIVE
 // ═══════════════════════════════════════════════════════════════
 function initDataTable() {
   if (!window.jQuery || !$.fn.DataTable) {
@@ -295,23 +289,24 @@ function initDataTable() {
     $('#usersTable').DataTable().destroy();
   }
 
+  // Responsive configuration
   const isMobile = HIFI.isMobile();
   const isTablet = HIFI.isTablet();
   
-  // ✨ NEW: Dynamic page length dengan opsi lengkap
-  let defaultPageLength = 25;
-  if (isMobile) defaultPageLength = 10;
-  else if (isTablet) defaultPageLength = 25;
+  // Dynamic page length
+  let defaultPageLength = 10;
+  if (isMobile) defaultPageLength = 5;
+  else if (isTablet) defaultPageLength = 8;
 
-  // ✨ Initialize dengan animasi ultra smooth
+  // ✨ Initialize with smooth animations
   const dt = $table.DataTable({
     responsive: false,
     autoWidth: false,
     searching: true,
     lengthChange: true,
-    pagingType: 'full_numbers', // ✨ NEW: Full pagination controls
+    pagingType: 'simple_numbers',
     pageLength: defaultPageLength,
-    lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]], // ✨ NEW: Complete options
+    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
     dom: "Bfrtip",
     order: [[2, 'asc']],
     columnDefs: [
@@ -328,129 +323,92 @@ function initDataTable() {
     ],
     language: {
       paginate: { 
-        first: '<i class="fas fa-angle-double-left"></i><span class="page-text"> First</span>', 
-        previous: '<i class="fas fa-angle-left"></i><span class="page-text"> Prev</span>', 
-        next: '<span class="page-text">Next </span><i class="fas fa-angle-right"></i>', 
-        last: '<span class="page-text">Last </span><i class="fas fa-angle-double-right"></i>' 
+        first: '<i class="fas fa-angle-double-left"></i>', 
+        previous: isMobile ? '<i class="fas fa-angle-left"></i>' : '<i class="fas fa-angle-left"></i> Prev', 
+        next: isMobile ? '<i class="fas fa-angle-right"></i>' : 'Next <i class="fas fa-angle-right"></i>', 
+        last: '<i class="fas fa-angle-double-right"></i>' 
       },
-      info: isMobile ? '_START_-_END_ / _TOTAL_' : 'Showing _START_ to _END_ of _TOTAL_ entries',
-      infoEmpty: 'No entries available',
-      infoFiltered: isMobile ? '' : '(filtered from _MAX_ total entries)',
-      zeroRecords: `
-        <div class="empty-state">
-          <div class="empty-icon">
-            <i class="fas fa-search fa-3x"></i>
-          </div>
-          <p class="empty-title">No Data Found</p>
-          <p class="empty-subtitle">Try adjusting your search or filter</p>
-        </div>
-      `,
-      emptyTable: `
-        <div class="empty-state">
-          <div class="empty-icon">
-            <i class="fas fa-database fa-3x"></i>
-          </div>
-          <p class="empty-title">No Data Available</p>
-          <p class="empty-subtitle">The table is currently empty</p>
-        </div>
-      `,
-      lengthMenu: isMobile ? '_MENU_' : 'Show _MENU_ entries',
+      info: isMobile ? '_START_-_END_ / _TOTAL_' : 'Menampilkan _START_ - _END_ dari _TOTAL_ data',
+      infoEmpty: 'Tidak ada data',
+      infoFiltered: isMobile ? '' : '(disaring dari _MAX_ total data)',
+      zeroRecords: '<div class="empty-state"><i class="fas fa-inbox fa-3x"></i><p>Data tidak ditemukan</p></div>',
+      emptyTable: '<div class="empty-state"><i class="fas fa-database fa-3x"></i><p>Tidak ada data tersedia</p></div>',
+      lengthMenu: isMobile ? '_MENU_' : 'Tampilkan _MENU_ data',
       search: '',
-      searchPlaceholder: isMobile ? 'Search...' : 'Type to search...'
+      searchPlaceholder: isMobile ? 'Cari...' : 'Ketik untuk mencari...'
     },
     buttons: [
       {
         extend: 'excel',
-        text: '<i class="fas fa-file-excel"></i><span class="btn-text"> Excel</span>',
-        className: 'dt-btn-export dt-btn-excel',
+        text: isMobile ? '<i class="fas fa-file-excel"></i>' : '<i class="fas fa-file-excel"></i> Excel',
+        className: 'dt-btn-green btn-smooth',
         title: 'Data Warga HIFI',
         exportOptions: { columns: ':not(.no-export)' }
       },
       {
         extend: 'pdf',
-        text: '<i class="fas fa-file-pdf"></i><span class="btn-text"> PDF</span>',
-        className: 'dt-btn-export dt-btn-pdf',
+        text: isMobile ? '<i class="fas fa-file-pdf"></i>' : '<i class="fas fa-file-pdf"></i> PDF',
+        className: 'dt-btn-green btn-smooth',
         title: 'Data Warga HIFI',
         orientation: 'landscape',
         exportOptions: { columns: ':not(.no-export)' }
       },
       {
         extend: 'print',
-        text: '<i class="fas fa-print"></i><span class="btn-text"> Print</span>',
-        className: 'dt-btn-export dt-btn-print',
+        text: isMobile ? '<i class="fas fa-print"></i>' : '<i class="fas fa-print"></i> Print',
+        className: 'dt-btn-green btn-smooth',
         title: 'Data Warga HIFI',
         exportOptions: { columns: ':not(.no-export)' }
       }
     ],
     initComplete: function() {
-      // ✨ Smooth fade-in after initialization
-      $table.addClass('table-initialized');
-      
-      // Animate table wrapper
-      setTimeout(() => {
-        $('.dataTables_wrapper').addClass('wrapper-loaded');
-      }, 100);
+      // ✨ Fade in table after load
+      $table.addClass('table-loaded');
     },
-    drawCallback: function(settings) {
+    drawCallback: function() {
       if (HIFI.isTouch()) {
         $table.addClass('touch-enabled');
       }
       
-      // ✨ ULTRA SATISFYING: Wave animation untuk rows
-      const rows = $table.find('tbody tr');
-      rows.each((i, row) => {
-        const $row = $(row);
-        
-        // Reset animation
-        $row.css({
-          opacity: '0',
-          transform: 'translateY(20px) scale(0.95)'
+      // ✨ Animate rows on draw
+      $table.find('tbody tr').each((i, row) => {
+        $(row).css({
+          'animation': `fadeInUp 0.4s ease ${i * 0.03}s both`
         });
-        
-        // ✨ Staggered wave animation
-        setTimeout(() => {
-          $row.css({
-            transition: `all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 30}ms`,
-            opacity: '1',
-            transform: 'translateY(0) scale(1)'
-          });
-        }, 10);
       });
-      
-      // Update pagination info dengan animasi
-      $('.dataTables_info').addClass('info-updated');
-      setTimeout(() => {
-        $('.dataTables_info').removeClass('info-updated');
-      }, 300);
     }
   });
 
   enhanceDataTable(dt);
   
-  console.log('✅ DataTable initialized with ULTRA SATISFYING animations');
+  console.log('✅ DataTable initialized with enhanced animations');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ✨ DATATABLE ENHANCEMENTS - SMART TOGGLE
+// ✨ DATATABLE ENHANCEMENTS - SMOOTH INTERACTIONS
 // ═══════════════════════════════════════════════════════════════
 function enhanceDataTable(dt) {
   if (!dt) return;
 
-  // Style wrappers
-  $('.dataTables_wrapper').addClass('glass-card');
+  // Style wrappers dengan animasi
+  $('.dataTables_wrapper').addClass('glass-card').css('opacity', '0');
+  setTimeout(() => {
+    $('.dataTables_wrapper').css({
+      'transition': 'opacity 0.5s ease',
+      'opacity': '1'
+    });
+  }, 100);
+
   $('.dataTables_filter input').addClass('form-control-glass');
   $('.dataTables_length select').addClass('form-control-glass');
 
-  // ✨ Enhanced search dengan icon
+  // ✨ Enhanced search input dengan icon
   const searchWrapper = $('.dataTables_filter');
   if (!searchWrapper.find('.search-icon').length) {
     searchWrapper.prepend('<i class="fas fa-search search-icon"></i>');
   }
 
-  // ✨ Variable untuk tracking active row
-  let activeRow = null;
-
-  // ✨ NEW: Smart toggle - auto hide previous detail
+  // ✨ Toggle child-row dengan smooth animation
   $('#usersTable tbody')
     .off('click.hifi touchend.hifi')
     .on('click.hifi touchend.hifi', 'tr', function (e) {
@@ -466,76 +424,33 @@ function enhanceDataTable(dt) {
 
       const $tr = $(this);
       const row = dt.row($tr);
-      
-      // Skip jika bukan data row
-      if (!row.data()) return;
 
-      // ✨ SMART BEHAVIOR:
-      // 1. Jika row yang sama diklik lagi -> toggle (show/hide)
-      // 2. Jika row berbeda -> hide previous, show new
-      
-      if (activeRow && activeRow[0] !== $tr[0]) {
-        // ✨ Hide previous row dengan smooth animation
-        const prevRow = dt.row(activeRow);
-        if (prevRow.child.isShown()) {
-          activeRow.removeClass('row-expanded');
-          
-          // Smooth slide up
-          const $prevDetail = activeRow.next('tr.child').find('.dt-detail-wrapper');
-          $prevDetail.css({
-            animation: 'slideOutUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards'
-          });
-          
-          setTimeout(() => {
-            prevRow.child.hide();
-          }, 350);
-        }
-      }
-
-      if (row.child.isShown() && activeRow && activeRow[0] === $tr[0]) {
-        // ✨ Close current row (toggle behavior)
-        $tr.removeClass('row-expanded');
-        
-        const $detail = $tr.next('tr.child').find('.dt-detail-wrapper');
-        $detail.css({
-          animation: 'slideOutUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards'
+      if (row.child.isShown()) {
+        // ✨ Close with slide-up animation
+        $tr.removeClass('shown');
+        $tr.find('.dt-detail').slideUp(300, function() {
+          row.child.hide();
+        });
+      } else {
+        // Close other rows first
+        dt.rows().every(function () {
+          if (this.child && this.child.isShown()) {
+            $(this.node()).removeClass('shown');
+            $(this.node()).find('.dt-detail').slideUp(200, () => {
+              this.child.hide();
+            });
+          }
         });
         
-        setTimeout(() => {
-          row.child.hide();
-        }, 350);
-        
-        activeRow = null;
-        
-      } else {
-        // ✨ Open new row
+        // ✨ Open with slide-down animation
         const rowData = row.data();
         row.child(HIFI.buildDetail(rowData)).show();
         
-        // Animate row expansion
-        $tr.addClass('row-expanding');
-        setTimeout(() => {
-          $tr.removeClass('row-expanding').addClass('row-expanded');
-        }, 10);
+        // Initial hide untuk animasi
+        const $detail = $tr.next('tr.child').find('.dt-detail');
+        $detail.hide().slideDown(350, 'swing');
         
-        // ✨ Ultra smooth slide down with bounce
-        const $detail = $tr.next('tr.child').find('.dt-detail-wrapper');
-        $detail.css({
-          display: 'block',
-          animation: 'slideInDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
-        });
-        
-        // Animate detail cards
-        setTimeout(() => {
-          $detail.find('.detail-item-card').each((i, card) => {
-            $(card).css({
-              animation: `fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${i * 50}ms both`
-            });
-          });
-        }, 100);
-        
-        // Update active row
-        activeRow = $tr;
+        setTimeout(() => $tr.addClass('shown'), 50);
         
         // Scroll into view on mobile
         if (HIFI.isMobile()) {
@@ -548,37 +463,33 @@ function enhanceDataTable(dt) {
                 inline: 'nearest'
               });
             }
-          }, 550);
+          }, 400);
         }
 
         // Haptic feedback
         if (navigator.vibrate) {
-          navigator.vibrate([5, 30, 5]);
+          navigator.vibrate(5);
         }
       }
     });
 
-  // ✨ Enhanced pagination dengan animasi
-  $('.dataTables_paginate').on('click', 'a', function() {
-    // Smooth scroll to top
-    if (!HIFI.isMobile()) {
-      $('html, body').animate({
-        scrollTop: $table.offset().top - 100
-      }, 400, 'swing');
-    }
-  });
-
-  // ✨ Resize handler
+  // ✨ Smooth resize handler
   const handleResize = HIFI.debounce(() => {
     const isMobile = HIFI.isMobile();
     const isTablet = HIFI.isTablet();
+    
+    let newLength = 10;
+    if (isMobile) newLength = 5;
+    else if (isTablet) newLength = 8;
+    
+    if (dt.page.len() !== newLength) {
+      dt.page.len(newLength).draw();
+    }
     
     dt.columns.adjust().responsive.recalc();
   }, 300);
 
   $(window).on('resize.datatable', handleResize);
-  
-  console.log('✅ DataTable enhanced with smart toggle behavior');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -591,6 +502,7 @@ function initCharts() {
 
   const isMobile = HIFI.isMobile();
   
+  // ✨ Enhanced chart with smooth animations
   new Chart(ctx, {
     type: 'line',
     data: {
@@ -618,7 +530,7 @@ function initCharts() {
       maintainAspectRatio: true,
       aspectRatio: isMobile ? 1.5 : 2,
       animation: {
-        duration: 1800,
+        duration: 1500,
         easing: 'easeInOutQuart'
       },
       plugins: {
@@ -631,13 +543,11 @@ function initCharts() {
           }
         },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
           padding: 12,
           borderColor: 'rgba(220, 20, 60, 0.5)',
           borderWidth: 1,
           displayColors: false,
-          titleFont: { size: 14, weight: 'bold' },
-          bodyFont: { size: 13 },
           callbacks: {
             title: (context) => context[0].label,
             label: (context) => `Pendaftar: ${context.parsed.y} orang`
@@ -674,7 +584,7 @@ function initCharts() {
     }
   });
 
-  console.log('✅ Chart initialized');
+  console.log('✅ Chart initialized with smooth animations');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -685,27 +595,27 @@ function animateStatCards() {
   if (!cards.length) return;
 
   const isMobile = HIFI.isMobile();
-  const delay = isMobile ? 100 : 150;
-  const duration = isMobile ? 600 : 800;
+  const delay = isMobile ? 80 : 120;
+  const duration = isMobile ? 500 : 700;
 
   cards.forEach((card, i) => {
     // Initial state
     card.style.opacity = '0';
-    card.style.transform = 'translateY(50px) scale(0.9) rotateX(10deg)';
+    card.style.transform = 'translateY(40px) scale(0.9)';
     
     setTimeout(() => {
       card.style.transition = `all ${duration}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
       card.style.opacity = '1';
-      card.style.transform = 'translateY(0) scale(1) rotateX(0deg)';
+      card.style.transform = 'translateY(0) scale(1)';
       
-      // Add hover class after animation
+      // ✨ Add hover effect after animation
       setTimeout(() => {
         card.classList.add('card-animated');
       }, duration);
     }, i * delay);
   });
 
-  // Animate counters
+  // ✨ Animate counter values with easing
   setTimeout(() => {
     cards.forEach(card => {
       const valueEl = card.querySelector('[data-counter]');
@@ -714,15 +624,17 @@ function animateStatCards() {
         animateCounter(valueEl, 0, target, 2000);
       }
     });
-  }, 500);
+  }, 400);
 
   console.log('✅ Stat cards animated');
 }
 
+// ✨ Enhanced counter animation dengan easing
 function animateCounter(element, start, end, duration) {
   const range = end - start;
   const startTime = performance.now();
   
+  // Easing function (ease-out-cubic)
   const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
   
   function updateCounter(currentTime) {
@@ -744,7 +656,7 @@ function animateCounter(element, start, end, duration) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ⏳ LOADING STATE
+// ⏳ LOADING STATE - SMOOTH OVERLAY
 // ═══════════════════════════════════════════════════════════════
 function showLoadingState(show = true) {
   let overlay = document.querySelector('.loading-overlay');
@@ -779,7 +691,7 @@ function showLoadingState(show = true) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 🗑️ USER ACTIONS
+// 🗑️ USER ACTIONS - ENHANCED CONFIRMATIONS
 // ═══════════════════════════════════════════════════════════════
 function confirmDelete(id) {
   const message = HIFI.isMobile() 
@@ -789,10 +701,12 @@ function confirmDelete(id) {
   if (confirm(message)) {
     showLoadingState(true);
     
+    // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate([10, 50, 10]);
     }
     
+    // Submit form
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = `/dashboard/delete/${id}?_method=DELETE`;
@@ -802,7 +716,7 @@ function confirmDelete(id) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 👆 TOUCH ENHANCEMENTS
+// 👆 TOUCH ENHANCEMENTS - BETTER MOBILE UX
 // ═══════════════════════════════════════════════════════════════
 function initTouchEnhancements() {
   if (!HIFI.isTouch()) return;
@@ -812,31 +726,36 @@ function initTouchEnhancements() {
   );
 
   touchElements.forEach(el => {
-    el.addEventListener('touchstart', function() {
+    // ✨ Press effect
+    el.addEventListener('touchstart', function(e) {
       this.classList.add('touch-pressed');
       this.style.transform = 'scale(0.95)';
     }, { passive: true });
     
+    // ✨ Release effect
     el.addEventListener('touchend', function() {
       this.classList.remove('touch-pressed');
       this.style.transform = '';
     }, { passive: true });
 
+    // ✨ Cancel effect
     el.addEventListener('touchcancel', function() {
       this.classList.remove('touch-pressed');
       this.style.transform = '';
     }, { passive: true });
   });
 
+  // ✨ Prevent 300ms delay on mobile
   document.addEventListener('touchstart', function() {}, { passive: true });
 
   console.log('✅ Touch enhancements activated');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ♿ ACCESSIBILITY
+// ♿ ACCESSIBILITY - BETTER A11Y
 // ═══════════════════════════════════════════════════════════════
 function initAccessibility() {
+  // Add ARIA labels
   document.querySelectorAll('.btn-action').forEach(btn => {
     if (!btn.getAttribute('aria-label')) {
       const title = btn.getAttribute('title') || btn.textContent.trim();
@@ -844,6 +763,7 @@ function initAccessibility() {
     }
   });
 
+  // Focus visible untuk keyboard navigation
   document.querySelectorAll('button, a, input, select, textarea').forEach(el => {
     el.addEventListener('keydown', function(e) {
       if (e.key === 'Tab') {
@@ -856,6 +776,7 @@ function initAccessibility() {
     });
   });
 
+  // Skip to content link
   if (!document.querySelector('.skip-link')) {
     const skipLink = document.createElement('a');
     skipLink.href = '#main-content';
@@ -864,34 +785,95 @@ function initAccessibility() {
     document.body.insertBefore(skipLink, document.body.firstChild);
   }
 
-  console.log('✅ Accessibility enhanced');
+  console.log('✅ Accessibility enhancements applied');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 🚀 INIT ALL
+// 🎯 SCROLL ANIMATIONS - REVEAL ON SCROLL
+// ═══════════════════════════════════════════════════════════════
+function initScrollAnimations() {
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Observe elements
+  document.querySelectorAll('.glass-card, .stat-card').forEach(el => {
+    el.classList.add('fade-on-scroll');
+    observer.observe(el);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 🎨 THEME TOGGLE (Optional Enhancement)
+// ═══════════════════════════════════════════════════════════════
+function initThemeToggle() {
+  const themeToggle = document.querySelector('#themeToggle');
+  if (!themeToggle) return;
+
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // ✨ Smooth transition
+    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 🚀 INIT ALL - ORCHESTRATE EVERYTHING
 // ═══════════════════════════════════════════════════════════════
 function initAll() {
   console.log('═══════════════════════════════════════════');
-  console.log('🚀 HIFI Admin Panel v3.0 - Initializing...');
+  console.log('🚀 HIFI Admin Panel v2.0 - Initializing...');
   console.log('═══════════════════════════════════════════');
   
   const deviceType = HIFI.isMobile() ? 'Mobile 📱' : 
                      HIFI.isTablet() ? 'Tablet 💻' : 
                      'Desktop 🖥️';
   console.log(`📱 Device: ${deviceType}`);
+  console.log(`👆 Touch: ${HIFI.isTouch() ? 'Yes' : 'No'}`);
 
-  // Core
+  // Core functionality
   initSidebarToggle();
   
-  setTimeout(() => initDataTable(), 100);
-  setTimeout(() => initCharts(), 300);
-  setTimeout(() => animateStatCards(), 500);
+  // Delay DataTable untuk smooth initial load
+  setTimeout(() => {
+    initDataTable();
+  }, 100);
+  
+  // Delay charts untuk sequential animation
+  setTimeout(() => {
+    initCharts();
+  }, 300);
+  
+  // Stat cards dengan delay
+  setTimeout(() => {
+    animateStatCards();
+  }, 500);
   
   // Enhancements
   initTouchEnhancements();
   initAccessibility();
+  initScrollAnimations();
+  initThemeToggle();
 
-  // Device classes
+  // Add device classes
   document.body.classList.add(
     HIFI.isMobile() ? 'is-mobile' : 
     HIFI.isTablet() ? 'is-tablet' : 
@@ -902,6 +884,7 @@ function initAll() {
     document.body.classList.add('is-touch');
   }
 
+  // ✨ Page loaded animation
   document.body.classList.add('page-loaded');
 
   console.log('═══════════════════════════════════════════');
@@ -929,22 +912,22 @@ window.HIFIAdmin = {
   isDesktop: HIFI.isDesktop,
   isTouch: HIFI.isTouch,
   getDataTable: getDT,
-  version: '3.0'
+  version: '2.0'
 };
 
 // ═══════════════════════════════════════════════════════════════
-// 🎨 ULTRA SATISFYING STYLES
+// 🎨 ENHANCED STYLES - BEAUTIFUL ANIMATIONS
 // ═══════════════════════════════════════════════════════════════
-const ultraStyles = document.createElement('style');
-ultraStyles.textContent = `
+const enhancedStyles = document.createElement('style');
+enhancedStyles.textContent = `
   /* ═══════════════════════════════════════════════════════════════
-     🎬 ULTRA SATISFYING KEYFRAMES
+     🎬 KEYFRAME ANIMATIONS
      ═══════════════════════════════════════════════════════════════ */
   
   @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(20px);
     }
     to {
       opacity: 1;
@@ -952,36 +935,16 @@ ultraStyles.textContent = `
     }
   }
 
-  @keyframes slideInDown {
-    0% {
+  @keyframes slideDown {
+    from {
       opacity: 0;
       max-height: 0;
-      transform: translateY(-30px) scaleY(0.8);
+      transform: translateY(-10px);
     }
-    50% {
-      opacity: 0.5;
-      transform: translateY(5px) scaleY(1.05);
-    }
-    100% {
+    to {
       opacity: 1;
-      max-height: 2000px;
-      transform: translateY(0) scaleY(1);
-    }
-  }
-
-  @keyframes slideOutUp {
-    0% {
-      opacity: 1;
-      max-height: 2000px;
-      transform: translateY(0) scaleY(1);
-    }
-    50% {
-      transform: translateY(-5px) scaleY(0.95);
-    }
-    100% {
-      opacity: 0;
-      max-height: 0;
-      transform: translateY(-30px) scaleY(0.8);
+      max-height: 500px;
+      transform: translateY(0);
     }
   }
 
@@ -994,76 +957,9 @@ ultraStyles.textContent = `
     50% { opacity: 0.5; }
   }
 
-  @keyframes glow {
-    0%, 100% { box-shadow: 0 0 5px rgba(220, 20, 60, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(220, 20, 60, 0.8); }
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     📱 FIXED SIDEBAR (NO COLLAPSE TO SIDE)
-     ═══════════════════════════════════════════════════════════════ */
-  
-  .sidebar-glass {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 260px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
-  }
-
-  /* Desktop: Always visible */
-  @media (min-width: 769px) {
-    .sidebar-glass {
-      transform: translateX(0) !important;
-    }
-    
-    .main-content,
-    .content-wrapper {
-      margin-left: 260px;
-      transition: margin-left 0.4s ease;
-    }
-  }
-
-  /* Mobile: Slide from left with overlay */
-  @media (max-width: 768px) {
-    .sidebar-glass {
-      transform: translateX(-100%);
-    }
-    
-    .sidebar-glass.mobile-active {
-      transform: translateX(0);
-      box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3);
-    }
-    
-    .main-content,
-    .content-wrapper {
-      margin-left: 0;
-      width: 100%;
-    }
-  }
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 999;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1074,9 +970,9 @@ ultraStyles.textContent = `
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 99999;
     align-items: center;
     justify-content: center;
@@ -1098,232 +994,134 @@ ultraStyles.textContent = `
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 70px;
-    height: 70px;
-    margin: -35px 0 0 -35px;
-    border: 4px solid transparent;
+    width: 60px;
+    height: 60px;
+    margin: -30px 0 0 -30px;
+    border: 3px solid transparent;
     border-top-color: #dc143c;
     border-radius: 50%;
-    animation: spin 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
   }
 
   .spinner-ring-2 {
-    width: 56px;
-    height: 56px;
-    margin: -28px 0 0 -28px;
-    border-width: 3px;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
     border-top-color: #ff6b6b;
-    animation-delay: -0.5s;
+    animation-delay: -0.4s;
   }
 
   .spinner-ring-3 {
-    width: 42px;
-    height: 42px;
-    margin: -21px 0 0 -21px;
-    border-width: 2px;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
     border-top-color: #ffa07a;
-    animation-delay: -1s;
+    animation-delay: -0.8s;
   }
 
   .loading-text {
-    margin-top: 90px;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 1px;
+    margin-top: 80px;
+    font-size: 14px;
+    font-weight: 500;
     animation: pulse 1.5s ease-in-out infinite;
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     📊 DATATABLE - ULTRA ENHANCED
+     📊 DATATABLE ENHANCEMENTS
      ═══════════════════════════════════════════════════════════════ */
 
   .dataTables_wrapper {
-    transition: all 0.5s ease;
-    opacity: 0;
+    transition: all 0.3s ease;
   }
 
-  .dataTables_wrapper.wrapper-loaded {
-    opacity: 1;
-  }
-
-  #usersTable {
-    opacity: 0;
-    transition: opacity 0.6s ease;
-  }
-
-  #usersTable.table-initialized {
-    opacity: 1;
+  .table-loaded {
+    animation: fadeInUp 0.6s ease;
   }
 
   #usersTable tbody tr {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    position: relative;
-  }
-
-  #usersTable tbody tr::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 0;
-    background: linear-gradient(90deg, rgba(220, 20, 60, 0.1) 0%, transparent 100%);
-    transition: width 0.3s ease;
-  }
-
-  #usersTable tbody tr:hover::before {
-    width: 100%;
   }
 
   #usersTable tbody tr:hover {
-    background-color: rgba(220, 20, 60, 0.03) !important;
-    transform: translateX(6px);
-    box-shadow: -5px 0 0 0 rgba(220, 20, 60, 0.6);
-  }
-
-  #usersTable tbody tr.row-expanding {
     background-color: rgba(220, 20, 60, 0.05) !important;
-    transform: scale(1.01);
+    transform: translateX(4px);
+    box-shadow: -4px 0 0 0 rgba(220, 20, 60, 0.5);
   }
 
-  #usersTable tbody tr.row-expanded {
-    background: linear-gradient(90deg, 
-      rgba(220, 20, 60, 0.08) 0%, 
-      rgba(220, 20, 60, 0.03) 50%, 
-      transparent 100%) !important;
-    box-shadow: inset 4px 0 0 0 rgba(220, 20, 60, 0.8);
+  #usersTable tbody tr.shown {
+    background-color: rgba(220, 20, 60, 0.1) !important;
   }
 
-  /* ✨ Detail Container - Ultra Smooth */
-  .dt-detail-wrapper {
-    padding: 20px;
-    background: linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.95) 0%, 
-      rgba(250, 250, 250, 0.95) 100%);
-    border-radius: 12px;
-    box-shadow: 
-      0 10px 40px rgba(0, 0, 0, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    margin: 12px 8px;
-    overflow: hidden;
+  .dt-detail {
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    border-radius: 8px;
+    margin: 8px 0;
   }
 
-  .dt-detail-container {
-    position: relative;
-  }
-
-  .detail-grid {
+  .detail-card {
     display: grid;
-    gap: 18px;
+    gap: 16px;
   }
 
-  /* ✨ Detail Item Cards - Beautiful Design */
-  .detail-item-card {
-    background: white;
-    padding: 16px 18px;
-    border-radius: 10px;
-    border: 1px solid rgba(220, 20, 60, 0.1);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    overflow: hidden;
+  .detail-item {
+    opacity: 0;
+    animation: fadeInUp 0.4s ease forwards;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    border-left: 3px solid #dc143c;
+    transition: all 0.3s ease;
   }
 
-  .detail-item-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 0;
-    background: linear-gradient(180deg, #dc143c 0%, #ff6b6b 100%);
-    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  .detail-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
-  .detail-item-card:hover::before {
-    height: 100%;
-  }
-
-  .detail-item-card:hover {
-    transform: translateY(-4px) translateX(4px);
-    box-shadow: 
-      -4px 8px 20px rgba(220, 20, 60, 0.15),
-      0 0 0 1px rgba(220, 20, 60, 0.2);
-    border-color: rgba(220, 20, 60, 0.3);
-  }
-
-  .detail-item-card.full-width {
-    grid-column: 1 / -1;
-  }
-
-  .detail-item-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgba(220, 20, 60, 0.1);
-  }
-
-  .detail-icon {
+  .detail-item b {
+    display: block;
     color: #dc143c;
-    font-size: 18px;
-    width: 24px;
-    text-align: center;
-    animation: glow 2s ease-in-out infinite;
-  }
-
-  .detail-label {
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 12px;
+    margin-bottom: 6px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #666;
+    letter-spacing: 0.5px;
   }
 
-  .detail-value {
-    font-size: 15px;
-    font-weight: 600;
-    color: #222;
-    word-break: break-word;
+  .detail-item span {
+    display: block;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
   }
 
-  /* Role Badge - Enhanced */
   .role-badge {
     display: inline-block;
-    padding: 6px 16px;
-    border-radius: 20px;
+    padding: 4px 12px;
+    border-radius: 12px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
   }
 
   .role-admin {
     background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
-  }
-
-  .role-admin:hover {
-    box-shadow: 0 6px 20px rgba(220, 20, 60, 0.6);
-    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
   }
 
   .role-user {
     background: linear-gradient(135deg, #6c757d 0%, #95a5a6 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
-  }
-
-  .role-user:hover {
-    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
-    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     🔍 SEARCH & PAGINATION - ENHANCED
+     🔍 SEARCH ENHANCEMENT
      ═══════════════════════════════════════════════════════════════ */
 
   .dataTables_filter {
@@ -1332,131 +1130,59 @@ ultraStyles.textContent = `
 
   .search-icon {
     position: absolute;
-    left: 14px;
+    left: 12px;
     top: 50%;
     transform: translateY(-50%);
     color: #dc143c;
-    font-size: 16px;
     pointer-events: none;
     z-index: 1;
-    transition: all 0.3s ease;
-  }
-
-  .dataTables_filter input:focus + .search-icon,
-  .dataTables_filter:hover .search-icon {
-    color: #ff6b6b;
-    transform: translateY(-50%) scale(1.1);
   }
 
   .dataTables_filter input {
-    padding-left: 45px !important;
+    padding-left: 40px !important;
     transition: all 0.3s ease;
-    border: 2px solid rgba(220, 20, 60, 0.2);
   }
 
   .dataTables_filter input:focus {
-    box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.1);
+    box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
     border-color: #dc143c;
-  }
-
-  /* Length Menu - Enhanced */
-  .dataTables_length select {
-    padding: 8px 35px 8px 12px !important;
-    border: 2px solid rgba(220, 20, 60, 0.2);
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-  }
-
-  .dataTables_length select:hover {
-    border-color: #dc143c;
-    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.15);
-  }
-
-  .dataTables_length select:focus {
-    outline: none;
-    border-color: #dc143c;
-    box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.1);
-  }
-
-  /* Pagination - Ultra Enhanced */
-  .dataTables_paginate {
-    margin-top: 20px;
-  }
-
-  .dataTables_paginate .paginate_button {
-    padding: 10px 16px !important;
-    margin: 0 4px !important;
-    border-radius: 8px !important;
-    border: 2px solid rgba(220, 20, 60, 0.2) !important;
-    background: white !important;
-    color: #dc143c !important;
-    font-weight: 600 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  }
-
-  .dataTables_paginate .paginate_button:hover {
-    background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%) !important;
-    color: white !important;
-    border-color: #dc143c !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(220, 20, 60, 0.3) !important;
-  }
-
-  .dataTables_paginate .paginate_button.current {
-    background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%) !important;
-    color: white !important;
-    border-color: #dc143c !important;
-    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4) !important;
-  }
-
-  .dataTables_paginate .paginate_button.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  .dataTables_paginate .paginate_button.disabled:hover {
-    background: white !important;
-    color: #dc143c !important;
-    transform: none;
-    box-shadow: none !important;
-  }
-
-  /* Info - Enhanced */
-  .dataTables_info {
-    font-weight: 600;
-    color: #666;
-    transition: all 0.3s ease;
-  }
-
-  .dataTables_info.info-updated {
-    color: #dc143c;
-    transform: scale(1.05);
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     🎯 BUTTONS - EXPORT
+     🎴 STAT CARDS
      ═══════════════════════════════════════════════════════════════ */
 
-  .dt-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+  .stat-card {
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform;
   }
 
-  .dt-btn-export {
-    padding: 10px 20px !important;
-    border-radius: 8px !important;
-    border: none !important;
-    font-weight: 600 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  .stat-card.card-animated {
+    cursor: pointer;
+  }
+
+  .stat-card.card-animated:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(220, 20, 60, 0.2);
+  }
+
+  .stat-card.card-animated:active {
+    transform: translateY(-4px) scale(1);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     🎯 BUTTONS
+     ═══════════════════════════════════════════════════════════════ */
+
+  .btn-smooth,
+  .dt-btn-green {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   }
 
-  .dt-btn-export::before {
+  .btn-smooth::before,
+  .dt-btn-green::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -1469,65 +1195,21 @@ ultraStyles.textContent = `
     transition: width 0.6s, height 0.6s;
   }
 
-  .dt-btn-export:hover::before {
+  .btn-smooth:hover::before,
+  .dt-btn-green:hover::before {
     width: 300px;
     height: 300px;
   }
 
-  .dt-btn-export:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+  .btn-smooth:hover,
+  .dt-btn-green:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
 
-  .dt-btn-excel {
-    background: linear-gradient(135deg, #217346 0%, #2ea85b 100%) !important;
-    color: white !important;
-  }
-
-  .dt-btn-pdf {
-    background: linear-gradient(135deg, #dc143c 0%, #ff6b6b 100%) !important;
-    color: white !important;
-  }
-
-  .dt-btn-print {
-    background: linear-gradient(135deg, #495057 0%, #6c757d 100%) !important;
-    color: white !important;
-  }
-
-  /* Hide text on mobile */
-  @media (max-width: 768px) {
-    .page-text,
-    .btn-text {
-      display: none;
-    }
-    
-    .dt-btn-export {
-      padding: 10px 14px !important;
-      min-width: 44px;
-    }
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     🎴 STAT CARDS
-     ═══════════════════════════════════════════════════════════════ */
-
-  .stat-card {
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: transform;
-    perspective: 1000px;
-  }
-
-  .stat-card.card-animated {
-    cursor: pointer;
-  }
-
-  .stat-card.card-animated:hover {
-    transform: translateY(-10px) scale(1.03) rotateX(-5deg);
-    box-shadow: 0 15px 35px rgba(220, 20, 60, 0.25);
-  }
-
-  .stat-card.card-animated:active {
-    transform: translateY(-5px) scale(1);
+  .btn-smooth:active,
+  .dt-btn-green:active {
+    transform: translateY(0);
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1541,6 +1223,35 @@ ultraStyles.textContent = `
 
   .touch-pressed {
     transition: transform 0.15s ease !important;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     📱 SIDEBAR OVERLAY
+     ═══════════════════════════════════════════════════════════════ */
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .sidebar-glass {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar-glass.active {
+    transform: translateX(0);
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1558,79 +1269,32 @@ ultraStyles.textContent = `
     border-radius: 0 0 4px 0;
     z-index: 100000;
     transition: top 0.3s ease;
-    font-weight: 600;
   }
 
   .skip-link:focus {
     top: 0;
-    outline: 3px solid #fff;
+    outline: 2px solid #fff;
     outline-offset: 2px;
   }
 
   .keyboard-focus {
-    outline: 3px solid #dc143c !important;
-    outline-offset: 3px !important;
+    outline: 2px solid #dc143c !important;
+    outline-offset: 2px !important;
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     🎨 EMPTY STATE
+     📜 SCROLL ANIMATIONS
      ═══════════════════════════════════════════════════════════════ */
 
-  .empty-state {
-    padding: 60px 20px;
-    text-align: center;
+  .fade-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .empty-icon {
-    margin-bottom: 20px;
-    color: rgba(220, 20, 60, 0.2);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  .empty-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #666;
-    margin: 0 0 8px 0;
-  }
-
-  .empty-subtitle {
-    font-size: 14px;
-    color: #999;
-    margin: 0;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     📱 RESPONSIVE ADJUSTMENTS
-     ═══════════════════════════════════════════════════════════════ */
-
-  @media (max-width: 768px) {
-    .dt-detail-wrapper {
-      padding: 14px;
-      margin: 10px 4px;
-    }
-
-    .detail-item-card {
-      padding: 12px 14px;
-    }
-
-    .detail-label {
-      font-size: 10px;
-    }
-
-    .detail-value {
-      font-size: 13px;
-    }
-
-    .stat-card.card-animated:hover {
-      transform: translateY(-6px) scale(1.02);
-    }
-
-    .dataTables_paginate .paginate_button {
-      padding: 8px 12px !important;
-      margin: 0 2px !important;
-      font-size: 13px !important;
-    }
+  .fade-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1644,6 +1308,68 @@ ultraStyles.textContent = `
 
   body.page-loaded {
     opacity: 1;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     📱 RESPONSIVE ADJUSTMENTS
+     ═══════════════════════════════════════════════════════════════ */
+
+  @media (max-width: 768px) {
+    .dt-detail {
+      padding: 12px;
+    }
+
+    .detail-item {
+      padding: 10px;
+    }
+
+    .detail-item b {
+      font-size: 11px;
+    }
+
+    .detail-item span {
+      font-size: 13px;
+    }
+
+    .stat-card.card-animated:hover {
+      transform: translateY(-4px) scale(1.01);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     🌙 DARK MODE SUPPORT (Optional)
+     ═══════════════════════════════════════════════════════════════ */
+
+  [data-theme="dark"] .detail-item {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="dark"] .detail-item:hover {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  [data-theme="dark"] .detail-item span {
+    color: #e0e0e0;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     🎯 EMPTY STATE
+     ═══════════════════════════════════════════════════════════════ */
+
+  .empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999;
+  }
+
+  .empty-state i {
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    margin: 0;
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1661,8 +1387,8 @@ ultraStyles.textContent = `
   }
 `;
 
-document.head.appendChild(ultraStyles);
+document.head.appendChild(enhancedStyles);
 
 console.log('═══════════════════════════════════════════');
-console.log('✨ HIFI Admin Panel v3.0 - ULTRA Enhanced');
+console.log('✨ HIFI Admin Panel v2.0 - Enhanced Loaded');
 console.log('═══════════════════════════════════════════');

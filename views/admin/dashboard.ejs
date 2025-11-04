@@ -182,12 +182,6 @@
       -webkit-text-fill-color: transparent;
     }
     
-    .table-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -246,7 +240,7 @@
       
       <!-- Statistics Cards -->
       <div class="stats-grid">
-        <div class="stat-card" data-tilt>
+        <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-users"></i>
           </div>
@@ -254,7 +248,7 @@
           <div class="stat-label">Total Anggota</div>
         </div>
         
-        <div class="stat-card" data-tilt>
+        <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-user-shield"></i>
           </div>
@@ -262,7 +256,7 @@
           <div class="stat-label">Administrator</div>
         </div>
         
-        <div class="stat-card" data-tilt>
+        <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-user-check"></i>
           </div>
@@ -270,7 +264,7 @@
           <div class="stat-label">Anggota Aktif</div>
         </div>
         
-        <div class="stat-card" data-tilt>
+        <div class="stat-card">
           <div class="stat-icon">
             <i class="fas fa-chart-line"></i>
           </div>
@@ -295,9 +289,6 @@
   
   <!-- Scripts -->
   <%- include('partials/script') %>
-  
-  <script src="/javascript/animations.js"></script>
-  <script src="/javascript/admin-animations.js"></script>
   
   <script>
     // Particle Animation
